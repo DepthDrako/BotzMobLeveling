@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: botzmobleveling
+Specification-Vendor: BotzLabz
+Specification-Version: 1
+Implementation-Title: mobleveling
+Implementation-Version: 1.0.0
+Implementation-Vendor: BotzLabz
+Implementation-Timestamp: 2026-02-04T20:54:17-0700
+

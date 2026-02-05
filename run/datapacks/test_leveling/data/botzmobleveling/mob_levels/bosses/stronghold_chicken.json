@@ -1,0 +1,41 @@
+{
+  "enabled": true,
+  "target_mobs": ["minecraft:chicken"],
+  "spawn_chance": 0.10,
+  "structures": ["minecraft:stronghold"],
+
+  "display_name": "§4§l☠ Cluckthulhu §4§l☠",
+  "tier": 3,
+  "level": 750,
+  "ignore_level_cap": true,
+
+  "boss_bar": {
+    "color": "red",
+    "style": "notched_10",
+    "visible": true
+  },
+
+  "size_multiplier": 2.0,
+  "glow_effect": true,
+  "glow_color": "red",
+  "particle_effect": "minecraft:flame",
+
+  "immunities": ["fire", "fall"],
+
+  "stat_multipliers": {
+    "minecraft:generic.max_health": 50.0,
+    "minecraft:generic.attack_damage": 10.0,
+    "minecraft:generic.movement_speed": 1.5,
+    "minecraft:generic.knockback_resistance": 0.8
+  },
+
+  "xp_multiplier": 20.0,
+
+  "minions": {
+    "type": "minecraft:chicken",
+    "count": 3,
+    "interval_seconds": 20,
+    "health_threshold": 0.5,
+    "max_minions": 9
+  }
+}

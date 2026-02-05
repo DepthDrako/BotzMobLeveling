@@ -1,0 +1,49 @@
+{
+  "structure": "minecraft:fortress",
+  "priority": 100,
+  "enabled": true,
+  "level_range": {
+    "min": 35,
+    "max": 60
+  },
+  "level_mode": "random",
+  "ignore_distance_scaling": true,
+  "mob_overrides": {
+    "minecraft:blaze": {
+      "level_bonus": 10,
+      "attribute_scaling": {
+        "minecraft:generic.max_health": {
+          "base_bonus": 10.0,
+          "per_level": 1.0,
+          "operation": "addition"
+        }
+      }
+    },
+    "minecraft:wither_skeleton": {
+      "level_bonus": 5,
+      "attribute_multipliers": {
+        "minecraft:generic.attack_damage": 1.5
+      }
+    }
+  },
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 8.0,
+      "per_level": 0.6,
+      "operation": "addition",
+      "max_bonus": 60.0
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.06,
+      "operation": "multiply_base",
+      "max_bonus": 3.0
+    },
+    "minecraft:generic.armor": {
+      "base_bonus": 2.0,
+      "per_level": 0.1,
+      "operation": "addition",
+      "max_bonus": 12.0
+    }
+  }
+}

@@ -1,0 +1,72 @@
+
+#General Settings
+[general]
+	#Enable or disable the entire mob leveling system
+	enabled = true
+	#Display mob level in their name tag
+	showLevelInName = true
+	#Enable debug logging for troubleshooting
+	debugMode = false
+
+#Rule Type Toggles - Enable/disable specific rule types
+[ruleToggles]
+	#Enable structure-based leveling rules (highest priority)
+	structureLevelingEnabled = true
+	#Enable biome-based leveling rules (medium priority)
+	biomeLevelingEnabled = true
+	#Enable distance-from-spawn leveling (used in base rules)
+	distanceLevelingEnabled = true
+
+#Mob Filtering - Control which mobs receive levels
+[filtering]
+	#Apply leveling to passive mobs (animals, villagers, etc)
+	applyToPassiveMobs = false
+	#Apply leveling to boss mobs (Wither, Ender Dragon, etc)
+	applyToBossMobs = false
+	#Allow structure rules to level passive mobs even when applyToPassiveMobs is false.
+	#Example: A chicken in a stronghold can still get leveled if a stronghold rule exists.
+	structureOverridesPassiveFilter = true
+	#Allow structure rules to level boss mobs even when applyToBossMobs is false.
+	#Example: The Ender Dragon can be leveled by an end_city structure rule.
+	structureOverridesBossFilter = true
+	#List of mob IDs that will never receive levels (e.g., 'minecraft:armor_stand')
+	mobBlacklist = ["minecraft:armor_stand", "minecraft:marker", "minecraft:item_frame", "minecraft:glow_item_frame", "minecraft:painting"]
+
+#Default Level Ranges - Used when no specific rule applies
+[levels]
+	#Default minimum level for mobs without specific rules
+	#Range: 1 ~ 10000
+	defaultMinLevel = 1
+	#Default maximum level for mobs without specific rules
+	#Range: 1 ~ 10000
+	defaultMaxLevel = 100
+	#Absolute maximum level any mob can reach, regardless of rules
+	#Range: 1 ~ 10000
+	globalLevelCap = 100
+
+#Distance-based Scaling - Controls how levels increase with distance from spawn
+[distance]
+	#Distance from spawn (in blocks) where level scaling begins. Mobs within this radius use minimum level.
+	#Range: 0 ~ 100000
+	distanceStartRadius = 100
+	#Number of blocks of distance required per additional level
+	#Range: 1 ~ 10000
+	distancePerLevel = 50
+	#Multiplier applied to distance-calculated levels (1.0 = normal, 2.0 = double levels)
+	#Range: 0.1 ~ 10.0
+	distanceLevelMultiplier = 1.0
+
+#Display Settings - Controls how mob levels are shown
+[display]
+	#Format for level display. Use {level} as placeholder for the level number.
+	levelFormat = "[Lv.{level}] "
+	#Color for level display. Use color names (gold, red, green) or hex codes (#FF5500)
+	levelColor = "gold"
+	#Always show mob name with level (true) or only when looking at mob (false)
+	alwaysShowName = false
+
+#Attribute Whitelist - Only these attributes can be modified by the leveling system
+[attributes]
+	#List of attribute IDs that the mod is allowed to modify. Supports modded attributes.
+	allowedAttributes = ["minecraft:generic.max_health", "minecraft:generic.attack_damage", "minecraft:generic.armor", "minecraft:generic.armor_toughness", "minecraft:generic.knockback_resistance", "minecraft:generic.movement_speed", "minecraft:generic.follow_range", "minecraft:generic.attack_knockback", "minecraft:generic.attack_speed"]
+

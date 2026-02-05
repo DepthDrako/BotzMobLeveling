@@ -1,0 +1,41 @@
+{
+  "enabled": true,
+  "target_mobs": ["minecraft:zombie"],
+  "spawn_chance": 0.05,
+  "structures": ["minecraft:stronghold"],
+
+  "display_name": "§5§lStronghold Overlord",
+  "tier": 2,
+  "level": 500,
+  "ignore_level_cap": true,
+
+  "boss_bar": {
+    "color": "purple",
+    "style": "notched_6",
+    "visible": true
+  },
+
+  "size_multiplier": 1.5,
+  "glow_effect": true,
+  "glow_color": "purple",
+  "particle_effect": "minecraft:soul",
+
+  "immunities": ["fire", "drown"],
+
+  "stat_multipliers": {
+    "minecraft:generic.max_health": 25.0,
+    "minecraft:generic.attack_damage": 5.0,
+    "minecraft:generic.armor": 3.0,
+    "minecraft:generic.knockback_resistance": 0.5
+  },
+
+  "xp_multiplier": 10.0,
+
+  "minions": {
+    "type": "minecraft:zombie",
+    "count": 2,
+    "interval_seconds": 30,
+    "health_threshold": 0.75,
+    "max_minions": 6
+  }
+}

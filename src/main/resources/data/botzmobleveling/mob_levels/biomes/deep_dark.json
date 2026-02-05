@@ -1,0 +1,43 @@
+{
+  "biome": "minecraft:deep_dark",
+  "priority": 75,
+  "enabled": true,
+  "level_range": {
+    "min": 40,
+    "max": 65
+  },
+  "level_mode": "random",
+  "ignore_distance_scaling": true,
+  "mob_overrides": {
+    "minecraft:warden": {
+      "fixed_level": 100,
+      "ignore_level_cap": true,
+      "attribute_scaling": {
+        "minecraft:generic.max_health": {
+          "base_bonus": 100.0,
+          "per_level": 5.0,
+          "operation": "addition"
+        },
+        "minecraft:generic.attack_damage": {
+          "base_bonus": 0.0,
+          "per_level": 0.1,
+          "operation": "multiply_base"
+        }
+      }
+    }
+  },
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 10.0,
+      "per_level": 0.8,
+      "operation": "addition",
+      "max_bonus": 70.0
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.05,
+      "operation": "multiply_base",
+      "max_bonus": 2.5
+    }
+  }
+}

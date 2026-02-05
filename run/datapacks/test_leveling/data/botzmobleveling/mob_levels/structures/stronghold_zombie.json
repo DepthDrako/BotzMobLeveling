@@ -1,0 +1,35 @@
+{
+  "structure": "minecraft:stronghold",
+  "priority": 200,
+  "enabled": true,
+  "level_range": {
+    "min": 420,
+    "max": 420
+  },
+  "level_mode": "fixed",
+  "fixed_level": 420,
+  "ignore_distance_scaling": true,
+  "mob_overrides": {
+    "minecraft:zombie": {
+      "fixed_level": 420,
+      "ignore_level_cap": true
+    },
+    "minecraft:chicken": {
+      "fixed_level": 750,
+      "ignore_level_cap": true,
+      "can_attack": true
+    }
+  },
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 50.0,
+      "per_level": 0.5,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.05,
+      "operation": "multiply_base"
+    }
+  }
+}

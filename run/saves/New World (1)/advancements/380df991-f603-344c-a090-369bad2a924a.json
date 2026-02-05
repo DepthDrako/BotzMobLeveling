@@ -1,0 +1,25 @@
+{
+  "minecraft:recipes/decorations/crafting_table": {
+    "criteria": {
+      "unlock_right_away": "2026-02-04 19:58:35 -0700"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "minecraft:taiga": "2026-02-04 20:01:20 -0700",
+      "minecraft:snowy_taiga": "2026-02-04 19:58:36 -0700",
+      "minecraft:grove": "2026-02-04 19:58:52 -0700",
+      "minecraft:lush_caves": "2026-02-04 19:58:59 -0700",
+      "minecraft:old_growth_spruce_taiga": "2026-02-04 20:14:06 -0700"
+    },
+    "done": false
+  },
+  "minecraft:story/follow_ender_eye": {
+    "criteria": {
+      "in_stronghold": "2026-02-04 19:59:03 -0700"
+    },
+    "done": true
+  },
+  "DataVersion": 3465
+}

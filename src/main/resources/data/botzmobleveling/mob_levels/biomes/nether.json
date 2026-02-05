@@ -1,0 +1,52 @@
+{
+  "biome_tags": [
+    "minecraft:is_nether"
+  ],
+  "priority": 50,
+  "enabled": true,
+  "level_range": {
+    "min": 20,
+    "max": 45
+  },
+  "level_mode": "distance",
+  "distance_multiplier": 1.2,
+  "ignore_distance_scaling": false,
+  "mob_overrides": {
+    "minecraft:ghast": {
+      "level_bonus": 10
+    },
+    "minecraft:hoglin": {
+      "level_bonus": 5,
+      "attribute_multipliers": {
+        "minecraft:generic.max_health": 1.3
+      }
+    },
+    "minecraft:piglin_brute": {
+      "level_bonus": 15,
+      "attribute_multipliers": {
+        "minecraft:generic.attack_damage": 1.5,
+        "minecraft:generic.armor": 1.5
+      }
+    }
+  },
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 5.0,
+      "per_level": 0.4,
+      "operation": "addition",
+      "max_bonus": 40.0
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.04,
+      "operation": "multiply_base",
+      "max_bonus": 2.0
+    },
+    "minecraft:generic.armor": {
+      "base_bonus": 1.0,
+      "per_level": 0.08,
+      "operation": "addition",
+      "max_bonus": 8.0
+    }
+  }
+}

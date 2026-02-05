@@ -1,0 +1,98 @@
+[04Feb.2026 20:13:11.495] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 5, --assetsDir, C:\Users\WarShip\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
+[04Feb.2026 20:13:11.499] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.11 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[04Feb.2026 20:13:11.583] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[04Feb.2026 20:13:11.643] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[04Feb.2026 20:13:11.793] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
+[04Feb.2026 20:13:11.863] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/WarShip/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[04Feb.2026 20:13:11.896] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: NVIDIA GeForce RTX 3090/PCIe/SSE2 GL version 4.6.0 NVIDIA 581.80, NVIDIA Corporation
+[04Feb.2026 20:13:12.043] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\WarShip\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[04Feb.2026 20:13:12.045] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\WarShip\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[04Feb.2026 20:13:12.047] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\WarShip\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[04Feb.2026 20:13:12.051] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\WarShip\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
+[04Feb.2026 20:13:12.100] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[04Feb.2026 20:13:12.772] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, C:\Users\WarShip\.gradle\caches\forge_gradle\assets, --assetIndex, 5]
+[04Feb.2026 20:13:13.450] [main/WARN] [oshi.driver.windows.perfmon.PerfmonDisabled/]: Invalid registry value type detected for PerfOS counters. Should be REG_DWORD. Ignoring: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PerfOS\Performance\Disable Performance Counters.
+[04Feb.2026 20:13:15.295] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 188 Datafixer optimizations took 102 milliseconds
+[04Feb.2026 20:13:16.457] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/WarShip/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_official_1.20.1/forge-1.20.1-47.4.0_mapped_official_1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[04Feb.2026 20:13:16.457] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/WarShip/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_official_1.20.1/forge-1.20.1-47.4.0_mapped_official_1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[04Feb.2026 20:13:16.469] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[04Feb.2026 20:13:16.472] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Dev
+[04Feb.2026 20:13:16.546] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.1 build 7
+[04Feb.2026 20:13:16.775] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
+[04Feb.2026 20:13:16.777] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
+[04Feb.2026 20:13:16.784] [modloading-worker-0/INFO] [com.botzlabz.mobleveling.BotzMobLeveling/]: [botzmobleveling] Mob leveling system initialized!
+[04Feb.2026 20:13:17.274] [Render thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [botzmobleveling]
+[04Feb.2026 20:13:17.355] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources
+[04Feb.2026 20:13:17.431] [Worker-Main-5/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.0.06.hex, loading
+[04Feb.2026 20:13:17.570] [Worker-Main-4/INFO] [com.botzlabz.mobleveling.BotzMobLeveling/]: [botzmobleveling] Common setup complete - data-driven mob leveling ready
+[04Feb.2026 20:13:17.609] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[04Feb.2026 20:13:17.660] [Worker-Main-7/INFO] [com.botzlabz.mobleveling.BotzMobLeveling/]: [botzmobleveling] Client setup complete
+[04Feb.2026 20:13:18.011] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.0 Target: 47.4.10
+[04Feb.2026 20:13:18.919] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
+[04Feb.2026 20:13:18.919] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[04Feb.2026 20:13:18.968] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on Speakers (7.1 Surround Sound)
+[04Feb.2026 20:13:18.969] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
+[04Feb.2026 20:13:19.042] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
+[04Feb.2026 20:13:19.051] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[04Feb.2026 20:13:19.051] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[04Feb.2026 20:13:19.051] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[04Feb.2026 20:13:19.052] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[04Feb.2026 20:13:19.055] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[04Feb.2026 20:13:19.055] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[04Feb.2026 20:13:19.055] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[04Feb.2026 20:13:19.055] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[04Feb.2026 20:13:19.215] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[04Feb.2026 20:13:19.245] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
+[04Feb.2026 20:13:19.245] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[04Feb.2026 20:13:19.245] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[04Feb.2026 20:13:19.668] [Realms Notification Availability checker #1/INFO] [com.mojang.realmsclient.client.RealmsClient/]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
+[04Feb.2026 20:13:34.542] [Render thread/INFO] [net.minecraftforge.registries.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[04Feb.2026 20:13:35.271] [Render thread/INFO] [com.botzlabz.mobleveling.event.DataReloadHandler/]: [botzmobleveling] Registered mob leveling data reload listener
+[04Feb.2026 20:13:35.488] [Render thread/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 7 recipes
+[04Feb.2026 20:13:35.552] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 1271 advancements
+[04Feb.2026 20:13:35.558] [Render thread/INFO] [com.botzlabz.mobleveling.data.MobLevelingDataManager/]: [botzmobleveling] Loaded 4 structure rules, 4 biome rules, 2 base rules (0 errors)
+[04Feb.2026 20:13:35.827] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Starting integrated minecraft server version 1.20.1
+[04Feb.2026 20:13:35.827] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[04Feb.2026 20:13:36.602] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[04Feb.2026 20:13:38.174] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[04Feb.2026 20:13:38.174] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[04Feb.2026 20:13:38.174] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[04Feb.2026 20:13:38.174] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[04Feb.2026 20:13:38.587] [Server thread/INFO] [net.minecraftforge.server.permission.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[04Feb.2026 20:13:38.599] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 1996 ms
+[04Feb.2026 20:13:38.674] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing view distance to 12, from 10
+[04Feb.2026 20:13:38.675] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing simulation distance to 12, from 0
+[04Feb.2026 20:13:38.735] [Render thread/WARN] [io.netty.util.internal.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
+[04Feb.2026 20:13:39.302] [Netty Local Client IO #0/INFO] [net.minecraftforge.network.NetworkHooks/]: Connected to a modded server.
+[04Feb.2026 20:13:39.339] [Server thread/INFO] [net.minecraft.server.players.PlayerList/]: Dev[local:E:61e0138f] logged in with entity id 110 at (-1331.573436248372, 115.90236832640772, -623.906661315845)
+[04Feb.2026 20:13:39.380] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev joined the game
+[04Feb.2026 20:13:40.012] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 11 advancements
+[04Feb.2026 20:13:50.974] [Server thread/INFO] [net.minecraft.server.commands.LocateCommand/]: Locating element minecraft:stronghold took 2 ms
+[04Feb.2026 20:13:50.979] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] The nearest minecraft:stronghold is at [-1472, ~, -672] (148 blocks away)
+[04Feb.2026 20:13:55.672] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Teleported Dev to -1471.500000, 115.902368, -671.500000]
+[04Feb.2026 20:13:55.672] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Teleported Dev to -1471.500000, 115.902368, -671.500000
+[04Feb.2026 20:13:57.734] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Set own game mode to Spectator Mode]
+[04Feb.2026 20:13:57.741] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Set own game mode to Spectator Mode
+[04Feb.2026 20:14:05.039] [Server thread/INFO] [net.minecraft.world.entity.LivingEntity/]: Named entity Zombie['[Lv.29] Zombie'/160, l='ServerLevel[New World]', x=-1362.47, y=103.54, z=-645.53] died: [Lv.29] Zombie burned to death
+[04Feb.2026 20:14:12.898] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Dev: Set own game mode to Creative Mode]
+[04Feb.2026 20:14:12.904] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Set own game mode to Creative Mode
+[04Feb.2026 20:14:35.693] [Server thread/INFO] [net.minecraft.world.entity.LivingEntity/]: Named entity GlowSquid['[Lv.34] Glow Squid'/1026, l='ServerLevel[New World]', x=-1614.16, y=-7.00, z=-650.52] died: [Lv.34] Glow Squid drowned
+[04Feb.2026 20:14:36.243] [Server thread/INFO] [net.minecraft.world.entity.LivingEntity/]: Named entity GlowSquid['[Lv.34] Glow Squid'/1044, l='ServerLevel[New World]', x=-1614.97, y=-6.00, z=-650.40] died: [Lv.34] Glow Squid drowned
+[04Feb.2026 20:14:43.988] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+[04Feb.2026 20:14:43.994] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[04Feb.2026 20:14:44.005] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[04Feb.2026 20:14:44.005] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[04Feb.2026 20:14:46.059] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Stopping!
+[04Feb.2026 20:14:46.099] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Dev lost connection: Disconnected
+[04Feb.2026 20:14:46.099] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev left the game
+[04Feb.2026 20:14:46.104] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Stopping singleplayer server as player logged out
+[04Feb.2026 20:14:46.137] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[04Feb.2026 20:14:46.137] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[04Feb.2026 20:14:46.137] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[04Feb.2026 20:14:46.633] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[04Feb.2026 20:14:47.353] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[04Feb.2026 20:14:47.354] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[04Feb.2026 20:14:47.364] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (New World (1)): All chunks are saved
+[04Feb.2026 20:14:47.365] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[04Feb.2026 20:14:47.365] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[04Feb.2026 20:14:47.365] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage: All dimensions are saved

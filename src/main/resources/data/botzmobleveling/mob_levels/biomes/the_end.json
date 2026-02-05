@@ -1,0 +1,44 @@
+{
+  "biome_tags": [
+    "minecraft:is_end"
+  ],
+  "priority": 60,
+  "enabled": true,
+  "level_range": {
+    "min": 40,
+    "max": 70
+  },
+  "level_mode": "distance",
+  "distance_multiplier": 1.5,
+  "ignore_distance_scaling": false,
+  "mob_overrides": {
+    "minecraft:enderman": {
+      "level_bonus": 10,
+      "attribute_scaling": {
+        "minecraft:generic.max_health": {
+          "base_bonus": 10.0,
+          "per_level": 0.8,
+          "operation": "addition"
+        }
+      }
+    },
+    "minecraft:ender_dragon": {
+      "fixed_level": 100,
+      "ignore_level_cap": true
+    }
+  },
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 10.0,
+      "per_level": 0.6,
+      "operation": "addition",
+      "max_bonus": 60.0
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.06,
+      "operation": "multiply_base",
+      "max_bonus": 3.0
+    }
+  }
+}
