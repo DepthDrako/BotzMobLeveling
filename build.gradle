@@ -69,6 +69,10 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+    maven {
+        name = "Patchouli"
+        url = "https://maven.blamejared.com"
+    }
 }
 
 dependencies {
@@ -84,6 +88,11 @@ dependencies {
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
     // Uncomment to include Curios at runtime for testing:
     // runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+
+    // Patchouli (optional integration)
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE:api")
+    // Include Patchouli at runtime for testing guide books:
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE")
 }
 
 tasks.named('processResources', ProcessResources).configure {

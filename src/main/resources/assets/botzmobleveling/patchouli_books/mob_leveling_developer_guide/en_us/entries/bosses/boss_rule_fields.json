@@ -1,0 +1,48 @@
+﻿{
+  "name": "Boss Rule Reference",
+  "icon": "minecraft:nether_star",
+  "category": "botzmobleveling:bosses",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Boss Rule Basics",
+      "text": "Boss rules transform normal mobs into powerful bosses with unique abilities.$(br2)File location:$(br2)$odata/<namespace>/mob_levels/bosses/<name>.json$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Core Fields",
+      "text": "$(bold)enabled$() (bool, default: true) - Master switch$(br2)$(bold)target_mobs$() (string array) - Entity IDs this can apply to$(br2)$(bold)spawn_chance$() (double, 0.0-1.0, default: 0.1) - Probability on eligible spawn$(br2)$(bold)tier$() (int, default: 1) - Higher = more specific/important$(br2)$(bold)level$() (int, default: 50) - Boss level$(br2)$(bold)ignore_level_cap$() (bool, default: true)"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Location Filters",
+      "text": "Optional restrictions:$(br2)$(bold)structures$() (string array) - Only in these structures$(br2)$(bold)biomes$() (string array) - Only in these biomes$(br2)If none specified, boss can spawn anywhere target mobs spawn.$(br2)Example: $(o)\"structures\": [\"minecraft:fortress\"]$()"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Visual Fields",
+      "text": "$(bold)display_name$() (string, default: \"§c§lBoss\") - Custom name$(br2)$(bold)glow_effect$() (bool, default: true)$(br2)$(bold)glow_color$() (string, default: \"red\")$(br2)$(bold)size_multiplier$() (float, default: 1.0)$(br2)$(bold)particle_effect$() (string, optional) - Particle ID"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Boss Bar Fields",
+      "text": "$(bold)boss_bar$() (object):$(br2){$(br)  \"color\": \"red\",$(br)  \"style\": \"notched_10\",$(br)  \"visible\": true$(br)}$(br2)Colors: pink, blue, red, green, yellow, purple, white$(br2)Styles: progress, notched_6, notched_10, notched_12, notched_20"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Combat Fields",
+      "text": "$(bold)immunities$() (string array):$(br2)  $(o)fire, drowning, fall_damage, knockback$()$(br2)$(bold)stat_multipliers$() (object):$(br2){$(br)  \"minecraft:generic.max_health\": 3.0,$(br)  \"minecraft:generic.attack_damage\": 2.0$(br)}$(br2)$(bold)xp_multiplier$() (double, default: 5.0)$(br2)$(bold)loot_table$() (string) - Custom loot table ID"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Minion Fields",
+      "text": "$(bold)minions$() (object):$(br2){$(br)  \"type\": \"minecraft:zombie\",$(br)  \"count\": 4,$(br)  \"interval_seconds\": 30,$(br)  \"health_threshold\": 0.5,$(br)  \"max_minions\": 8$(br)}$(br2)Minions spawn when boss health drops below threshold. Count per wave."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Complete Example",
+      "text": "{$(br)  \"enabled\": true,$(br)  \"target_mobs\": [\"minecraft:wither_skeleton\"],$(br)  \"spawn_chance\": 0.05,$(br)  \"structures\": [\"minecraft:fortress\"],$(br)  \"tier\": 3,$(br)  \"display_name\": \"§c§lFortress Guardian\",$(br)  \"boss_bar\": {$(br)    \"color\": \"red\",$(br)    \"style\": \"notched_10\",$(br)    \"visible\": true$(br)  },$(br)  \"glow_effect\": true,$(br)  \"stat_multipliers\": {$(br)    \"minecraft:generic.max_health\": 3.0$(br)  },$(br)  \"xp_multiplier\": 10.0$(br)}"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+﻿{
+  "name": "The Mathematics of Danger",
+  "icon": "minecraft:clock",
+  "category": "botzmobleveling:leveling",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Three Paths to Power",
+      "text": "Mobs can gain levels through three different methods:$(br2)$(li)$(bold)Fixed:$() A set level regardless of location$(li)$(bold)Random:$() A level chosen between minimum and maximum$(li)$(bold)Distance:$() Level scales based on blocks from spawn$(br2)Server administrators choose which method applies where, creating unique difficulty curves for their worlds."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Distance Scaling Explained",
+      "text": "The most common method uses your position relative to world spawn:$(br2)$(li)A $(bold)start radius$() around spawn has minimum levels$(li)Beyond that, every $(bold)X blocks$() traveled adds +1 level$(li)A $(bold)multiplier$() can accelerate or slow this growth$(br2)Example: With 100 block start radius and 50 blocks per level, a mob at 1,100 blocks from spawn would be 20 levels higher than the minimum."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Level Caps and Limits",
+      "text": "Even the strongest mobs have bounds:$(br2)$(li)$(bold)Rule Ranges:$() Each location type has min/max levels$(li)$(bold)Global Cap:$() No mob can exceed this ceiling$(li)$(bold)Boss Override:$() Legendary foes may ignore the cap entirely$(br2)$(o)Some specially-configured mobs always spawn at exact levels, bypassing all calculations."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Mob-Specific Overrides",
+      "text": "Sometimes individual mob types break the rules:$(br2)$(li)A $(bold)fixed level$() for specific creatures$(li)A $(bold)level bonus$() added after calculation$(li)Custom $(bold)min/max ranges$() different from the area$(br2)This means even in a low-level area, you might encounter a uniquely powerful individual-a champion among its kind."
+    }
+  ]
+}

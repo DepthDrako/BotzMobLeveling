@@ -1,0 +1,28 @@
+﻿{
+  "name": "Legendary Foes",
+  "icon": "minecraft:nether_star",
+  "category": "botzmobleveling:bosses",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "The Boss System",
+      "text": "Beyond normal leveling, some mobs can become $(bold)Bosses$()-legendary versions with unique powers, massive health pools, and special mechanics.$(br2)Bosses announce their presence to nearby players, display custom boss bars, and often bring minions to the fight.$(br2)$(o)When you see a boss bar appear, prepare for a serious battle."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Boss Spawn Conditions",
+      "text": "Bosses can spawn under various conditions:$(br2)$(li)$(bold)Anywhere:$() Global spawn chance for target mobs$(li)$(bold)Structures Only:$() Only inside specific places$(li)$(bold)Biomes Only:$() In matching environmental regions$(li)$(bold)Combined:$() Must meet location AND random roll$(br2)Higher tier bosses are rarer but more rewarding."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Boss Powers",
+      "text": "Legendary foes gain special traits:$(br2)$(li)$(bold)Stat Multipliers:$() Health, damage, speed beyond normal scaling$(li)$(bold)Immunities:$()) Fire, fall damage, drowning, or knockback$(li)$(bold)Glow Effect:$() Visible through walls to all players$(li)$(bold)Size Changes:$()) Larger (or sometimes smaller) than normal$(br2)Each boss rule defines its own unique combination of powers."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Minion Waves",
+      "text": "Many bosses summon reinforcements:$(br2)$(li)Minions spawn at health thresholds$(li)Limited by maximum active count$(li)Spawn on intervals to prevent spam$(li)Can be any mob type-not just the boss type$(br2)Focusing on the boss while ignoring minions is a recipe for disaster. Clear adds or position carefully."
+    }
+  ]
+}

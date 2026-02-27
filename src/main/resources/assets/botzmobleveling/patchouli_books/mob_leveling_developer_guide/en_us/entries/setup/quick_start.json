@@ -1,0 +1,28 @@
+{
+  "name": "Quick Start Guide",
+  "icon": "minecraft:oak_sign",
+  "category": "botzmobleveling:setup",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Creating Your First Datapack",
+      "text": "To create mob leveling rules, you need a datapack. Here's the minimum structure:$(br2)$osaves/<world>/datapacks/<pack_name>/$r$(br2)$opack.mcmeta$r (metadata file)$(br2)$odata/<namespace>/mob_levels/<rule_type>/<file>.json$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Pack Metadata",
+      "text": "Your $(o)pack.mcmeta$r should look like this:$(br2){$(br)  \"pack\": {$(br)    \"description\": \"My Mob Leveling Rules\",$(br)    \"pack_format\": 15$(br)  }$(br)}$(br2)Pack format 15 is for Minecraft 1.20.1. Use 15+ for this version."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Namespace",
+      "text": "Replace $(o)<namespace>$r with your modpack or datapack ID:$(br2)$(li)Use only lowercase letters, numbers, and underscores$(li)Keep it short but unique$(li)Examples: $(o)mypack, custom_rpg, hardcore_plus$$(br2)All your rules will be under:$(br2)$odata/<namespace>/mob_levels/$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Rule Type Folders",
+      "text": "Create folders for each rule type:$(br2)$(li)$(bold)structures/$() - Structure-based rules$(li)$(bold)biomes/$() - Biome-based rules$(li)$(bold)base/$() - Base rules by mob type$(li)$(bold)bosses/$() - Boss definitions$(br2)The folder name determines the rule type. Files inside are automatically routed based on this path."
+    }
+  ]
+}

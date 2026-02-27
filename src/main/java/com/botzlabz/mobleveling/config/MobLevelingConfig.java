@@ -16,6 +16,7 @@ public class MobLevelingConfig {
     // Rule toggles
     public static final ForgeConfigSpec.BooleanValue STRUCTURE_LEVELING_ENABLED;
     public static final ForgeConfigSpec.BooleanValue BIOME_LEVELING_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue DIMENSION_LEVELING_ENABLED;
     public static final ForgeConfigSpec.BooleanValue DISTANCE_LEVELING_ENABLED;
 
     // Mob filtering
@@ -53,6 +54,26 @@ public class MobLevelingConfig {
     public static final ForgeConfigSpec.BooleanValue BOSS_SPAWN_ANNOUNCEMENT;
     public static final ForgeConfigSpec.IntValue BOSS_ANNOUNCEMENT_RADIUS;
 
+    // Guide Books
+    public static final ForgeConfigSpec.BooleanValue GIVE_PLAYER_GUIDE_ON_FIRST_JOIN;
+    public static final ForgeConfigSpec.BooleanValue GIVE_DEVELOPER_GUIDE_ON_FIRST_JOIN;
+
+    // Adaptive Difficulty
+    public static final ForgeConfigSpec.BooleanValue ADAPTIVE_DIFFICULTY_ENABLED;
+    public static final ForgeConfigSpec.IntValue ADAPTIVE_PLAYER_SEARCH_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_GEAR_SCORE_MULTIPLIER;
+    public static final ForgeConfigSpec.IntValue ADAPTIVE_MAX_LEVEL_BONUS;
+    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_ATTRIBUTE_SCALING;
+    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_EQUIPMENT_CHANCE;
+    public static final ForgeConfigSpec.IntValue ADAPTIVE_MAX_EQUIPMENT_TIER;
+    public static final ForgeConfigSpec.BooleanValue ADAPTIVE_COMPATIBILITY_MODE;
+    public static final ForgeConfigSpec.BooleanValue ADAPTIVE_DEBUG_LOGGING;
+
+    // Epic Fight Integration
+    public static final ForgeConfigSpec.BooleanValue EPICFIGHT_INTEGRATION_ENABLED;
+    public static final ForgeConfigSpec.DoubleValue EPICFIGHT_WEAPON_CHANCE;
+    public static final ForgeConfigSpec.BooleanValue EPICFIGHT_PREFER_EXOTIC_AT_HIGH_TIER;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -83,6 +104,10 @@ public class MobLevelingConfig {
         BIOME_LEVELING_ENABLED = builder
                 .comment("Enable biome-based leveling rules (medium priority)")
                 .define("biomeLevelingEnabled", true);
+
+        DIMENSION_LEVELING_ENABLED = builder
+                .comment("Enable dimension-based leveling rules (below biome, above base rules)")
+                .define("dimensionLevelingEnabled", true);
 
         DISTANCE_LEVELING_ENABLED = builder
                 .comment("Enable distance-from-spawn leveling (used in base rules)")
@@ -230,6 +255,90 @@ public class MobLevelingConfig {
         BOSS_ANNOUNCEMENT_RADIUS = builder
                 .comment("Radius (in blocks) for boss spawn announcements")
                 .defineInRange("announcementRadius", 64, 16, 256);
+
+        builder.pop();
+
+        // Guide Books Section
+        builder.comment("Guide Books - Configure automatic Patchouli guide distribution").push("guideBooks");
+
+        GIVE_PLAYER_GUIDE_ON_FIRST_JOIN = builder
+                .comment("Give the player guide book to each player on first join")
+                .define("givePlayerGuideOnFirstJoin", true);
+
+        GIVE_DEVELOPER_GUIDE_ON_FIRST_JOIN = builder
+                .comment("Give the developer guide book to each player on first join")
+                .define("giveDeveloperGuideOnFirstJoin", false);
+
+        builder.pop();
+
+        // Adaptive Difficulty Section
+        builder.comment("Adaptive Difficulty - Scale mob difficulty based on nearby player gear").push("adaptiveDifficulty");
+
+        ADAPTIVE_DIFFICULTY_ENABLED = builder
+                .comment("Enable adaptive difficulty system that scales mobs based on nearby player gear",
+                         "Works with Iron's Spells, Apotheosis, and other attribute-modifying mods")
+                .define("enabled", true);
+
+        ADAPTIVE_PLAYER_SEARCH_RADIUS = builder
+                .comment("Radius (in blocks) to search for players when calculating adaptive difficulty",
+                         "Only players within this radius affect mob spawning")
+                .defineInRange("playerSearchRadius", 64, 8, 256);
+
+        ADAPTIVE_GEAR_SCORE_MULTIPLIER = builder
+                .comment("Multiplier for gear score calculation",
+                         "Higher values make mobs scale more aggressively with player gear")
+                .defineInRange("gearScoreMultiplier", 1.0, 0.1, 5.0);
+
+        ADAPTIVE_MAX_LEVEL_BONUS = builder
+                .comment("Maximum additional levels mobs can gain from adaptive difficulty",
+                         "This is added on top of the normal level calculation")
+                .defineInRange("maxLevelBonus", 50, 0, 200);
+
+        ADAPTIVE_ATTRIBUTE_SCALING = builder
+                .comment("How much mob attributes scale with adaptive difficulty",
+                         "1.0 = normal scaling, 2.0 = double attribute bonuses")
+                .defineInRange("attributeScaling", 1.0, 0.1, 3.0);
+
+        ADAPTIVE_EQUIPMENT_CHANCE = builder
+                .comment("Chance (0.0 to 1.0) for mobs to receive equipment based on player gear level",
+                         "Higher gear scores increase this chance up to the maximum")
+                .defineInRange("equipmentChance", 0.3, 0.0, 1.0);
+
+        ADAPTIVE_MAX_EQUIPMENT_TIER = builder
+                .comment("Maximum equipment tier mobs can spawn with (0-4)",
+                         "0 = leather/wood, 1 = chain/stone, 2 = iron, 3 = diamond, 4 = netherite")
+                .defineInRange("maxEquipmentTier", 3, 0, 4);
+
+        ADAPTIVE_COMPATIBILITY_MODE = builder
+                .comment("Compatibility mode for modded attributes",
+                         "When true, scans for known modded attributes (irons_spellbooks, apotheosis, etc)",
+                         "Works with: Iron's Spells (mana, spell power), Apotheosis (current hp bonus, etc)")
+                .define("compatibilityMode", true);
+
+        ADAPTIVE_DEBUG_LOGGING = builder
+                .comment("Enable debug logging for adaptive difficulty calculations")
+                .define("debugLogging", false);
+
+        builder.pop();
+
+        // Epic Fight Integration Section
+        builder.comment("Epic Fight Integration - Dynamic weapon assignment with fighting styles",
+                       "Requires Epic Fight mod to be installed").push("epicFight");
+
+        EPICFIGHT_INTEGRATION_ENABLED = builder
+                .comment("Enable Epic Fight integration",
+                         "When enabled, mobs can spawn with Epic Fight weapons and use their fighting styles")
+                .define("enabled", true);
+
+        EPICFIGHT_WEAPON_CHANCE = builder
+                .comment("Chance (0.0 to 1.0) for mobs to receive Epic Fight weapons instead of vanilla ones",
+                         "Only applies when Epic Fight is installed")
+                .defineInRange("epicFightWeaponChance", 0.7, 0.0, 1.0);
+
+        EPICFIGHT_PREFER_EXOTIC_AT_HIGH_TIER = builder
+                .comment("At high threat tiers, prefer exotic weapons (greatswords, katanas, spears)",
+                         "over basic swords and axes")
+                .define("preferExoticAtHighTier", true);
 
         builder.pop();
 

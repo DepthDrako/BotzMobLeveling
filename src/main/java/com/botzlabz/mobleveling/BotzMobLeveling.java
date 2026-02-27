@@ -1,9 +1,12 @@
 package com.botzlabz.mobleveling;
 
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
+import com.botzlabz.mobleveling.integration.EpicFightIntegration;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -15,7 +18,7 @@ import org.slf4j.Logger;
 @Mod(BotzMobLeveling.MOD_ID)
 public class BotzMobLeveling {
     public static final String MOD_ID = "botzmobleveling";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public BotzMobLeveling() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -37,5 +40,12 @@ public class BotzMobLeveling {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         LOGGER.info("[{}] Client setup complete", MOD_ID);
+    }
+
+    @SubscribeEvent
+    public void onServerStarted(ServerStartedEvent event) {
+        // Initialize Epic Fight weapon registry after server has fully started
+        // This ensures all items are registered and datapacks are loaded
+        EpicFightIntegration.initializeWeapons();
     }
 }

@@ -1,0 +1,28 @@
+﻿{
+  "name": "Attribute Scaling",
+  "icon": "minecraft:golden_apple",
+  "category": "botzmobleveling:rules",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Attribute Scaling Format",
+      "text": "The $(o)attribute_scaling$() field is a map of attribute IDs to scaling configs:$(br2){$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"base_bonus\": 0,$(br)      \"per_level\": 2,$(br)      \"operation\": \"addition\",$(br)      \"max_bonus\": 100$(br)    }$(br)  }$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Scaling Fields",
+      "text": "$(bold)base_bonus$() (double, default: 0) - Flat bonus at level 0$(br2)$(bold)per_level$() (double, default: 0) - Bonus per level$(br2)$(bold)operation$() (string):$(br)$(li)$(o)addition$(): Flat value added$(br)$(li)$(o)multiply_base$(): Multiplies base value$(br)$(li)$(o)multiply_total$(): Multiplies current total$(br2)$(bold)max_bonus$() (double, optional) - Cap the bonus"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Common Attributes",
+      "text": "Default allowed attributes:$(br2)$(li)$(o)minecraft:generic.max_health$()$(li)$(o)minecraft:generic.attack_damage$()$(li)$(o)minecraft:generic.armor$()$(li)$(o)minecraft:generic.armor_toughness$()$(li)$(o)minecraft:generic.knockback_resistance$()$(li)$(o)minecraft:generic.movement_speed$()$(li)$(o)minecraft:generic.follow_range$()$(br2)Add more in config's $(o)allowedAttributes$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Calculation Formula",
+      "text": "Bonus = base_bonus + (per_level x level)$(br2)Capped by max_bonus if specified.$(br2)Then applied based on operation:$(br2)$(li)addition: +bonus$(li)multiply_base: x(1 + bonus)$(li)multiply_total: x(1 + bonus)$(br2)Multiple modifiers stack through Forge's attribute system."
+    }
+  ]
+}

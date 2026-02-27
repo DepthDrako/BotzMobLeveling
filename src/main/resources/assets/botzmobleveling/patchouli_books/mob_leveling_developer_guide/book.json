@@ -1,0 +1,11 @@
+{
+  "name": "Mob Leveling Developer Guide",
+  "landing_text": "Complete reference for datapack authors and modpack developers: rule file layout, JSON fields, config keys, and troubleshooting.",
+  "version": 1,
+  "subtitle": "Datapack and Config Reference",
+  "book_texture": "patchouli:textures/gui/book_blue.png",
+  "model": "patchouli:book_blue",
+  "creative_tab": "minecraft:tools_and_utilities",
+  "use_resource_pack": true,
+  "show_progress": false
+}

@@ -1,0 +1,28 @@
+﻿{
+  "name": "Surviving Legends",
+  "icon": "minecraft:shield",
+  "category": "botzmobleveling:bosses",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Preparation is Key",
+      "text": "Fighting a boss without preparation is suicide. Before engaging:$(br2)$(li)Bring your best gear-enchanted diamond minimum$(li)Pack golden apples, potions, and food$(li)Clear the area of normal mobs first$(li)Have an escape route planned$(li)Bring friends if possible$(br2)Bosses can have 10x normal health and 5x damage. Respect them."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reading Boss Bars",
+      "text": "Boss bars display:$(br2)$(li)Custom boss name$(li)Current health percentage$(li)Different colors for different threat tiers$(br2)If multiple bosses are nearby, you'll see multiple bars. This is your cue to either be a legend or run away.$(br2)$(o)Some bosses are designed for group content-don't try to solo everything."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Loot and Rewards",
+      "text": "Bosses justify their danger through rewards:$(br2)$(li)Massive experience drops$(li)Custom loot tables$(li)Rare items configured by server$(li)Guaranteed valuable drops$(br2)The best gear often comes from defeating the strongest foes. Risk vs. reward is the name of the game."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "When to Retreat",
+      "text": "Not every fight is winnable:$(br2)$(li)If you're undergeared for the area$(li)If multiple bosses spawn together$(li)If environmental hazards complicate things$(li)If potions and food are running low$(br2)Live to fight another day. Bosses that spawn naturally will respawn eventually-prepare better and return."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Guide Book Distribution",
+  "icon": "patchouli:guide_book",
+  "category": "botzmobleveling:setup",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Auto-Giving Guide Books",
+      "text": "Configure automatic book distribution in $(o)config/botzmobleveling-common.toml$:$(br2)$(li)$(bold)givePlayerGuideOnFirstJoin$() - Player handbook$(li)$(bold)giveDeveloperGuideOnFirstJoin$() - Technical reference$(br2)Both default to $(o)true$() in the config spec. Set to $(o)false$() to disable."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Manual Distribution",
+      "text": "Give books via commands:$(br2)$(bold)Player Guide:$()$(br)/give @s patchouli:guide_book{patchouli:book:\"botzmobleveling:mob_leveling_player_guide\"}$(br2)$(bold)Developer Guide:$()$(br)/give @s patchouli:guide_book{patchouli:book:\"botzmobleveling:mob_leveling_developer_guide\"}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Patchouli Requirement",
+      "text": "Patchouli is an $(bold)optional$() dependency. If not present:$(br2)$(li)Guide books won't be given automatically$(li)Players see a chat message about missing Patchouli$(li)The mod functions normally otherwise$(br2)Include Patchouli in your modpack for the full documentation experience."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Custom Books",
+      "text": "You can create your own Patchouli books for your modpack:$(br2)$(li)Place book JSON in $(o)assets/<namespace>/patchouli_books/$()$(li)Reference the same structure as these guides$(li)Link between books using entry URLs$(br2)This allows deep customization for RPG modpacks with lore integration."
+    }
+  ]
+}

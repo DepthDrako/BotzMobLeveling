@@ -22,12 +22,14 @@ public final class ModConstants {
     public static final String DATA_DIRECTORY = "mob_levels";
     public static final String STRUCTURES_PATH = "structures";
     public static final String BIOMES_PATH = "biomes";
+    public static final String DIMENSIONS_PATH = "dimensions";
     public static final String BASE_PATH = "base";
     public static final String BOSSES_PATH = "bosses";
 
     // Rule types
     public static final String RULE_TYPE_STRUCTURE = "structure";
     public static final String RULE_TYPE_BIOME = "biome";
+    public static final String RULE_TYPE_DIMENSION = "dimension";
     public static final String RULE_TYPE_BASE = "base";
 
     // Level modes

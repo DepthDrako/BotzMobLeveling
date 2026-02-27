@@ -1,0 +1,28 @@
+﻿{
+  "name": "Troubleshooting",
+  "icon": "minecraft:redstone_torch",
+  "category": "botzmobleveling:reference",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Rules Not Loading",
+      "text": "Check these common issues:$(br2)$(li)File path must be $(o)data/<namespace>/mob_levels/<type>/<name>.json$()$(li)JSON syntax errors (missing commas, braces)$(li)Invalid field names or values$(br2)Enable $(o)debugMode$() in config to see load errors in logs."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Rules Not Applying",
+      "text": "If rules load but don't work:$(br2)$(li)Check priority-higher value wins$(li)Verify structure/biome IDs are correct$(li)Ensure rule is $(o)enabled: true$()$(li)Check mob is not blacklisted$(br2)Use debug mode to see which rule wins for each spawn."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Performance Issues",
+      "text": "If you experience lag:$(br2)$(li)Structure checks are expensive during world gen$(li)Too many boss rules with complex conditions$(li)Excessive attribute modifiers$(br2)The mod already delays structure checks during world generation. Avoid hundreds of complex rules."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Common Mistakes",
+      "text": "Frequent JSON errors:$(br2)$(li)Trailing commas in objects/arrays$(li)Using single quotes instead of double$(li)Wrong data types (string vs number)$(li)Missing required fields$(br2)Validate JSON with online tools before testing."
+    }
+  ]
+}

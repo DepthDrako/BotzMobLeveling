@@ -1,5 +1,6 @@
 package com.botzlabz.mobleveling.level;
 
+import com.botzlabz.mobleveling.adaptive.AdaptiveDifficultyHandler;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import com.botzlabz.mobleveling.data.*;
 import com.botzlabz.mobleveling.util.ModConstants;
@@ -34,7 +35,8 @@ public class LevelResolver {
     private enum RuleTier {
         STRUCTURE(0),
         BIOME(1),
-        BASE(2);
+        DIMENSION(2),
+        BASE(3);
 
         private final int order;
 
@@ -119,6 +121,14 @@ public class LevelResolver {
             }
         }
 
+        // Check dimension rules (below biome, above base)
+        if (MobLevelingConfig.DIMENSION_LEVELING_ENABLED.get()) {
+            DimensionRule dimensionRule = findDimensionRule(level, dataManager);
+            if (dimensionRule != null && dimensionRule.isEnabled()) {
+                applicableRules.add(new ApplicableRule(dimensionRule, RuleTier.DIMENSION));
+            }
+        }
+
         // Check base rules (lowest priority tier)
         List<BaseRule> matchingBaseRules = findApplicableBaseRules(mob, mobId, dataManager);
         for (BaseRule baseRule : matchingBaseRules) {
@@ -147,11 +157,19 @@ public class LevelResolver {
         LevelCalculator calculator = new LevelCalculator(mob.getRandom());
         int calculatedLevel = calculator.calculateLevel(rule, override, pos, level);
 
+        // Add adaptive difficulty bonus based on nearby player gear
+        int adaptiveBonus = AdaptiveDifficultyHandler.getAdaptiveLevelBonus(mob);
+        if (adaptiveBonus > 0) {
+            LOGGER.debug("[MobLeveling] Adding adaptive level bonus of +{} to {}", adaptiveBonus, mobId);
+            calculatedLevel += adaptiveBonus;
+        }
+
         // Determine if we should ignore global cap
         // Ignore cap if: mob override says so, OR if using fixed level mode (explicit level intent)
         boolean isFixedLevel = (override != null && override.hasFixedLevel()) ||
                                (rule.getFixedLevel() != null && rule.getLevelMode().equals(ModConstants.LEVEL_MODE_FIXED));
-        boolean ignoreCap = (override != null && override.isIgnoreLevelCap()) || isFixedLevel;
+        // Adaptive bonus can exceed cap unless explicitly prevented
+        boolean ignoreCap = (override != null && override.isIgnoreLevelCap()) || isFixedLevel || adaptiveBonus > 0;
 
         // Apply global cap unless explicitly ignored
         int finalLevel = calculator.applyGlobalCap(calculatedLevel, ignoreCap);
@@ -295,6 +313,20 @@ public class LevelResolver {
         return null;
     }
 
+    @Nullable
+    private DimensionRule findDimensionRule(ServerLevel level, MobLevelingDataManager dataManager) {
+        ResourceLocation dimensionId = level.dimension().location();
+
+        // Rules are already sorted by priority (descending), return first match
+        for (DimensionRule rule : dataManager.getDimensionRules()) {
+            if (rule.appliesToDimension(dimensionId)) {
+                return rule;
+            }
+        }
+
+        return null;
+    }
+
     private List<BaseRule> findApplicableBaseRules(Mob mob, ResourceLocation mobId, MobLevelingDataManager dataManager) {
         List<BaseRule> matching = new ArrayList<>();
         EntityType<?> entityType = mob.getType();
@@ -419,6 +451,13 @@ public class LevelResolver {
                 break;
             case ModConstants.RULE_TYPE_BIOME:
                 for (BiomeRule rule : dataManager.getBiomeRules()) {
+                    if (ruleId.equals(rule.getId())) {
+                        return rule;
+                    }
+                }
+                break;
+            case ModConstants.RULE_TYPE_DIMENSION:
+                for (DimensionRule rule : dataManager.getDimensionRules()) {
                     if (ruleId.equals(rule.getId())) {
                         return rule;
                     }

@@ -1,0 +1,5 @@
+{
+  "name": "Leveling Mechanics",
+  "description": "How mob levels are calculated, what attributes are affected, and understanding the mathematical systems behind difficulty scaling.",
+  "icon": "minecraft:experience_bottle"
+}

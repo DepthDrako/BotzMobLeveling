@@ -1,0 +1,11 @@
+{
+  "name": "Mob Leveling Guide",
+  "landing_text": "Welcome to BotzMobLeveling. This guide explains how mob levels are chosen, what bosses do, and how to tune the system for your world.",
+  "version": 1,
+  "subtitle": "Player Handbook",
+  "book_texture": "patchouli:textures/gui/book_green.png",
+  "model": "patchouli:book_green",
+  "creative_tab": "minecraft:tools_and_utilities",
+  "use_resource_pack": true,
+  "show_progress": false
+}

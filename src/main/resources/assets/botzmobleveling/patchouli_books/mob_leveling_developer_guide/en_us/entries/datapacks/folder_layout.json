@@ -1,0 +1,28 @@
+﻿{
+  "name": "Complete Folder Layout",
+  "icon": "minecraft:chest",
+  "category": "botzmobleveling:datapacks",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Full Directory Structure",
+      "text": "Complete datapack structure:$(br2)$osaves/MyWorld/datapacks/MyPack/$r$(br2)$opack.mcmeta$r$(br2)$odata/mypack/mob_levels/$r$(br2)  $ostructures/$r$(br2)    $ostronghold.json$r$(br2)    $ofortress.json$r$(br2)  $obiomes/$r$(br2)    $odeep_dark.json$r$(br2)  $obase/$r$(br2)    $ohostile.json$r$(br2)  $obosses/$r$(br2)    $olich_king.json$r"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Naming Conventions",
+      "text": "Follow these rules:$(br2)$(li)Use only lowercase letters, numbers, underscores$(li)Be descriptive but concise$(li)File names become part of the rule ID$(br2)Good: $(o)nether_fortress.json, deep_dark_high_level.json$()$(br2)Bad: $(o)Rule1.json, my cool rule.json, UPPERCASE.json$()"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Rule IDs",
+      "text": "Rule IDs are automatically generated from the file path:$(br2)$omypack:structures/stronghold.json$()$(br2)This ID appears in debug logs and can be referenced elsewhere.$(br2)Keep IDs meaningful-they help with troubleshooting."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Multiple Datapacks",
+      "text": "Multiple datapacks can provide rules:$(br2)$(li)All are loaded together$(li)Same-priority rules may conflict$(li)Higher priority wins within same tier$(br2)Use the $(o)priority$() field to control precedence across packs."
+    }
+  ]
+}

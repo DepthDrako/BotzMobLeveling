@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# Run directory - logs, saves, crash reports, generated configs
+run/logs/
+run/crash-reports/
+run/saves/
+run/screenshots/
+run/debug/
+run/replay_recordings/
+run/options.txt
+run/usercache.json
+run/usernamecache.json
+run/snooper_settings.json
+run/servers.dat*
+
+# Eclipse
+.classpath
+.project
+.settings/
+eclipse/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled output
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar

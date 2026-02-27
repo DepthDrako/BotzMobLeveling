@@ -1,0 +1,38 @@
+﻿{
+  "name": "Config Reference",
+  "icon": "minecraft:book",
+  "category": "botzmobleveling:reference",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Config Location",
+      "text": "Config file:$(br2)$oworld/serverconfig/botzmobleveling-server.toml$() (per-world)$(br2)Or:$(br2)$oconfig/botzmobleveling-common.toml$() (common)$(br2)Changes require restart to fully take effect."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "General Section",
+      "text": "$(bold)enabled$() (bool, default: true) - Master switch$(br2)$(bold)showLevelInName$() (bool, default: true) - Nameplate display$(br2)$(bold)debugMode$() (bool, default: false) - Verbose logging"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Rule Toggles",
+      "text": "$(bold)structureLevelingEnabled$() (bool, default: true)$(br2)$(bold)biomeLevelingEnabled$() (bool, default: true)$(br2)$(bold)distanceLevelingEnabled$() (bool, default: true)$(br2)Disable entire rule types globally without removing datapacks."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Filtering Section",
+      "text": "$(bold)applyToPassiveMobs$() (bool, default: false)$(br2)$(bold)applyToBossMobs$() (bool, default: false)$(br2)$(bold)structureOverridesPassiveFilter$() (bool, default: true)$(br2)$(bold)structureOverridesBossFilter$() (bool, default: true)$(br2)$(bold)leveledPassivesCanAttack$() (bool, default: true)$(br2)$(bold)mobBlacklist$() (string list)"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Level Settings",
+      "text": "$(bold)defaultMinLevel$() (int, default: 1)$(br2)$(bold)defaultMaxLevel$() (int, default: 100)$(br2)$(bold)globalLevelCap$() (int, default: 100)$(br2)Defaults apply when no rule matches. Global cap applies everywhere unless ignored."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Distance Settings",
+      "text": "$(bold)distanceStartRadius$() (int, default: 100)$(br2)$(bold)distancePerLevel$() (int, default: 50)$(br2)$(bold)distanceLevelMultiplier$() (double, default: 1.0)$(br2)Formula: level = min + ((distance - start) / perLevel) x multiplier"
+    }
+  ]
+}

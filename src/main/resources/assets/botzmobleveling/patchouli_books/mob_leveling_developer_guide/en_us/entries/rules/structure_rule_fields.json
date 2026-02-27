@@ -1,0 +1,33 @@
+{
+  "name": "Structure Rules",
+  "icon": "minecraft:stone_bricks",
+  "category": "botzmobleveling:rules",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Structure Rule Basics",
+      "text": "Structure rules are the $(bold)highest priority$() tier. When a mob spawns inside a structure with a rule, that rule wins.$(br2)File location:$(br2)$odata/<namespace>/mob_levels/structures/<name>.json$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Required Fields",
+      "text": "$(bold)structure$() (string) - The structure ID:$(br2)$(li)Examples: $(o)minecraft:stronghold, minecraft:fortress, minecraft:end_city, minecraft:mansion$()$(br2)$(bold)level_range$() (object) - Min/max levels:$(br2){$(br)  \"min\": 50,$(br)  \"max\": 100$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Optional Fields",
+      "text": "$(bold)priority$() (int, default: 100)$(br2)$(bold)enabled$() (boolean, default: true)$(br2)$(bold)level_mode$() (string: distance/random/fixed, default: random)$(br2)$(bold)fixed_level$() (int, required if level_mode=fixed)$(br2)$(bold)ignore_distance_scaling$() (boolean, default: true for structures)$(br2)$(bold)distance_multiplier$() (double, default: 1.0)"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Complex Fields",
+      "text": "$(bold)attribute_scaling$() - Map of attribute IDs to scaling configs$(br2)$(bold)mob_overrides$() - Per-mob exceptions with level_bonus, attribute_multipliers, etc:$(br2){$(br)  \"minecraft:zombie\": {$(br)    \"fixed_level\": 200,$(br)    \"ignore_level_cap\": true$(br)  }$(br)}$(br2)Structure rules with mob overrides can bypass passive/boss filters."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Complete Example",
+      "text": "{$(br)  \"structure\": \"minecraft:stronghold\",$(br)  \"priority\": 100,$(br)  \"enabled\": true,$(br)  \"level_range\": {$(br)    \"min\": 30,$(br)    \"max\": 50$(br)  },$(br)  \"level_mode\": \"random\",$(br)  \"ignore_distance_scaling\": true,$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"per_level\": 0.5,$(br)      \"operation\": \"addition\"$(br)    }$(br)  },$(br)  \"mob_overrides\": {$(br)    \"minecraft:silverfish\": {$(br)      \"level_bonus\": 5$(br)    }$(br)  }$(br)}"
+    }
+  ]
+}

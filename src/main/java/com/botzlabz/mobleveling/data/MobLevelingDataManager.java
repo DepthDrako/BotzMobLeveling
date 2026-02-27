@@ -29,6 +29,7 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
     private Map<ResourceLocation, StructureRule> structureRules = new HashMap<>();
     private Map<ResourceLocation, BiomeRule> biomeRulesByBiome = new HashMap<>();
     private List<BiomeRule> biomeTagRules = new ArrayList<>();
+    private List<DimensionRule> dimensionRules = new ArrayList<>();
     private List<BaseRule> baseRules = new ArrayList<>();
     private List<BossRule> bossRules = new ArrayList<>();
 
@@ -48,11 +49,13 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
         structureRules = new HashMap<>();
         biomeRulesByBiome = new HashMap<>();
         biomeTagRules = new ArrayList<>();
+        dimensionRules = new ArrayList<>();
         baseRules = new ArrayList<>();
         bossRules = new ArrayList<>();
 
         int structureCount = 0;
         int biomeCount = 0;
+        int dimensionCount = 0;
         int baseCount = 0;
         int bossCount = 0;
         int errorCount = 0;
@@ -85,6 +88,15 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
                     }
                     biomeCount++;
                     LOGGER.debug("Loaded biome rule: {}", id);
+                } else if (path.startsWith(ModConstants.DIMENSIONS_PATH + "/")) {
+                    DimensionRule rule = DimensionRule.fromJson(id, json);
+                    if (rule.hasDimensions()) {
+                        dimensionRules.add(rule);
+                        dimensionCount++;
+                        LOGGER.debug("Loaded dimension rule: {} for dimensions {}", id, rule.getDimensionIds());
+                    } else {
+                        LOGGER.warn("Dimension rule {} has no 'dimension' or 'dimensions' field, skipping", id);
+                    }
                 } else if (path.startsWith(ModConstants.BASE_PATH + "/")) {
                     BaseRule rule = BaseRule.fromJson(id, json);
                     baseRules.add(rule);
@@ -96,7 +108,7 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
                     bossCount++;
                     LOGGER.debug("Loaded boss rule: {}", id);
                 } else {
-                    LOGGER.warn("Unknown rule path: {} - should be in structures/, biomes/, base/, or bosses/", path);
+                    LOGGER.warn("Unknown rule path: {} - should be in structures/, biomes/, dimensions/, base/, or bosses/", path);
                 }
             } catch (Exception e) {
                 LOGGER.error("Failed to load mob level rule {}: {}", id, e.getMessage());
@@ -110,11 +122,14 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
         // Sort biome tag rules by priority (descending)
         biomeTagRules.sort(Comparator.comparingInt(BiomeRule::getPriority).reversed());
 
+        // Sort dimension rules by priority (descending)
+        dimensionRules.sort(Comparator.comparingInt(DimensionRule::getPriority).reversed());
+
         // Sort boss rules by tier (descending - higher tier = more specific/important)
         bossRules.sort(Comparator.comparingInt(BossRule::getTier).reversed());
 
-        LOGGER.info("[{}] Loaded {} structure rules, {} biome rules, {} base rules, {} boss rules ({} errors)",
-                BotzMobLeveling.MOD_ID, structureCount, biomeCount, baseCount, bossCount, errorCount);
+        LOGGER.info("[{}] Loaded {} structure rules, {} biome rules, {} dimension rules, {} base rules, {} boss rules ({} errors)",
+                BotzMobLeveling.MOD_ID, structureCount, biomeCount, dimensionCount, baseCount, bossCount, errorCount);
     }
 
     // Structure rules
@@ -153,6 +168,12 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
         return getAllBiomeRules();
     }
 
+    // Dimension rules
+
+    public List<DimensionRule> getDimensionRules() {
+        return dimensionRules;
+    }
+
     // Base rules
 
     public List<BaseRule> getBaseRules() {
@@ -162,12 +183,12 @@ public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
     // Stats
 
     public int getTotalRuleCount() {
-        return structureRules.size() + biomeRulesByBiome.size() + biomeTagRules.size() + baseRules.size();
+        return structureRules.size() + biomeRulesByBiome.size() + biomeTagRules.size() + dimensionRules.size() + baseRules.size();
     }
 
     public String getStats() {
-        return String.format("Structure: %d, Biome: %d (+ %d tag rules), Base: %d, Boss: %d",
-                structureRules.size(), biomeRulesByBiome.size(), biomeTagRules.size(), baseRules.size(), bossRules.size());
+        return String.format("Structure: %d, Biome: %d (+ %d tag rules), Dimension: %d, Base: %d, Boss: %d",
+                structureRules.size(), biomeRulesByBiome.size(), biomeTagRules.size(), dimensionRules.size(), baseRules.size(), bossRules.size());
     }
 
     // Boss rules

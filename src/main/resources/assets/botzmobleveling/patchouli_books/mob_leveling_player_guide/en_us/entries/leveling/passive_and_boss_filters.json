@@ -1,0 +1,28 @@
+﻿{
+  "name": "Who Gets Leveled?",
+  "icon": "minecraft:egg",
+  "category": "botzmobleveling:leveling",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Mob Type Filtering",
+      "text": "Not all creatures are treated equally. Server configurations can control exactly which mob types receive levels:$(br2)$(li)$(bold)Hostile Mobs:$() Always affected (zombies, skeletons, creepers)$(li)$(bold)Passive Mobs:$() Optional-cows, pigs, villagers may or may not level$(li)$(bold)Boss Mobs:$() Optional-the Wither and Ender Dragon may be excluded$(br2)When passive mobs are leveled, they may fight back when attacked!"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Structure Overrides",
+      "text": "Even when passive mobs are normally un-leveled, structure rules can create exceptions:$(br2)A chicken in a stronghold might be level 50. A sheep in an end city could be level 100.$(br2)This represents the corrupting influence of ancient places-even harmless creatures absorb ambient power.$(br2)$(o)Some structures specifically include passive mobs in their danger profiles."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Blacklist",
+      "text": "Certain entities never receive levels regardless of rules:$(br2)$(li)Armor stands and item frames$(li)Markers and technical entities$(li)Paintings and decorative objects$(li)Specifically blacklisted mob types$(br2)This prevents visual glitches and ensures only actual creatures participate in the leveling system."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Leveled Passives Behavior",
+      "text": "When passive mobs gain levels, they change:$(br2)$(li)They gain health and armor$(li)If configured, they become combat-capable$(li)Attacking them triggers retaliation$(li)They drop more experience$(br2)This transforms normally peaceful areas into potential danger zones-treat even farm animals with caution in high-level regions."
+    }
+  ]
+}

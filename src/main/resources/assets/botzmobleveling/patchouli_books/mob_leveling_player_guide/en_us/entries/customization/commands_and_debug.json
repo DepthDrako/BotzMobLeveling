@@ -1,0 +1,28 @@
+﻿{
+  "name": "Tools of the Trade",
+  "icon": "minecraft:debug_stick",
+  "category": "botzmobleveling:customization",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Useful Commands",
+      "text": "Players and admins have tools available:$(br2)$(li)$(bold)/reload$() Refresh datapacks$(li)$(bold)/give @s patchouli:guide_book{patchouli:book:\"botzmobleveling:mob_leveling_player_guide\"}$() Replace this book$(li)$(bold)/give @s patchouli:guide_book{patchouli:book:\"botzmobleveling:mob_leveling_developer_guide\"}$() Get the dev guide$(br2)Operators can use Minecraft's standard entity commands to inspect mob data."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Debug Mode",
+      "text": "When enabled in config, debug mode logs detailed information:$(br2)$(li)Which rule won for each spawned mob$(li)Level calculation steps$(li)Attribute modifications applied$(br2)This is invaluable for datapack authors testing their configurations.$(br2)$(o)Only enable temporarily-it's verbose and fills logs quickly."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Checking Mob Data",
+      "text": "To inspect a specific mob's level:$(br2)$(li)Look for the level indicator above its head$(li)Check the mob's data through commands$(li)Note the spawn location and check what rules would apply there$(br2)This helps verify that your datapacks are working as intended."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Getting Help",
+      "text": "If things aren't working as expected:$(br2)$(li)Check the developer guide's troubleshooting section$(li)Verify your JSON syntax (commas, braces, quotes)$(li)Confirm file paths match expected structure$(li)Enable debug mode for detailed logs$(li)Test with /reload after every change$(br2)Most issues are simple syntax errors or incorrect file locations."
+    }
+  ]
+}

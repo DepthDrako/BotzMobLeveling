@@ -1,0 +1,23 @@
+{
+  "name": "Example: Base Rule",
+  "icon": "minecraft:writable_book",
+  "category": "botzmobleveling:datapacks",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Complete Example",
+      "text": "A complete base rule for hostile mobs with distance scaling:$(br2)File: $(o)data/mypack/mob_levels/base/hostile.json$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "hostile.json",
+      "text": "{$(br)  \"type\": \"hostile\",$(br)  \"priority\": 10,$(br)  \"enabled\": true,$(br)  \"applies_to\": {$(br)    \"mob_types\": [\"hostile\"],$(br)    \"mob_tags\": [],$(br)    \"mob_ids\": []$(br)  },$(br)  \"excludes\": {$(br)    \"mob_ids\": [],$(br)    \"mob_tags\": [\"forge:bosses\"]$(br)  },$(br)  \"level_range\": {$(br)    \"min\": 1,$(br)    \"max\": 100$(br)  },$(br)  \"level_mode\": \"distance\",$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"base_bonus\": 0,$(br)      \"per_level\": 2,$(br)      \"operation\": \"addition\"$(br)    },$(br)    \"minecraft:generic.attack_damage\": {$(br)      \"per_level\": 0.1,$(br)      \"operation\": \"multiply_base\"$(br)    }$(br)  }$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Explanation",
+      "text": "This rule:$(br2)$(li)Targets all hostile mobs$(li)Excludes bosses via tag$(li)Uses distance-based leveling$(li)Gains +2 health per level$(li)Gains +10% damage per level$(li)Priority 10 (lower priority than defaults)$(br2)The default distance settings apply."
+    }
+  ]
+}

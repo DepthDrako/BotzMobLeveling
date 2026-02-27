@@ -1,0 +1,29 @@
+{
+  "name": "Welcome, Adventurer",
+  "icon": "minecraft:diamond_sword",
+  "category": "botzmobleveling:basics",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "The World Grows Dangerous",
+      "text": "Welcome to a world where danger scales with your journey. $(br2)As you venture further from the safety of spawn, the creatures you encounter grow stronger, smarter, and more deadly. $(br2)This guide will teach you how the leveling system works, where to find the most dangerous foes, and how to survive the challenges that await."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:compass",
+      "title": "Distance Matters",
+      "text": "The further you travel from world spawn, the higher level mobs become. What starts as a humble journey near home can lead to encounters with legendary beasts in distant lands.$(br2)$(o)Watch for level indicators above mob heads. They tell you exactly what you are facing."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What Affects Mob Levels?",
+      "text": "Several factors determine how powerful a mob will be:$(br2)$(li)$(bold)Distance:$() Mobs get stronger the further you are from spawn$(li)$(bold)Biomes:$() Some biomes naturally harbor stronger creatures$(li)$(bold)Structures:$() Ancient ruins and strongholds contain the most powerful foes$(li)$(bold)Bosses:$() Legendary enemies can spawn anywhere, bringing unique challenges"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reading This Book",
+      "text": "The following chapters will explain:$(br2)$(li)$(bold)Rule Priority:$() How the game decides what level a mob gets$(li)$(bold)Level Math:$() Understanding distance scaling and level ranges$(li)$(bold)Attributes:$() What stats change as levels increase$(li)$(bold)Bosses:$() Legendary enemies and how to defeat them$(li)$(bold)Customization:$() Config options and datapacks for your world"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+﻿{
+  "name": "World Configuration",
+  "icon": "minecraft:writable_book",
+  "category": "botzmobleveling:customization",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Config Options",
+      "text": "Server administrators control the experience through configuration:$(br2)$(li)$(bold)General:$() Enable/disable the entire system$(li)$(bold)Rule Toggles:$() Turn structure/biome/distance scaling on/off$(li)$(bold)Filtering:$() Which mob types get leveled$(li)$(bold)Levels:$() Default ranges and global caps$(li)$(bold)Display:$() How levels appear above mobs$(li)$(bold)Boss Module:$()) Boss system settings$(br2)Changes require server restart to take full effect."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Distance Settings",
+      "text": "The core progression curve is configurable:$(br2)$(li)$(bold)Start Radius:$() Safe zone blocks around spawn$(li)$(bold)Distance Per Level:$() How far for +1 level$(li)$(bold)Multiplier:$() Speed up or slow down scaling$(br2)Example config: 100 block safe zone, +1 level per 50 blocks, 1.5x multiplier = rapid difficulty increase."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Display Options",
+      "text": "How levels appear is customizable:$(br2)$(li)$(bold)Show Level in Name:$() Toggle the display$(li)$(bold)Level Format:$() Text around the number$(li)$(bold)Level Color:$() Gold, red, custom hex codes$(li)$(bold)Always Show:$() Permanent vs. on-look$(br2)Common formats: [Lv.42], *42*, [Level 42], or custom RPG-style indicators."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Attribute Whitelist",
+      "text": "For safety, only approved attributes can be modified:$(br2)Default allowed: max_health, attack_damage, armor, armor_toughness, knockback_resistance, movement_speed, follow_range, attack_knockback, attack_speed$(br2)Modded attributes from other mods can be added if their IDs are known.$(br2)$(o)This prevents broken combinations or unexpected behavior."
+    }
+  ]
+}

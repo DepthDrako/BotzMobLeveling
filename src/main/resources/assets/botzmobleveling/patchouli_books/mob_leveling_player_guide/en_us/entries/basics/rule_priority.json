@@ -1,0 +1,28 @@
+﻿{
+  "name": "The Rule of Power",
+  "icon": "minecraft:obsidian",
+  "category": "botzmobleveling:basics",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "How Levels Are Decided",
+      "text": "When a mob spawns, the system follows a strict hierarchy to determine its level. Think of it as layers of influence-the most specific location rules always take precedence.$(br2)$(br)The order is absolute:$(br)$(bold)Structure > Biome > Base Rules > Defaults"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tier 1: Structure Rules",
+      "text": "$(bold)Structure rules$() are the highest authority. When you enter an ancient stronghold, a nether fortress, or an end city, the structure's power overrides everything else.$(br2)$(li)Stronghold mobs may all be level 50+$(li)Nether fortresses could have minimum level 30$(li)End cities might spawn level 100 enemies$(br2)$(o)Structures represent concentrated danger zones."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tier 2: Biome Rules",
+      "text": "If no structure claims the area, $(bold)biome rules$() apply. The Deep Dark, The Nether, and The End naturally harbor stronger creatures than peaceful plains or forests.$(br2)Biome rules stack with distance scaling-venturing far into dangerous biomes creates truly terrifying encounters.$(br2)$(o)Some biomes may have minimum levels regardless of distance."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tier 3: Base & Default Rules",
+      "text": "With no structure or biome rule, $(bold)base rules$() apply based on mob type. Hostile mobs, passive animals, and bosses can each have their own scaling patterns.$(br2)Finally, if nothing else applies, distance-based scaling from world configuration takes over-starting from default minimum and growing as you travel outward.$(br2)$(o)The world truly becomes more dangerous the further you roam."
+    }
+  ]
+}

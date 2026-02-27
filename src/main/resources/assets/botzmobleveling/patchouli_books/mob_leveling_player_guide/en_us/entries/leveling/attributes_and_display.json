@@ -1,0 +1,28 @@
+﻿{
+  "name": "Strength Beyond Numbers",
+  "icon": "minecraft:golden_apple",
+  "category": "botzmobleveling:leveling",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "What Levels Change",
+      "text": "A mob's level isn't just for show-it modifies their core attributes:$(br2)$(li)$(bold)Health:$() Higher level = more hearts$(li)$(bold)Attack Damage:$() Their strikes hit harder$(li)$(bold)Armor:$()) They resist more damage$(li)$(bold)Speed:$() They may move faster$(li)$(bold)Follow Range:$() They detect you from further away$(br2)Each server configures which attributes scale and by how much."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Scaling Methods",
+      "text": "Attributes increase through mathematical operations:$(br2)$(li)$(bold)Addition:$() Flat bonus (e.g., +2 hearts per level)$(li)$(bold)Multiply Base:$() Percentage of original stat$(li)$(bold)Multiply Total:$()) Percentage of current total$(br2)These stack together-a level 50 mob might have triple health and double damage through combined multipliers."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reading Level Displays",
+      "text": "Watch for indicators above mob heads:$(br2)$(li)$(o)[Lv.5]$() A relatively weak foe$(li)$(o)[Lv.25]$() A serious threat for unprepared adventurers$(li)$(o)[Lv.50]$() A dangerous enemy requiring preparation$(li)$(o)[Lv.100+]$() Legendary-tier opposition$(br2)Colors and formatting vary by server configuration. Bosses often show special name colors or boss bars."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Equipment Scaling",
+      "text": "Some rules give mobs equipment that scales with level:$(br2)$(li)Low level: Leather, wooden tools$(li)Mid level: Iron armor and weapons$(li)High level: Diamond or netherite gear$(li)Legendary: Enchanted equipment$(br2)A level 100 zombie in full enchanted netherite is a raid boss unto itself-plan accordingly."
+    }
+  ]
+}

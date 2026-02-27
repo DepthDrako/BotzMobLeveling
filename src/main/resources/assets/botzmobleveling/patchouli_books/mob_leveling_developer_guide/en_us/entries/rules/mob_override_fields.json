@@ -1,0 +1,28 @@
+﻿{
+  "name": "Base Rules",
+  "icon": "minecraft:zombie_spawn_egg",
+  "category": "botzmobleveling:rules",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Base Rule Basics",
+      "text": "Base rules apply to mob types. They're $(bold)lowest priority$()-structure and biome rules override them.$(br2)File location:$(br2)$odata/<namespace>/mob_levels/base/<name>.json$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Targeting Fields",
+      "text": "Base rules use $(bold)applies_to$() and $(bold)excludes$() objects:$(br2)$(li)$(o)applies_to.mob_types$(): $(o)hostile, passive, boss, all$()$(br2)$(li)$(o)applies_to.mob_tags$(): Entity type tags$(br2)$(li)$(o)applies_to.mob_ids$(): Specific entity IDs$(br2)$(li)$(o)excludes.mob_tags$(): Blacklist tags$(br2)$(li)$(o)excludes.mob_ids$(): Blacklist IDs"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Example Targeting",
+      "text": "Target all hostiles except creepers:$(br2){$(br)  \"applies_to\": {$(br)    \"mob_types\": [\"hostile\"]$(br)  },$(br)  \"excludes\": {$(br)    \"mob_ids\": [\"minecraft:creeper\"]$(br)  }$(br)}$(br2)Target specific mobs:$(br2){$(br)  \"applies_to\": {$(br)    \"mob_ids\": [$(br)      \"minecraft:zombie\",$(br)      \"minecraft:skeleton\"$(br)    ]$(br)  }$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Complete Example",
+      "text": "{$(br)  \"type\": \"hostile\",$(br)  \"priority\": 10,$(br)  \"enabled\": true,$(br)  \"applies_to\": {$(br)    \"mob_types\": [\"hostile\"],$(br)    \"mob_tags\": [],$(br)    \"mob_ids\": []$(br)  },$(br)  \"excludes\": {$(br)    \"mob_ids\": [],$(br)    \"mob_tags\": [\"forge:bosses\"]$(br)  },$(br)  \"level_range\": {$(br)    \"min\": 1,$(br)    \"max\": 50$(br)  },$(br)  \"level_mode\": \"distance\",$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"base_bonus\": 0.0,$(br)      \"per_level\": 0.2,$(br)      \"operation\": \"addition\",$(br)      \"max_bonus\": 30.0$(br)    }$(br)  }$(br)}"
+    }
+  ]
+}

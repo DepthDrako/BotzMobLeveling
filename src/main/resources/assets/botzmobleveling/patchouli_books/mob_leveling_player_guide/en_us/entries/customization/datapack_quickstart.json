@@ -1,0 +1,28 @@
+﻿{
+  "name": "Custom Content",
+  "icon": "minecraft:command_block",
+  "category": "botzmobleveling:customization",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Datapack Power",
+      "text": "The true strength of this mod lies in datapacks-custom JSON files that define exactly how your world works.$(br2)Server owners and modpack creators can:$(br2)$(li)Create custom structure rules$(li)Define biome-specific scaling$(li)Set up unique boss encounters$(li)Balance progression exactly as desired$(br2)$(o)No coding required-just JSON files and creativity."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Datapack Locations",
+      "text": "Place rule files in your world's datapack folder:$(br2)$(li)$(bold)structures/:$() Structure-based rules$(li)$(bold)biomes/:$() Biome-specific scaling$(li)$(bold)base/:$() Rules by mob type$(li)$(bold)bosses/:$() Boss definitions$(br2)Example path:$(br)$oc saves/MyWorld/datapacks/MyPack/data/botzmobleveling/mob_levels/structures/stronghold.json"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Hot Reloading",
+      "text": "Datapacks can be reloaded without restarting:$(br2)$(li)Use $(bold)/reload$() to refresh all datapacks$(li)Changes apply to newly spawned mobs$(li)Already-spawned mobs keep their levels$(br2)This makes testing and iteration fast-edit a file, run /reload, test immediately.$(br2)$(o)Perfect for fine-tuning balance on a live server."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Developer Guide",
+      "text": "For complete reference on datapack formats:$(br2)Check the $(bold)Mob Leveling Developer Guide$() book for:$(br)$(li)Complete field documentation$(li)JSON examples$(li)Rule type specifications$(li)Troubleshooting tips$(br2)This player guide covers concepts-the developer guide has the technical details for content creation."
+    }
+  ]
+}

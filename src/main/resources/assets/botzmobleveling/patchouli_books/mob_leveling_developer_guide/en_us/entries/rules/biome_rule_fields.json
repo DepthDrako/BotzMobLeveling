@@ -1,0 +1,33 @@
+﻿{
+  "name": "Biome Rules",
+  "icon": "minecraft:grass_block",
+  "category": "botzmobleveling:rules",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Biome Rule Basics",
+      "text": "Biome rules apply to specific biomes or biome tags. They're $(bold)medium priority$()-structure rules override them.$(br2)File location:$(br2)$odata/<namespace>/mob_levels/biomes/<name>.json$"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Targeting Fields",
+      "text": "Use $(bold)biome$() OR $(bold)biome_tags$() (or both):$(br2)$(li)$(o)biome$(): Single biome ID$(br2)  Example: $(o)\"biome\": \"minecraft:deep_dark\"$()$(br2)$(li)$(o)biome_tags$(): List of tag IDs$(br2)  Example: $(o)\"biome_tags\": [\"minecraft:is_nether\"]$()$(br2)Match is OR-either condition satisfies."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Optional Fields",
+      "text": "$(bold)priority$() (int, default: 50)$(br2)$(bold)enabled$() (boolean, default: true)$(br2)$(bold)level_mode$() (string, default: distance)$(br2)$(bold)ignore_distance_scaling$() (boolean, default: false)$(br2)$(bold)distance_multiplier$() (double, default: 1.0)$(br2)$(bold)level_range$() (object, default: 1-100)$(br2)$(bold)attribute_scaling$()$(br2)$(bold)mob_overrides$()"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Biome Tag Priority",
+      "text": "When multiple biome-tag rules could match:$(br2)$(li)Rules are sorted by $(bold)descending priority$()$(li)First match wins$(br2)Direct biome rules override tag rules of equal priority.$(br2)Example: A rule for $(o)minecraft:deep_dark$() beats a rule for $(o)minecraft:is_overworld$() at the same priority."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Complete Example",
+      "text": "{$(br)  \"biome_tags\": [\"minecraft:is_end\"],$(br)  \"priority\": 60,$(br)  \"level_range\": {$(br)    \"min\": 40,$(br)    \"max\": 70$(br)  },$(br)  \"level_mode\": \"distance\",$(br)  \"distance_multiplier\": 1.5,$(br)  \"mob_overrides\": {$(br)    \"minecraft:enderman\": {$(br)      \"level_bonus\": 10$(br)    },$(br)    \"minecraft:ender_dragon\": {$(br)      \"fixed_level\": 100,$(br)      \"ignore_level_cap\": true$(br)    }$(br)  },$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"base_bonus\": 10.0,$(br)      \"per_level\": 0.6,$(br)      \"operation\": \"addition\"$(br)    }$(br)  }$(br)}"
+    }
+  ]
+}

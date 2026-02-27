@@ -1,0 +1,28 @@
+﻿{
+  "name": "JSON Snippets",
+  "icon": "minecraft:paper",
+  "category": "botzmobleveling:reference",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Fixed Level Structure",
+      "text": "All mobs in stronghold are exactly level 50:$(br2){$(br)  \"structure\": \"minecraft:stronghold\",$(br)  \"level_mode\": \"fixed\",$(br)  \"fixed_level\": 50,$(br)  \"level_range\": {$(br)    \"min\": 50,$(br)    \"max\": 50$(br)  },$(br)  \"ignore_distance_scaling\": true$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Biome with Tags",
+      "text": "All nether biomes, high minimum level:$(br2){$(br)  \"biome_tags\": [\"minecraft:is_nether\"],$(br)  \"priority\": 100,$(br)  \"level_range\": {$(br)    \"min\": 30,$(br)    \"max\": 80$(br)  },$(br)  \"level_mode\": \"distance\",$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"per_level\": 0.5,$(br)      \"operation\": \"addition\"$(br)    }$(br)  }$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Base Rule Example",
+      "text": "Hostile mobs with distance scaling:$(br2){$(br)  \"type\": \"hostile\",$(br)  \"priority\": 10,$(br)  \"applies_to\": {$(br)    \"mob_types\": [\"hostile\"]$(br)  },$(br)  \"excludes\": {$(br)    \"mob_tags\": [\"forge:bosses\"]$(br)  },$(br)  \"level_mode\": \"distance\",$(br)  \"level_range\": {$(br)    \"min\": 1,$(br)    \"max\": 100$(br)  },$(br)  \"attribute_scaling\": {$(br)    \"minecraft:generic.max_health\": {$(br)      \"per_level\": 2,$(br)      \"operation\": \"addition\"$(br)    }$(br)  }$(br)}"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Complex Boss",
+      "text": "Full boss configuration:$(br2){$(br)  \"target_mobs\": [\"minecraft:wither_skeleton\"],$(br)  \"spawn_chance\": 0.05,$(br)  \"structures\": [\"minecraft:fortress\"],$(br)  \"tier\": 3,$(br)  \"display_name\": \"§c§lFortress Guardian\",$(br)  \"boss_bar\": {$(br)    \"color\": \"red\",$(br)    \"style\": \"notched_10\"$(br)  },$(br)  \"glow_effect\": true,$(br)  \"immunities\": [\"fire\", \"knockback\"],$(br)  \"stat_multipliers\": {$(br)    \"minecraft:generic.max_health\": 3.0$(br)  },$(br)  \"minions\": {$(br)    \"type\": \"minecraft:blaze\",$(br)    \"count\": 3$(br)  }$(br)}"
+    }
+  ]
+}
