@@ -1,0 +1,44 @@
+{
+  "enabled": true,
+  "target_mobs": ["minecraft:wither_skeleton"],
+  "spawn_chance": 0.05,
+  "structures": ["minecraft:fortress"],
+
+  "display_name": "§5§lNether Overlord",
+  "tier": 2,
+  "level": 200,
+  "ignore_level_cap": true,
+
+  "hunt_to_level": true,
+  "hunt_to_level_chance": 0.7,
+
+  "boss_bar": {
+    "color": "purple",
+    "style": "notched_6",
+    "visible": true
+  },
+
+  "size_multiplier": 1.5,
+  "glow_effect": true,
+  "glow_color": "purple",
+  "particle_effect": "minecraft:soul",
+
+  "immunities": ["fire", "drown"],
+
+  "stat_multipliers": {
+    "minecraft:generic.max_health": 30.0,
+    "minecraft:generic.attack_damage": 6.0,
+    "minecraft:generic.armor": 4.0,
+    "minecraft:generic.knockback_resistance": 0.5
+  },
+
+  "xp_multiplier": 12.0,
+
+  "minions": {
+    "type": "minecraft:wither_skeleton",
+    "count": 2,
+    "interval_seconds": 25,
+    "health_threshold": 0.6,
+    "max_minions": 6
+  }
+}

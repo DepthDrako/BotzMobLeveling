@@ -22,6 +22,8 @@ public class LevelResult {
     private final MobOverride mobOverride;
     private final Map<ResourceLocation, AttributeScaling> attributeScaling;
     private final boolean ignoreLevelCap;
+    private final boolean huntToLevel;
+    private final double huntToLevelChance;
 
     private LevelResult(boolean skip) {
         this.skip = skip;
@@ -30,16 +32,21 @@ public class LevelResult {
         this.mobOverride = null;
         this.attributeScaling = Collections.emptyMap();
         this.ignoreLevelCap = false;
+        this.huntToLevel = false;
+        this.huntToLevelChance = 1.0;
     }
 
     public LevelResult(int level, @Nullable LevelRule sourceRule, @Nullable MobOverride mobOverride,
-                       Map<ResourceLocation, AttributeScaling> attributeScaling, boolean ignoreLevelCap) {
+                       Map<ResourceLocation, AttributeScaling> attributeScaling, boolean ignoreLevelCap,
+                       boolean huntToLevel, double huntToLevelChance) {
         this.skip = false;
         this.level = level;
         this.sourceRule = sourceRule;
         this.mobOverride = mobOverride;
         this.attributeScaling = attributeScaling;
         this.ignoreLevelCap = ignoreLevelCap;
+        this.huntToLevel = huntToLevel;
+        this.huntToLevelChance = huntToLevelChance;
     }
 
     public boolean shouldSkip() {
@@ -68,6 +75,14 @@ public class LevelResult {
         return ignoreLevelCap;
     }
 
+    public boolean shouldHuntToLevel() {
+        return huntToLevel;
+    }
+
+    public double getHuntToLevelChance() {
+        return huntToLevelChance;
+    }
+
     @Nullable
     public ResourceLocation getSourceRuleId() {
         return sourceRule != null ? sourceRule.getId() : null;
@@ -88,6 +103,8 @@ public class LevelResult {
         private MobOverride mobOverride;
         private Map<ResourceLocation, AttributeScaling> attributeScaling = new HashMap<>();
         private boolean ignoreLevelCap = false;
+        private boolean huntToLevel = false;
+        private double huntToLevelChance = 1.0;
 
         public Builder(int level) {
             this.level = level;
@@ -113,8 +130,18 @@ public class LevelResult {
             return this;
         }
 
+        public Builder huntToLevel(boolean hunt) {
+            this.huntToLevel = hunt;
+            return this;
+        }
+
+        public Builder huntToLevelChance(double chance) {
+            this.huntToLevelChance = chance;
+            return this;
+        }
+
         public LevelResult build() {
-            return new LevelResult(level, sourceRule, mobOverride, attributeScaling, ignoreLevelCap);
+            return new LevelResult(level, sourceRule, mobOverride, attributeScaling, ignoreLevelCap, huntToLevel, huntToLevelChance);
         }
     }
 }

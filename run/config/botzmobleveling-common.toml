@@ -16,6 +16,8 @@
 	biomeLevelingEnabled = true
 	#Enable distance-from-spawn leveling (used in base rules)
 	distanceLevelingEnabled = true
+	#Enable dimension-based leveling rules (below biome, above base rules)
+	dimensionLevelingEnabled = true
 
 #Mob Filtering - Control which mobs receive levels
 [filtering]
@@ -31,6 +33,9 @@
 	structureOverridesBossFilter = true
 	#List of mob IDs that will never receive levels (e.g., 'minecraft:armor_stand')
 	mobBlacklist = ["minecraft:armor_stand", "minecraft:marker", "minecraft:item_frame", "minecraft:glow_item_frame", "minecraft:painting"]
+	#When enabled, leveled passive mobs can fight back when attacked.
+	#This can be overridden per-mob in datapack rules with 'can_attack' field.
+	leveledPassivesCanAttack = true
 
 #Default Level Ranges - Used when no specific rule applies
 [levels]
@@ -69,4 +74,124 @@
 [attributes]
 	#List of attribute IDs that the mod is allowed to modify. Supports modded attributes.
 	allowedAttributes = ["minecraft:generic.max_health", "minecraft:generic.attack_damage", "minecraft:generic.armor", "minecraft:generic.armor_toughness", "minecraft:generic.knockback_resistance", "minecraft:generic.movement_speed", "minecraft:generic.follow_range", "minecraft:generic.attack_knockback", "minecraft:generic.attack_speed"]
+
+#Boss Module - Transform mobs into powerful bosses with special effects
+[bossModule]
+	#Enable the boss module. When enabled, mobs can become bosses based on datapack rules.
+	enabled = true
+	#Show a boss bar for boss mobs
+	showBossBar = true
+	#Maximum distance (in blocks) at which boss bars are visible
+	#Range: 16 ~ 256
+	bossBarRenderDistance = 64
+	#Prevent boss mobs from despawning naturally
+	preventDespawn = true
+	#Apply glowing effect to boss mobs (can be overridden per-boss in datapack)
+	glowEffect = true
+	#Announce boss spawns to nearby players
+	spawnAnnouncement = true
+	#Radius (in blocks) for boss spawn announcements
+	#Range: 16 ~ 256
+	announcementRadius = 64
+
+#Guide Books - Configure automatic Patchouli guide distribution
+[guideBooks]
+	#Give the player guide book to each player on first join
+	givePlayerGuideOnFirstJoin = true
+	#Give the developer guide book to each player on first join
+	giveDeveloperGuideOnFirstJoin = false
+
+#Adaptive Difficulty - Scale mob difficulty based on nearby player gear
+[adaptiveDifficulty]
+	#Enable adaptive difficulty system that scales mobs based on nearby player gear
+	#Works with Iron's Spells, Apotheosis, and other attribute-modifying mods
+	enabled = true
+	#Radius (in blocks) to search for players when calculating adaptive difficulty
+	#Only players within this radius affect mob spawning
+	#Range: 8 ~ 256
+	playerSearchRadius = 64
+	#Multiplier for gear score calculation
+	#Higher values make mobs scale more aggressively with player gear
+	#Range: 0.1 ~ 5.0
+	gearScoreMultiplier = 1.0
+	#Maximum additional levels mobs can gain from adaptive difficulty
+	#This is added on top of the normal level calculation
+	#Range: 0 ~ 200
+	maxLevelBonus = 50
+	#How much mob attributes scale with adaptive difficulty
+	#1.0 = normal scaling, 2.0 = double attribute bonuses
+	#Range: 0.1 ~ 3.0
+	attributeScaling = 1.0
+	#Chance (0.0 to 1.0) for mobs to receive equipment based on player gear level
+	#Higher gear scores increase this chance up to the maximum
+	#Range: 0.0 ~ 1.0
+	equipmentChance = 0.3
+	#Maximum equipment tier mobs can spawn with (0-4)
+	#0 = leather/wood, 1 = chain/stone, 2 = iron, 3 = diamond, 4 = netherite
+	#Range: 0 ~ 4
+	maxEquipmentTier = 3
+	#Compatibility mode for modded attributes
+	#When true, scans for known modded attributes (irons_spellbooks, apotheosis, etc)
+	#Works with: Iron's Spells (mana, spell power), Apotheosis (current hp bonus, etc)
+	compatibilityMode = true
+	#Enable debug logging for adaptive difficulty calculations
+	debugLogging = false
+
+#Epic Fight Integration - Dynamic weapon assignment with fighting styles
+#Requires Epic Fight mod to be installed
+[epicFight]
+	#Enable Epic Fight integration
+	#When enabled, mobs can spawn with Epic Fight weapons and use their fighting styles
+	enabled = true
+	#Chance (0.0 to 1.0) for mobs to receive Epic Fight weapons instead of vanilla ones
+	#Only applies when Epic Fight is installed
+	#Range: 0.0 ~ 1.0
+	epicFightWeaponChance = 0.7
+	#At high threat tiers, prefer exotic weapons (greatswords, katanas, spears)
+	#over basic swords and axes
+	preferExoticAtHighTier = true
+
+#Kill Leveling - Mobs gain XP and levels by killing other mobs and players
+[killLeveling]
+	#Enable the kill leveling system. Mobs earn XP and levels from kills.
+	enabled = true
+	#Global toggle for the hunt_to_level datapack feature.
+	#When false, mobs with hunt_to_level: true in their rule will NOT actively hunt other mobs.
+	huntToLevelEnabled = true
+	#Default probability (0.0–1.0) that a mob with hunt_to_level: true actually receives hunting AI.
+	#Can be overridden per-rule with 'hunt_to_level_chance' in the datapack JSON.
+	#1.0 = every matching mob hunts, 0.5 = roughly half will hunt.
+	#Range: 0.0 ~ 1.0
+	huntToLevelChance = 1.0
+	#Allow any mob to gain kill levels, not just mobs already assigned a level by this mod.
+	#When false, only mobs processed by spawn rules can accumulate kill XP.
+	applyToAnyMob = false
+	#Base XP granted per kill, regardless of the victim's level
+	#Range: 1 ~ 100000
+	xpBase = 50
+	#Bonus XP granted per level of the victim (only applies when victim has a level assigned by this mod)
+	#Range: 0 ~ 10000
+	xpPerVictimLevel = 10
+	#Flat bonus XP added when the victim is a player (stacks with xpBase)
+	#Range: 0 ~ 100000
+	xpPlayerBonus = 200
+	#XP required to earn the very first kill level
+	#Range: 1 ~ 1000000
+	baseXpRequired = 100
+	#XP cost multiplier per kill level. Each level costs this many times more than the previous.
+	#1.5 means each level costs 50% more (100, 150, 225, 338, ...)
+	#Range: 1.0 ~ 10.0
+	xpScaling = 1.5
+	#Maximum number of kill levels a mob can earn on top of its base spawn level
+	#Range: 1 ~ 10000
+	maxKillLevel = 50
+	#Prevent mobs that have earned at least one kill from despawning naturally
+	makePersistent = true
+	#Show a kill indicator in the mob's name tag when it has at least one kill
+	showIndicator = true
+	#Text prepended to the mob's name when it has kills. Use {kills} for the kill count.
+	#Default: a star character followed by a space.
+	indicatorFormat = "★ "
+	#Color for the kill indicator. Supports color names (red, dark_red) or hex (#FF0000)
+	indicatorColor = "red"
 

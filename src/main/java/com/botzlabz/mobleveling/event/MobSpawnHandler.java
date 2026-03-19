@@ -5,6 +5,8 @@ import com.botzlabz.mobleveling.attribute.AttributeScalingManager;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import com.botzlabz.mobleveling.data.AttributeScaling;
 import com.botzlabz.mobleveling.display.LevelDisplayManager;
+import com.botzlabz.mobleveling.kills.HuntingGoalHandler;
+import com.botzlabz.mobleveling.kills.KillLevelData;
 import com.botzlabz.mobleveling.level.LevelResolver;
 import com.botzlabz.mobleveling.level.LevelResult;
 import com.botzlabz.mobleveling.level.MobLevelData;
@@ -111,7 +113,10 @@ public class MobSpawnHandler {
      */
     private static void reapplyModifiersToLoadedMob(Mob mob, ServerLevel level) {
         try {
-            int mobLevel = MobLevelData.getLevel(mob);
+            int baseLevel = MobLevelData.getLevel(mob);
+            // Include any kill levels earned so attributes stay at the correct combined level
+            int killLevel = KillLevelData.getKillLevel(mob);
+            int mobLevel = Math.min(baseLevel + killLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
 
             // Get the rule that was used (if stored)
             var ruleIdOpt = MobLevelData.getSourceRuleId(mob);
@@ -140,6 +145,9 @@ public class MobSpawnHandler {
             if (!scaling.isEmpty()) {
                 attributeManager.applyScaling(mob, mobLevel, scaling);
             }
+
+            // Re-add hunting goals if the mob had hunt_to_level enabled before unloading
+            HuntingGoalHandler.reapplyHuntingOnLoad(mob);
 
             if (MobLevelingConfig.DEBUG_MODE.get()) {
                 LOGGER.debug("[{}] Reapplied modifiers to loaded {} at level {}",
@@ -247,6 +255,15 @@ public class MobSpawnHandler {
 
         // Handle passive mob combat ability
         applyPassiveCombatSettings(mob, result);
+
+        // Enable mob-hunting AI if the rule requests it, subject to a per-rule chance roll
+        if (result.shouldHuntToLevel()) {
+            // Per-rule chance takes precedence; falls back to global config default
+            double chance = result.getHuntToLevelChance();
+            if (chance >= 1.0 || mob.getRandom().nextDouble() < chance) {
+                HuntingGoalHandler.enableHunting(mob);
+            }
+        }
 
         // Update display name
         if (MobLevelingConfig.SHOW_LEVEL_IN_NAME.get()) {

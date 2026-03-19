@@ -15,6 +15,11 @@ public final class ModConstants {
     public static final String NBT_RULE_ID = BotzMobLeveling.MOD_ID + "_RuleId";
     public static final String NBT_RULE_TYPE = BotzMobLeveling.MOD_ID + "_RuleType";
 
+    // NBT Keys for kill leveling
+    public static final String NBT_KILL_XP = BotzMobLeveling.MOD_ID + "_KillXP";
+    public static final String NBT_KILL_LEVEL = BotzMobLeveling.MOD_ID + "_KillLevel";
+    public static final String NBT_KILL_COUNT = BotzMobLeveling.MOD_ID + "_KillCount";
+
     // UUID base for attribute modifiers
     public static final UUID MODIFIER_UUID_BASE = UUID.fromString("b0721ab5-0001-4e31-8000-000000000001");
 

@@ -1,0 +1,42 @@
+{
+  "structure": "minecraft:fortress",
+  "priority": 200,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 120,
+  "ignore_distance_scaling": true,
+
+  "mob_overrides": {
+    "minecraft:blaze": {
+      "fixed_level": 130,
+      "ignore_level_cap": true
+    },
+    "minecraft:wither_skeleton": {
+      "fixed_level": 125,
+      "ignore_level_cap": true
+    },
+    "minecraft:magma_cube": {
+      "fixed_level": 110,
+      "ignore_level_cap": true
+    }
+  },
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 60.0,
+      "per_level": 0.8,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.1,
+      "operation": "multiply_base"
+    },
+    "minecraft:generic.knockback_resistance": {
+      "base_bonus": 0.2,
+      "per_level": 0.0,
+      "operation": "addition"
+    }
+  }
+}

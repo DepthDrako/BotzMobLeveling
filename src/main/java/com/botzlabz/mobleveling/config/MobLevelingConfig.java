@@ -74,6 +74,22 @@ public class MobLevelingConfig {
     public static final ForgeConfigSpec.DoubleValue EPICFIGHT_WEAPON_CHANCE;
     public static final ForgeConfigSpec.BooleanValue EPICFIGHT_PREFER_EXOTIC_AT_HIGH_TIER;
 
+    // Kill Leveling
+    public static final ForgeConfigSpec.BooleanValue KILL_LEVELING_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue HUNT_TO_LEVEL_ENABLED;
+    public static final ForgeConfigSpec.DoubleValue HUNT_TO_LEVEL_CHANCE;
+    public static final ForgeConfigSpec.BooleanValue KILL_APPLY_TO_ANY_MOB;
+    public static final ForgeConfigSpec.IntValue KILL_XP_BASE;
+    public static final ForgeConfigSpec.IntValue KILL_XP_PER_VICTIM_LEVEL;
+    public static final ForgeConfigSpec.IntValue KILL_XP_PLAYER_BONUS;
+    public static final ForgeConfigSpec.IntValue KILL_BASE_XP_REQUIRED;
+    public static final ForgeConfigSpec.DoubleValue KILL_XP_SCALING;
+    public static final ForgeConfigSpec.IntValue KILL_MAX_LEVEL;
+    public static final ForgeConfigSpec.BooleanValue KILL_MAKE_PERSISTENT;
+    public static final ForgeConfigSpec.BooleanValue KILL_SHOW_INDICATOR;
+    public static final ForgeConfigSpec.ConfigValue<String> KILL_INDICATOR_FORMAT;
+    public static final ForgeConfigSpec.ConfigValue<String> KILL_INDICATOR_COLOR;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -339,6 +355,73 @@ public class MobLevelingConfig {
                 .comment("At high threat tiers, prefer exotic weapons (greatswords, katanas, spears)",
                          "over basic swords and axes")
                 .define("preferExoticAtHighTier", true);
+
+        builder.pop();
+
+        // Kill Leveling Section
+        builder.comment("Kill Leveling - Mobs gain XP and levels by killing other mobs and players").push("killLeveling");
+
+        KILL_LEVELING_ENABLED = builder
+                .comment("Enable the kill leveling system. Mobs earn XP and levels from kills.")
+                .define("enabled", true);
+
+        HUNT_TO_LEVEL_ENABLED = builder
+                .comment("Global toggle for the hunt_to_level datapack feature.",
+                         "When false, mobs with hunt_to_level: true in their rule will NOT actively hunt other mobs.")
+                .define("huntToLevelEnabled", true);
+
+        HUNT_TO_LEVEL_CHANCE = builder
+                .comment("Default probability (0.0–1.0) that a mob with hunt_to_level: true actually receives hunting AI.",
+                         "Can be overridden per-rule with 'hunt_to_level_chance' in the datapack JSON.",
+                         "1.0 = every matching mob hunts, 0.5 = roughly half will hunt.")
+                .defineInRange("huntToLevelChance", 1.0, 0.0, 1.0);
+
+        KILL_APPLY_TO_ANY_MOB = builder
+                .comment("Allow any mob to gain kill levels, not just mobs already assigned a level by this mod.",
+                         "When false, only mobs processed by spawn rules can accumulate kill XP.")
+                .define("applyToAnyMob", false);
+
+        KILL_XP_BASE = builder
+                .comment("Base XP granted per kill, regardless of the victim's level")
+                .defineInRange("xpBase", 50, 1, 100000);
+
+        KILL_XP_PER_VICTIM_LEVEL = builder
+                .comment("Bonus XP granted per level of the victim (only applies when victim has a level assigned by this mod)")
+                .defineInRange("xpPerVictimLevel", 10, 0, 10000);
+
+        KILL_XP_PLAYER_BONUS = builder
+                .comment("Flat bonus XP added when the victim is a player (stacks with xpBase)")
+                .defineInRange("xpPlayerBonus", 200, 0, 100000);
+
+        KILL_BASE_XP_REQUIRED = builder
+                .comment("XP required to earn the very first kill level")
+                .defineInRange("baseXpRequired", 100, 1, 1000000);
+
+        KILL_XP_SCALING = builder
+                .comment("XP cost multiplier per kill level. Each level costs this many times more than the previous.",
+                         "1.5 means each level costs 50% more (100, 150, 225, 338, ...)")
+                .defineInRange("xpScaling", 1.5, 1.0, 10.0);
+
+        KILL_MAX_LEVEL = builder
+                .comment("Maximum number of kill levels a mob can earn on top of its base spawn level")
+                .defineInRange("maxKillLevel", 50, 1, 10000);
+
+        KILL_MAKE_PERSISTENT = builder
+                .comment("Prevent mobs that have earned at least one kill from despawning naturally")
+                .define("makePersistent", true);
+
+        KILL_SHOW_INDICATOR = builder
+                .comment("Show a kill indicator in the mob's name tag when it has at least one kill")
+                .define("showIndicator", true);
+
+        KILL_INDICATOR_FORMAT = builder
+                .comment("Text prepended to the mob's name when it has kills. Use {kills} for the kill count.",
+                         "Default: a star character followed by a space.")
+                .define("indicatorFormat", "\u2605 ");
+
+        KILL_INDICATOR_COLOR = builder
+                .comment("Color for the kill indicator. Supports color names (red, dark_red) or hex (#FF0000)")
+                .define("indicatorColor", "red");
 
         builder.pop();
 

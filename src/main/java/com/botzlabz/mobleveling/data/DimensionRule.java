@@ -30,13 +30,15 @@ public class DimensionRule implements LevelRule {
     private final double distanceMultiplier;
     private final Map<ResourceLocation, AttributeScaling> attributeScaling;
     private final Map<ResourceLocation, MobOverride> mobOverrides;
+    private final boolean huntToLevel;
+    private final double huntToLevelChance;
 
     public DimensionRule(ResourceLocation id, List<ResourceLocation> dimensionIds,
                          int priority, boolean enabled, int minLevel, int maxLevel,
                          String levelMode, @Nullable Integer fixedLevel,
                          boolean ignoreDistanceScaling, double distanceMultiplier,
                          Map<ResourceLocation, AttributeScaling> attributeScaling,
-                         Map<ResourceLocation, MobOverride> mobOverrides) {
+                         Map<ResourceLocation, MobOverride> mobOverrides, boolean huntToLevel, double huntToLevelChance) {
         this.id = id;
         this.dimensionIds = dimensionIds;
         this.priority = priority;
@@ -49,6 +51,8 @@ public class DimensionRule implements LevelRule {
         this.distanceMultiplier = distanceMultiplier;
         this.attributeScaling = attributeScaling;
         this.mobOverrides = mobOverrides;
+        this.huntToLevel = huntToLevel;
+        this.huntToLevelChance = huntToLevelChance;
     }
 
     public static DimensionRule fromJson(ResourceLocation id, JsonObject json) {
@@ -82,6 +86,8 @@ public class DimensionRule implements LevelRule {
         Integer fixedLevel = json.has("fixed_level") ? GsonHelper.getAsInt(json, "fixed_level") : null;
         boolean ignoreDistanceScaling = GsonHelper.getAsBoolean(json, "ignore_distance_scaling", false);
         double distanceMultiplier = GsonHelper.getAsDouble(json, "distance_multiplier", 1.0);
+        boolean huntToLevel = GsonHelper.getAsBoolean(json, "hunt_to_level", false);
+        double huntToLevelChance = GsonHelper.getAsFloat(json, "hunt_to_level_chance", 1.0f);
 
         Map<ResourceLocation, AttributeScaling> attributeScaling = new HashMap<>();
         if (json.has("attribute_scaling")) {
@@ -103,7 +109,7 @@ public class DimensionRule implements LevelRule {
 
         return new DimensionRule(id, dimensionIds, priority, enabled, minLevel, maxLevel,
                 levelMode, fixedLevel, ignoreDistanceScaling, distanceMultiplier,
-                attributeScaling, mobOverrides);
+                attributeScaling, mobOverrides, huntToLevel, huntToLevelChance);
     }
 
     public List<ResourceLocation> getDimensionIds() {
@@ -172,6 +178,16 @@ public class DimensionRule implements LevelRule {
     @Override
     public Map<ResourceLocation, MobOverride> getMobOverrides() {
         return mobOverrides;
+    }
+
+    @Override
+    public boolean shouldHuntToLevel() {
+        return huntToLevel;
+    }
+
+    @Override
+    public double getHuntToLevelChance() {
+        return huntToLevelChance;
     }
 
     @Override

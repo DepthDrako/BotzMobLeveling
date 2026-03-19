@@ -1,0 +1,31 @@
+{
+  "biome": "minecraft:swamp",
+  "priority": 100,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 40,
+  "ignore_distance_scaling": true,
+
+  "target_mobs": ["minecraft:witch", "minecraft:slime", "minecraft:zombie"],
+
+  "mob_overrides": {
+    "minecraft:witch": {
+      "fixed_level": 65,
+      "ignore_level_cap": false
+    }
+  },
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 15.0,
+      "per_level": 0.4,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 1.0,
+      "per_level": 0.08,
+      "operation": "multiply_base"
+    }
+  }
+}

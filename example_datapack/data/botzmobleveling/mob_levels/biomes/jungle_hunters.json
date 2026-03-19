@@ -1,0 +1,27 @@
+{
+  "biome": "minecraft:jungle",
+  "priority": 100,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 35,
+  "ignore_distance_scaling": true,
+
+  "hunt_to_level": true,
+  "hunt_to_level_chance": 0.5,
+
+  "target_mobs": ["minecraft:spider", "minecraft:cave_spider", "minecraft:creeper"],
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 10.0,
+      "per_level": 0.3,
+      "operation": "addition"
+    },
+    "minecraft:generic.movement_speed": {
+      "base_bonus": 0.02,
+      "per_level": 0.001,
+      "operation": "addition"
+    }
+  }
+}

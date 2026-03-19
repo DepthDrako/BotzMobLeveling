@@ -1,0 +1,45 @@
+{
+  "structure": "minecraft:stronghold",
+  "priority": 200,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 80,
+  "ignore_distance_scaling": true,
+
+  "hunt_to_level": true,
+  "hunt_to_level_chance": 0.3,
+
+  "mob_overrides": {
+    "minecraft:zombie": {
+      "fixed_level": 80,
+      "ignore_level_cap": false
+    },
+    "minecraft:skeleton": {
+      "fixed_level": 85,
+      "ignore_level_cap": false
+    },
+    "minecraft:silverfish": {
+      "fixed_level": 70,
+      "ignore_level_cap": false
+    }
+  },
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 40.0,
+      "per_level": 0.5,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.08,
+      "operation": "multiply_base"
+    },
+    "minecraft:generic.armor": {
+      "base_bonus": 4.0,
+      "per_level": 0.0,
+      "operation": "addition"
+    }
+  }
+}

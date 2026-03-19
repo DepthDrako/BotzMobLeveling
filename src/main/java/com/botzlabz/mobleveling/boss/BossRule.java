@@ -55,6 +55,10 @@ public class BossRule {
     @Nullable
     private final MinionConfig minionConfig;
 
+    // Hunting
+    private final boolean huntToLevel;
+    private final double huntToLevelChance;
+
     private BossRule(Builder builder) {
         this.id = builder.id;
         this.enabled = builder.enabled;
@@ -76,6 +80,8 @@ public class BossRule {
         this.xpMultiplier = builder.xpMultiplier;
         this.lootTable = builder.lootTable;
         this.minionConfig = builder.minionConfig;
+        this.huntToLevel = builder.huntToLevel;
+        this.huntToLevelChance = builder.huntToLevelChance;
     }
 
     // ==================== Getters ====================
@@ -103,6 +109,8 @@ public class BossRule {
     public ResourceLocation getLootTable() { return lootTable; }
     @Nullable
     public MinionConfig getMinionConfig() { return minionConfig; }
+    public boolean shouldHuntToLevel() { return huntToLevel; }
+    public double getHuntToLevelChance() { return huntToLevelChance; }
 
     public boolean appliesToMob(ResourceLocation mobId) {
         return targetMobs.isEmpty() || targetMobs.contains(mobId);
@@ -200,6 +208,10 @@ public class BossRule {
             builder.minionConfig(MinionConfig.fromJson(GsonHelper.getAsJsonObject(json, "minions")));
         }
 
+        // Hunting
+        builder.huntToLevel(GsonHelper.getAsBoolean(json, "hunt_to_level", false));
+        builder.huntToLevelChance(GsonHelper.getAsDouble(json, "hunt_to_level_chance", 1.0));
+
         return builder.build();
     }
 
@@ -226,6 +238,8 @@ public class BossRule {
         private double xpMultiplier = 5.0;
         private ResourceLocation lootTable = null;
         private MinionConfig minionConfig = null;
+        private boolean huntToLevel = false;
+        private double huntToLevelChance = 1.0;
 
         public Builder(ResourceLocation id) {
             this.id = id;
@@ -250,6 +264,8 @@ public class BossRule {
         public Builder xpMultiplier(double mult) { this.xpMultiplier = mult; return this; }
         public Builder lootTable(ResourceLocation table) { this.lootTable = table; return this; }
         public Builder minionConfig(MinionConfig config) { this.minionConfig = config; return this; }
+        public Builder huntToLevel(boolean hunt) { this.huntToLevel = hunt; return this; }
+        public Builder huntToLevelChance(double chance) { this.huntToLevelChance = Math.max(0, Math.min(1, chance)); return this; }
 
         public BossRule build() {
             return new BossRule(this);

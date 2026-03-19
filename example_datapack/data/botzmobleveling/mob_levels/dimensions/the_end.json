@@ -1,0 +1,38 @@
+{
+  "dimension": "minecraft:the_end",
+  "priority": 150,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 150,
+  "ignore_distance_scaling": true,
+
+  "mob_overrides": {
+    "minecraft:enderman": {
+      "fixed_level": 160,
+      "ignore_level_cap": true
+    },
+    "minecraft:shulker": {
+      "fixed_level": 140,
+      "ignore_level_cap": true
+    }
+  },
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 80.0,
+      "per_level": 1.0,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.1,
+      "operation": "multiply_base"
+    },
+    "minecraft:generic.knockback_resistance": {
+      "base_bonus": 0.3,
+      "per_level": 0.0,
+      "operation": "addition"
+    }
+  }
+}

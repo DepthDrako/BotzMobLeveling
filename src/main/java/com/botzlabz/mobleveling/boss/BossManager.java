@@ -3,6 +3,7 @@ package com.botzlabz.mobleveling.boss;
 import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import com.botzlabz.mobleveling.data.MobLevelingDataManager;
+import com.botzlabz.mobleveling.kills.HuntingGoalHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -161,6 +162,14 @@ public class BossManager {
         // Create boss bar
         if (MobLevelingConfig.BOSS_SHOW_BOSS_BAR.get() && rule.getBossBar().isVisible()) {
             createBossBar(mob, rule);
+        }
+
+        // Enable hunting AI if the rule requests it
+        if (rule.shouldHuntToLevel()) {
+            double chance = rule.getHuntToLevelChance();
+            if (chance >= 1.0 || mob.getRandom().nextDouble() < chance) {
+                HuntingGoalHandler.enableHunting(mob);
+            }
         }
 
         // Announce spawn

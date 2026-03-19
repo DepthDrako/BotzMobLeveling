@@ -1,0 +1,38 @@
+{
+  "biome": "minecraft:desert",
+  "priority": 100,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 50,
+  "ignore_distance_scaling": true,
+
+  "mob_overrides": {
+    "minecraft:husk": {
+      "fixed_level": 60,
+      "ignore_level_cap": false
+    },
+    "minecraft:skeleton": {
+      "fixed_level": 55,
+      "ignore_level_cap": false
+    }
+  },
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 20.0,
+      "per_level": 0.5,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 2.0,
+      "per_level": 0.1,
+      "operation": "multiply_base"
+    },
+    "minecraft:generic.armor": {
+      "base_bonus": 2.0,
+      "per_level": 0.0,
+      "operation": "addition"
+    }
+  }
+}

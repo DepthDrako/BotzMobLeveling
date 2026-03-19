@@ -91,8 +91,8 @@ dependencies {
 
     // Patchouli (optional integration)
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE:api")
-    // Include Patchouli at runtime for testing guide books:
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE")
+    // Disabled at runtime - crashes on Forge 47.4.0 due to mixin incompatibility
+    // runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE")
 }
 
 tasks.named('processResources', ProcessResources).configure {

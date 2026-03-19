@@ -1,0 +1,30 @@
+{
+  "dimension": "minecraft:the_nether",
+  "priority": 150,
+  "enabled": true,
+
+  "level_mode": "fixed",
+  "fixed_level": 100,
+  "ignore_distance_scaling": true,
+
+  "hunt_to_level": true,
+  "hunt_to_level_chance": 0.25,
+
+  "attribute_scaling": {
+    "minecraft:generic.max_health": {
+      "base_bonus": 50.0,
+      "per_level": 0.6,
+      "operation": "addition"
+    },
+    "minecraft:generic.attack_damage": {
+      "base_bonus": 0.0,
+      "per_level": 0.08,
+      "operation": "multiply_base"
+    },
+    "minecraft:generic.movement_speed": {
+      "base_bonus": 0.01,
+      "per_level": 0.0,
+      "operation": "addition"
+    }
+  }
+}

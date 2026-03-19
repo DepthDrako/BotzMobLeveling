@@ -187,6 +187,8 @@ public class LevelResolver {
                 .mobOverride(override)
                 .attributeScaling(mergedScaling)
                 .ignoreLevelCap(ignoreCap)
+                .huntToLevel(rule.shouldHuntToLevel())
+                .huntToLevelChance(rule.getHuntToLevelChance())
                 .build();
     }
 

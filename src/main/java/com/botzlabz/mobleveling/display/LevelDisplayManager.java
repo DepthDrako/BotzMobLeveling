@@ -1,6 +1,7 @@
 package com.botzlabz.mobleveling.display;
 
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
+import com.botzlabz.mobleveling.kills.KillLevelData;
 import com.botzlabz.mobleveling.level.MobLevelData;
 import com.botzlabz.mobleveling.util.ModConstants;
 import net.minecraft.ChatFormatting;
@@ -36,9 +37,20 @@ public class LevelDisplayManager {
         // Get original name (stored or from type)
         Component originalName = getOriginalName(mob);
 
-        // Build full name with level prefix
+        // Build full name — prepend kill indicator when the mob has kills
         MutableComponent levelComponent = Component.literal(levelText).withStyle(levelStyle);
-        MutableComponent fullName = levelComponent.append(originalName);
+        MutableComponent fullName;
+
+        if (MobLevelingConfig.KILL_SHOW_INDICATOR.get() && KillLevelData.hasKills(mob)) {
+            String indicatorText = MobLevelingConfig.KILL_INDICATOR_FORMAT.get()
+                    .replace("{kills}", String.valueOf(KillLevelData.getKillCount(mob)));
+            TextColor indicatorColor = parseColor(MobLevelingConfig.KILL_INDICATOR_COLOR.get());
+            MutableComponent indicatorComponent = Component.literal(indicatorText)
+                    .withStyle(Style.EMPTY.withColor(indicatorColor));
+            fullName = indicatorComponent.append(levelComponent).append(originalName);
+        } else {
+            fullName = levelComponent.append(originalName);
+        }
 
         // Apply to mob
         mob.setCustomName(fullName);

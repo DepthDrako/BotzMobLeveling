@@ -4,6 +4,39 @@ All notable changes to BotzMobLeveling will be documented here.
 
 ---
 
+## [1.0.3] - 2026-03-18
+
+### Added
+- **Kill Leveling System** — Mobs gain XP and levels by killing other mobs or players
+  - XP scales with the victim's total level (base level + kill level)
+  - Players award a configurable bonus on top of normal XP
+  - Mobs level up when accumulated XP crosses the threshold (`kill_base_xp_required * kill_xp_scaling ^ (killLevel-1)`)
+  - Kill level is capped by `kill_max_level` and cannot push a mob beyond `global_level_cap` for attribute purposes
+  - Attributes are reapplied at `min(baseLevel + killLevel, globalLevelCap)` on every level-up and on chunk reload
+  - `kill_apply_to_any_mob` toggle — when `true`, any mob can gain kill XP regardless of datapack rules
+
+- **Persistence on First Kill** — Mobs that earn their first kill are automatically marked persistent (`setPersistenceRequired(true)`) so they won't despawn; controlled by `kill_make_persistent` config
+
+- **Kill Indicator in Name Tag** — A configurable prefix (default `★ `) is prepended to leveled mob names once they have at least one kill
+  - `kill_show_indicator` — toggle the indicator on/off
+  - `kill_indicator_format` — text template; use `{kills}` to embed the kill count
+  - `kill_indicator_color` — Minecraft color name for the indicator text
+
+- **Hunt-to-Level AI** — Per-rule datapack toggle `"hunt_to_level": true` injects `MeleeAttackGoal` and `NearestAttackableTargetGoal<Mob>` into any `PathfinderMob`, letting it actively hunt other mobs to accumulate kill XP even without a player nearby
+  - Goals are added at low priority so native combat behaviour takes precedence
+  - An NBT flag (`botzmobleveling_HuntGoalsAdded`) prevents duplicate goal injection and survives chunk reload
+
+- **Hunt Chance** — `"hunt_to_level_chance": 0.0–1.0` per rule (and `hunt_to_level_chance` global config fallback) controls the fraction of mobs that actually receive hunting AI; per-rule value always takes precedence
+
+### Config additions (`botzmobleveling-common.toml`)
+`killLeveling` section:
+- `killLevelingEnabled`, `huntToLevelEnabled`, `huntToLevelChance`
+- `killApplyToAnyMob`, `killXPBase`, `killXPPerVictimLevel`, `killXPPlayerBonus`
+- `killBaseXPRequired`, `killXPScaling`, `killMaxLevel`
+- `killMakePersistent`, `killShowIndicator`, `killIndicatorFormat`, `killIndicatorColor`
+
+---
+
 ## [1.0.1] - 2026-02-27
 
 ### Added
