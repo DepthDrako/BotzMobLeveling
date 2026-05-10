@@ -4,6 +4,14 @@ All notable changes to BotzMobLeveling will be documented here.
 
 ---
 
+## [1.0.5] - 2026-05-10
+
+### Fixed
+- **Custom boss display name now applied to the entity nameplate.** Previously `BossManager` only stored the rule's `display_name` in NBT and used it for the boss bar — the mob's own nameplate kept the leveled vanilla type description (e.g. `[Lv.10] Ravager`) set earlier by `LevelDisplayManager`. The boss name only appeared at the top of the screen, never above the mob.
+- `applyBossNameplate()` now calls `mob.setCustomName(...)` and `setCustomNameVisible(true)` immediately after stat transformation, with the level prefix included when `showLevelInName` is enabled. The cached "original name" used by `LevelDisplayManager` is rewritten to the boss display name so future level-display refreshes (e.g. on kill XP gain) keep the boss name as the base instead of resurrecting the type description.
+
+---
+
 ## [1.0.3] - 2026-03-18
 
 ### Added

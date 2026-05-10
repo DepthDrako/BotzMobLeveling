@@ -3,12 +3,15 @@ package com.botzlabz.mobleveling.boss;
 import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import com.botzlabz.mobleveling.data.MobLevelingDataManager;
+import com.botzlabz.mobleveling.display.LevelDisplayManager;
 import com.botzlabz.mobleveling.kills.HuntingGoalHandler;
+import com.botzlabz.mobleveling.level.MobLevelData;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
@@ -139,6 +142,12 @@ public class BossManager {
         BossData.setDisplayName(mob, rule.getDisplayName());
         BossData.setOriginalMaxHealth(mob, mob.getMaxHealth());
 
+        // Apply the boss display name to the entity itself so its nameplate
+        // matches the boss bar. Without this, only the boss bar gets the name —
+        // the entity nameplate stays as the leveled vanilla type description
+        // ([Lv.X] Ravager) set earlier by LevelDisplayManager.
+        applyBossNameplate(mob, rule);
+
         // Prevent despawning
         if (MobLevelingConfig.BOSS_PREVENT_DESPAWN.get()) {
             mob.setPersistenceRequired();
@@ -181,6 +190,45 @@ public class BossManager {
             LOGGER.debug("[BossManager] Transformed {} into boss with rule {}",
                     ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()), rule.getId());
         }
+    }
+
+    /**
+     * Sets the entity's nameplate to the boss display name, optionally prefixed
+     * with the level tag if level-in-name display is enabled. Also rewrites the
+     * stored "original name" cache so subsequent {@link LevelDisplayManager#updateDisplay}
+     * calls (e.g. when level changes via kills) keep the boss name as the base.
+     *
+     * <p>Called from {@link #applyBossTransformation} immediately after the
+     * other identity fields are stamped into NBT. Boss display strings may
+     * include legacy color codes (§4§l...), which {@link Component#literal} parses
+     * for rendering on the nameplate.
+     */
+    private void applyBossNameplate(Mob mob, BossRule rule) {
+        String bossName = rule.getDisplayName();
+        Component bossNameComponent = Component.literal(bossName);
+
+        Component fullName;
+        if (MobLevelingConfig.SHOW_LEVEL_IN_NAME.get() && MobLevelData.hasLevel(mob)) {
+            int level = MobLevelData.getLevel(mob);
+            Component levelPrefix = LevelDisplayManager.formatLevelComponent(
+                    level, MobLevelingConfig.LEVEL_COLOR.get());
+            MutableComponent combined = Component.empty();
+            combined.append(levelPrefix);
+            combined.append(bossNameComponent);
+            fullName = combined;
+        } else {
+            fullName = bossNameComponent;
+        }
+
+        mob.setCustomName(fullName);
+        mob.setCustomNameVisible(true);
+
+        // Refresh LevelDisplayManager's cached "original name" so future level
+        // updates rebuild as "[Lv.N] <bossName>" instead of resurrecting the
+        // vanilla type description (e.g. "Ravager"). Keys must match
+        // LevelDisplayManager.ORIGINAL_NAME_KEY / HAS_CUSTOM_NAME_KEY.
+        mob.getPersistentData().putString("botzmobleveling_OriginalName", bossName);
+        mob.getPersistentData().putBoolean("botzmobleveling_HadCustomName", true);
     }
 
     private void applyStatMultipliers(Mob mob, BossRule rule) {
