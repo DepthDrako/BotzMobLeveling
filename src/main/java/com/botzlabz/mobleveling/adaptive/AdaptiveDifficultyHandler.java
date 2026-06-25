@@ -1,64 +1,56 @@
 package com.botzlabz.mobleveling.adaptive;
 
-import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
-import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import org.slf4j.Logger;
 
 /**
- * Main handler for adaptive difficulty system.
- * Integrates with mob spawning to scale difficulty based on nearby player gear.
+ * Helper for the adaptive difficulty system.
+ *
+ * <p>This used to be a standalone {@code MobSpawnEvent.FinalizeSpawn} subscriber that
+ * applied permanent stat modifiers and equipment to <em>every</em> mob, bypassing the
+ * blacklist / passive / boss filters and the world-ready gate used by the leveling
+ * system, and recomputing the player gear score a second time. It is now driven from
+ * {@code MobSpawnHandler} <em>after</em> a mob has passed all of those checks, and the
+ * gear score is computed once and threaded through {@code LevelResult}.
  */
-@Mod.EventBusSubscriber(modid = BotzMobLeveling.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class AdaptiveDifficultyHandler {
+public final class AdaptiveDifficultyHandler {
 
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private AdaptiveDifficultyHandler() {}
 
-    @SubscribeEvent
-    public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
-        Mob mob = event.getEntity();
-        if (!(mob.level() instanceof ServerLevel level)) {
-            return;
-        }
-
-        // Check if adaptive difficulty is enabled
+    /**
+     * Compute the maximum gear score among players near this mob, or {@code 0} when
+     * adaptive difficulty is disabled or no eligible player is in range. Computed once
+     * per mob during {@code LevelResolver.resolve} and reused for both the level bonus
+     * and the attribute/equipment modifiers.
+     */
+    public static double getNearbyGearScore(Mob mob) {
         if (!MobLevelingConfig.ADAPTIVE_DIFFICULTY_ENABLED.get()) {
-            return;
+            return 0.0;
         }
 
-        // Find the nearest player
         Player nearestPlayer = findNearestPlayer(mob);
         if (nearestPlayer == null) {
-            return;
+            return 0.0;
         }
 
-        // Calculate gear score based on nearby players
-        double gearScore = GearAnalyzer.getMaxNearbyGearScore(nearestPlayer);
-
-        // Only apply if gear score is significant
-        if (gearScore <= 10) {  // Lowered threshold for testing
-            return;
-        }
-
-        LOGGER.info("[MobLeveling] Adaptive difficulty triggered for {} near {} - Gear Score: {}{}",
-                mob.getName().getString(), nearestPlayer.getName().getString(), String.format("%.1f", gearScore), "");
-
-        // Apply adaptive difficulty modifiers
-        MobResponseHandler.applyAdaptiveModifiers(mob, gearScore, level.getRandom());
-
-        LOGGER.info("[MobLeveling] Applied modifiers to {} - Threat: {}",
-                mob.getName().getString(), ThreatCalculator.getThreatDescription(ThreatCalculator.calculateThreatLevel(gearScore)));
+        return GearAnalyzer.getMaxNearbyGearScore(nearestPlayer);
     }
 
     /**
-     * Finds the nearest player to the mob within the search radius
+     * Convert a gear score into a bonus level count. Returns {@code 0} for scores that
+     * fall in the "trivial" threat bracket.
+     */
+    public static int getLevelBonusForGearScore(double gearScore) {
+        if (gearScore <= 0) {
+            return 0;
+        }
+        return ThreatCalculator.calculateLevelBonus(gearScore);
+    }
+
+    /**
+     * Finds the nearest living, non-spectator player to the mob within the search radius.
      */
     private static Player findNearestPlayer(Mob mob) {
         if (!(mob.level() instanceof ServerLevel level)) {
@@ -85,23 +77,5 @@ public class AdaptiveDifficultyHandler {
         }
 
         return nearestPlayer;
-    }
-
-    /**
-     * Gets the adaptive level bonus for a mob based on nearby players
-     * This is called from the level calculator to integrate with the existing system
-     */
-    public static int getAdaptiveLevelBonus(Mob mob) {
-        if (!MobLevelingConfig.ADAPTIVE_DIFFICULTY_ENABLED.get()) {
-            return 0;
-        }
-
-        Player nearestPlayer = findNearestPlayer(mob);
-        if (nearestPlayer == null) {
-            return 0;
-        }
-
-        double gearScore = GearAnalyzer.getMaxNearbyGearScore(nearestPlayer);
-        return ThreatCalculator.calculateLevelBonus(gearScore);
     }
 }

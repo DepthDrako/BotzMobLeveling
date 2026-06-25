@@ -1,5 +1,6 @@
 package com.botzlabz.mobleveling.adaptive;
 
+import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 
 /**
@@ -64,8 +65,8 @@ public class ThreatCalculator {
         bonus = applySmoothScaling(gearScore, threat, bonus);
 
         if (MobLevelingConfig.ADAPTIVE_DEBUG_LOGGING.get()) {
-            System.out.println("[MobLeveling] Gear score: " + gearScore + 
-                    ", Threat: " + threat + ", Level bonus: " + bonus);
+            BotzMobLeveling.LOGGER.debug("[MobLeveling] Gear score: {}, Threat: {}, Level bonus: {}",
+                    gearScore, threat, bonus);
         }
 
         return bonus;

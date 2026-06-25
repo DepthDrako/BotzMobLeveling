@@ -1,5 +1,6 @@
 package com.botzlabz.mobleveling.adaptive;
 
+import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -83,7 +84,7 @@ public class GearAnalyzer {
         double totalScore = 0.0;
         
         if (MobLevelingConfig.ADAPTIVE_DEBUG_LOGGING.get()) {
-            System.out.println("[MobLeveling] Analyzing gear for player: " + player.getName().getString());
+            BotzMobLeveling.LOGGER.debug("[MobLeveling] Analyzing gear for player: {}", player.getName().getString());
         }
 
         // Analyze armor slots
@@ -113,7 +114,7 @@ public class GearAnalyzer {
         totalScore *= MobLevelingConfig.ADAPTIVE_GEAR_SCORE_MULTIPLIER.get();
 
         if (MobLevelingConfig.ADAPTIVE_DEBUG_LOGGING.get()) {
-            System.out.println("[MobLeveling] Gear score for " + player.getName().getString() + ": " + totalScore);
+            BotzMobLeveling.LOGGER.debug("[MobLeveling] Gear score for {}: {}", player.getName().getString(), totalScore);
         }
 
         return totalScore;
@@ -137,9 +138,13 @@ public class GearAnalyzer {
         // Enchantments
         score += analyzeEnchantments(stack);
 
-        // Durability percentage (slight bonus for well-maintained gear)
-        double durabilityPercent = (double) stack.getDamageValue() / stack.getMaxDamage();
-        score *= (1.0 + (1.0 - durabilityPercent) * 0.1);
+        // Durability percentage (slight bonus for well-maintained gear).
+        // Guard against non-durability items (maxDamage == 0) which would produce
+        // Infinity/NaN and corrupt the whole gear score.
+        if (stack.isDamageableItem() && stack.getMaxDamage() > 0) {
+            double durabilityPercent = (double) stack.getDamageValue() / stack.getMaxDamage();
+            score *= (1.0 + (1.0 - durabilityPercent) * 0.1);
+        }
 
         return score;
     }
@@ -260,14 +265,14 @@ public class GearAnalyzer {
             return true;
         }
 
-        // Check by name - equipment modifiers often have specific names
+        // Check by name - equipment modifiers often have specific names.
+        // Deliberately excludes overly generic terms like "item"/"modifier" that also match
+        // non-equipment sources (potion effects, mob bonuses) and would inflate the score.
         String name = modifier.getName().toLowerCase();
         return name.contains("armor") ||
                name.contains("weapon") ||
                name.contains("tool") ||
-               name.contains("equipment") ||
-               name.contains("item") ||
-               name.contains("modifier");
+               name.contains("equipment");
     }
 
     /**

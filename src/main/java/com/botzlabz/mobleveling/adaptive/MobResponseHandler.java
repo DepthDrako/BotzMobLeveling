@@ -49,9 +49,8 @@ public class MobResponseHandler {
         applyEquipment(mob, gearScore, random);
 
         if (MobLevelingConfig.ADAPTIVE_DEBUG_LOGGING.get()) {
-            System.out.println("[MobLeveling] Applied adaptive modifiers to " + mob.getName().getString() +
-                    " - Threat: " + ThreatCalculator.getThreatDescription(threat) +
-                    " - Gear Score: " + gearScore);
+            BotzMobLeveling.LOGGER.debug("[MobLeveling] Applied adaptive modifiers to {} - Threat: {} - Gear Score: {}",
+                    mob.getName().getString(), ThreatCalculator.getThreatDescription(threat), gearScore);
         }
     }
 
@@ -226,7 +225,7 @@ public class MobResponseHandler {
         }
 
         if (MobLevelingConfig.ADAPTIVE_DEBUG_LOGGING.get() && equipmentGiven) {
-            System.out.println("[MobLeveling] Gave tier " + tier + " equipment to " + mob.getName().getString());
+            BotzMobLeveling.LOGGER.debug("[MobLeveling] Gave tier {} equipment to {}", tier, mob.getName().getString());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.botzlabz.mobleveling.event;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
+import com.botzlabz.mobleveling.adaptive.MobResponseHandler;
 import com.botzlabz.mobleveling.attribute.AttributeScalingManager;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import com.botzlabz.mobleveling.data.AttributeScaling;
@@ -116,7 +117,12 @@ public class MobSpawnHandler {
             int baseLevel = MobLevelData.getLevel(mob);
             // Include any kill levels earned so attributes stay at the correct combined level
             int killLevel = KillLevelData.getKillLevel(mob);
-            int mobLevel = Math.min(baseLevel + killLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
+            int mobLevel = baseLevel + killLevel;
+            // Don't re-clamp cap-exempt mobs (fixed level / ignore_level_cap), otherwise a
+            // high-level boss or override mob would be nerfed back to the cap after reload.
+            if (!MobLevelData.ignoresLevelCap(mob)) {
+                mobLevel = Math.min(mobLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
+            }
 
             // Get the rule that was used (if stored)
             var ruleIdOpt = MobLevelData.getSourceRuleId(mob);
@@ -241,6 +247,7 @@ public class MobSpawnHandler {
 
         // Store level in persistent data
         MobLevelData.setLevel(mob, mobLevel);
+        MobLevelData.setIgnoreLevelCap(mob, result.isIgnoreLevelCap());
         MobLevelData.markProcessed(mob);
 
         // Store source rule info for debugging
@@ -268,6 +275,16 @@ public class MobSpawnHandler {
         // Update display name
         if (MobLevelingConfig.SHOW_LEVEL_IN_NAME.get()) {
             displayManager.updateDisplay(mob, mobLevel);
+        }
+
+        // Apply adaptive difficulty stat/equipment modifiers. Runs only for mobs that
+        // passed the leveling filters (blacklist, passive/boss, server-ready) above, and
+        // reuses the gear score computed during resolve so it isn't calculated twice.
+        if (MobLevelingConfig.ADAPTIVE_DIFFICULTY_ENABLED.get()) {
+            double gearScore = result.getAdaptiveGearScore();
+            if (gearScore >= MobLevelingConfig.ADAPTIVE_MIN_GEAR_SCORE.get()) {
+                MobResponseHandler.applyAdaptiveModifiers(mob, gearScore, level.getRandom());
+            }
         }
 
         if (MobLevelingConfig.DEBUG_MODE.get()) {

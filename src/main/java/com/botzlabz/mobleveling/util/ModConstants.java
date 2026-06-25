@@ -14,6 +14,7 @@ public final class ModConstants {
     public static final String NBT_PROCESSED = BotzMobLeveling.MOD_ID + "_Processed";
     public static final String NBT_RULE_ID = BotzMobLeveling.MOD_ID + "_RuleId";
     public static final String NBT_RULE_TYPE = BotzMobLeveling.MOD_ID + "_RuleType";
+    public static final String NBT_IGNORE_CAP = BotzMobLeveling.MOD_ID + "_IgnoreCap";
 
     // NBT Keys for kill leveling
     public static final String NBT_KILL_XP = BotzMobLeveling.MOD_ID + "_KillXP";

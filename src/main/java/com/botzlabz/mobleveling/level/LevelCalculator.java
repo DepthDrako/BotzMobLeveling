@@ -66,13 +66,19 @@ public class LevelCalculator {
                 break;
         }
 
-        // Apply level bonus from override
+        // Clamp the base (distance/random) level to the rule's range FIRST.
+        calculatedLevel = Mth.clamp(calculatedLevel, minLevel, maxLevel);
+
+        // Then add the override's level bonus ON TOP of the range. Doing this
+        // after the clamp means a per-mob bonus actually stacks with distance
+        // scaling instead of being swallowed by the rule's max_level. The
+        // result is still subject to the global level cap unless the override
+        // sets ignore_level_cap (handled in LevelResolver).
         if (override != null && override.hasLevelBonus()) {
             calculatedLevel += override.getLevelBonus();
+            // Floor at 1 so a negative bonus can never produce an invalid level.
+            calculatedLevel = Math.max(1, calculatedLevel);
         }
-
-        // Clamp to range (only for non-fixed levels)
-        calculatedLevel = Mth.clamp(calculatedLevel, minLevel, maxLevel);
 
         return calculatedLevel;
     }

@@ -87,7 +87,9 @@ public class BossEventHandler {
             mob.setGlowingTag(true);
         }
 
-        // Boss bar will be created/managed on tick
+        // Recreate the boss bar — the in-memory map was emptied on unload/restart, and
+        // nothing else rebuilds it (the tick handler only updates an existing bar).
+        BossManager.getInstance().ensureBossBar(mob);
     }
 
     /**
@@ -117,6 +119,9 @@ public class BossEventHandler {
 
         BossManager manager = BossManager.getInstance();
 
+        // Make sure the bar exists (recovers it after reload/restart) before updating.
+        manager.ensureBossBar(mob);
+
         // Update boss bar health
         manager.updateBossBar(mob);
 
@@ -125,6 +130,33 @@ public class BossEventHandler {
 
         // Tick minion spawning
         manager.tickMinions(mob, serverLevel);
+
+        // Ambient boss particles (the rule's particle_effect field)
+        spawnBossParticles(mob, serverLevel, manager);
+    }
+
+    /**
+     * Spawns the boss rule's {@code particle_effect} around the boss a few times a second.
+     * Only simple (parameterless) particle types are supported; unknown or parameterized
+     * particles are ignored.
+     */
+    private static void spawnBossParticles(Mob boss, ServerLevel level, BossManager manager) {
+        if (boss.tickCount % 5 != 0) {
+            return;
+        }
+
+        BossRule rule = manager.getBossRule(boss);
+        if (rule == null || rule.getParticleEffect() == null) {
+            return;
+        }
+
+        var particleType = net.minecraftforge.registries.ForgeRegistries.PARTICLE_TYPES
+                .getValue(new net.minecraft.resources.ResourceLocation(rule.getParticleEffect()));
+        if (particleType instanceof net.minecraft.core.particles.ParticleOptions options) {
+            level.sendParticles(options,
+                    boss.getX(), boss.getY() + boss.getBbHeight() * 0.6, boss.getZ(),
+                    4, boss.getBbWidth() * 0.5, boss.getBbHeight() * 0.4, boss.getBbWidth() * 0.5, 0.01);
+        }
     }
 
     /**

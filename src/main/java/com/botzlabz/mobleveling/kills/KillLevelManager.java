@@ -85,7 +85,12 @@ public class KillLevelManager {
 
     private static void onKillLevelUp(Mob mob, int newKillLevel, ServerLevel level) {
         int baseLevel = MobLevelData.hasLevel(mob) ? MobLevelData.getLevel(mob) : 0;
-        int totalLevel = Math.min(baseLevel + newKillLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
+        int totalLevel = baseLevel + newKillLevel;
+        // Respect cap-exempt mobs (fixed level / ignore_level_cap) so kill levels don't
+        // clamp a high-level boss back down to the global cap.
+        if (!MobLevelData.ignoresLevelCap(mob)) {
+            totalLevel = Math.min(totalLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
+        }
 
         // Reapply attributes with the new combined level (replaces spawn-time modifier via same UUID)
         Map<ResourceLocation, AttributeScaling> scaling = getAttributeScaling(mob, level);

@@ -1,10 +1,14 @@
 package com.botzlabz.mobleveling.boss;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
+import com.botzlabz.mobleveling.attribute.AttributeScalingManager;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
+import com.botzlabz.mobleveling.data.AttributeScaling;
+import com.botzlabz.mobleveling.data.LevelRule;
 import com.botzlabz.mobleveling.data.MobLevelingDataManager;
 import com.botzlabz.mobleveling.display.LevelDisplayManager;
 import com.botzlabz.mobleveling.kills.HuntingGoalHandler;
+import com.botzlabz.mobleveling.level.LevelResolver;
 import com.botzlabz.mobleveling.level.MobLevelData;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -48,6 +52,10 @@ public class BossManager {
     // Track last minion spawn time for interval checks
     private final Map<UUID, Long> lastMinionSpawnTime = new ConcurrentHashMap<>();
 
+    // Used to re-derive the spawn rule's attribute scaling when applying a boss level
+    private final LevelResolver levelResolver = new LevelResolver();
+    private final AttributeScalingManager attributeManager = new AttributeScalingManager();
+
     private BossManager() {}
 
     public static BossManager getInstance() {
@@ -77,6 +85,10 @@ public class BossManager {
 
         if (BossData.isBoss(mob)) {
             return false; // Already a boss
+        }
+
+        if (BossData.isMinion(mob)) {
+            return false; // Boss-summoned minions can't recursively become bosses
         }
 
         MobLevelingDataManager dataManager = MobLevelingDataManager.getInstance();
@@ -140,6 +152,14 @@ public class BossManager {
         BossData.setBossRuleId(mob, rule.getId());
         BossData.setBossTier(mob, rule.getTier());
         BossData.setDisplayName(mob, rule.getDisplayName());
+
+        // Apply the boss's configured level BEFORE reading max health or building
+        // the nameplate. Previously the rule's "level" field was parsed but never
+        // applied, so the boss kept whatever level the normal spawn rules produced
+        // (e.g. a distance-based level 68) and its nameplate/boss bar/kill XP all
+        // reflected that instead of the intended boss level.
+        applyBossLevel(mob, rule, level);
+
         BossData.setOriginalMaxHealth(mob, mob.getMaxHealth());
 
         // Apply the boss display name to the entity itself so its nameplate
@@ -153,10 +173,12 @@ public class BossManager {
             mob.setPersistenceRequired();
         }
 
-        // Apply size multiplier
+        // Store the size multiplier in NBT for a future renderer. NOTE: this is currently
+        // NOT consumed anywhere — 1.20.1 has no entity scale attribute, so actually
+        // resizing the model requires a rendering mixin that does not yet exist. The field
+        // is documented as not-yet-functional; the NBT is written so a later renderer can
+        // pick it up without a data migration.
         if (rule.getSizeMultiplier() != 1.0f) {
-            // Note: Size scaling requires special handling via attributes or rendering
-            // For now we'll store it in NBT for the visual manager to use
             mob.getPersistentData().putFloat("botzmobleveling_SizeMultiplier", rule.getSizeMultiplier());
         }
 
@@ -231,6 +253,53 @@ public class BossManager {
         mob.getPersistentData().putBoolean("botzmobleveling_HadCustomName", true);
     }
 
+    /**
+     * Stamp the boss's configured level onto the mob and re-run the spawn rule's
+     * attribute scaling at that level. This makes the boss's health/damage/etc.
+     * scale with its boss level (on top of the flat {@code stat_multipliers}),
+     * and ensures the nameplate, boss bar, and kill-XP all use the boss level.
+     *
+     * <p>The level honors {@code ignore_level_cap}: when false it is clamped to
+     * the global level cap, matching how normal leveled mobs are capped.
+     */
+    private void applyBossLevel(Mob mob, BossRule rule, ServerLevel level) {
+        int bossLevel = rule.getLevel();
+        if (!rule.isIgnoreLevelCap()) {
+            bossLevel = Math.min(bossLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
+        }
+
+        MobLevelData.setLevel(mob, bossLevel);
+        MobLevelData.setIgnoreLevelCap(mob, rule.isIgnoreLevelCap());
+        MobLevelData.markProcessed(mob);
+
+        // Re-derive the attribute scaling from the rule the mob was originally
+        // leveled by (stored in NBT during normal spawn handling) and reapply it
+        // at the boss level. Falls back to a fresh resolve if the source rule is
+        // unavailable. Wrapped defensively so a scaling failure never aborts the
+        // boss transformation.
+        try {
+            Map<ResourceLocation, AttributeScaling> scaling = Collections.emptyMap();
+
+            var ruleIdOpt = MobLevelData.getSourceRuleId(mob);
+            var ruleTypeOpt = MobLevelData.getSourceRuleType(mob);
+            if (ruleIdOpt.isPresent() && ruleTypeOpt.isPresent()) {
+                LevelRule sourceRule = levelResolver.findRuleById(ruleIdOpt.get(), ruleTypeOpt.get());
+                if (sourceRule != null) {
+                    scaling = sourceRule.getAttributeScaling();
+                }
+            }
+
+            if (!scaling.isEmpty()) {
+                attributeManager.applyScaling(mob, bossLevel, scaling);
+            }
+        } catch (Exception e) {
+            if (MobLevelingConfig.DEBUG_MODE.get()) {
+                LOGGER.warn("[BossManager] Failed to reapply level scaling for boss {}: {}",
+                        rule.getId(), e.getMessage());
+            }
+        }
+    }
+
     private void applyStatMultipliers(Mob mob, BossRule rule) {
         Map<ResourceLocation, Double> multipliers = rule.getStatMultipliers();
 
@@ -253,6 +322,31 @@ public class BossManager {
     }
 
     // ==================== Boss Bars ====================
+
+    /**
+     * Recreate the in-memory boss bar for a boss that was loaded from disk (chunk reload
+     * or server restart). The {@code activeBossBars} map lives only in memory, so without
+     * this a saved boss would permanently lose its bar — {@link #updateBossBar} silently
+     * no-ops when the bar is missing. Safe to call every tick; it only acts when the bar
+     * is actually absent.
+     */
+    public void ensureBossBar(Mob mob) {
+        if (!MobLevelingConfig.BOSS_SHOW_BOSS_BAR.get()) {
+            return;
+        }
+
+        UUID bossId = BossData.getBossUUID(mob);
+        if (bossId == null || activeBossBars.containsKey(bossId)) {
+            return;
+        }
+
+        BossRule rule = getBossRule(mob);
+        if (rule == null || !rule.getBossBar().isVisible()) {
+            return;
+        }
+
+        createBossBar(mob, rule);
+    }
 
     private void createBossBar(Mob mob, BossRule rule) {
         UUID bossId = BossData.getBossUUID(mob);
@@ -411,6 +505,10 @@ public class BossManager {
             var minion = entityType.create(level);
             if (minion != null) {
                 minion.setPos(boss.getX() + offsetX, boss.getY(), boss.getZ() + offsetZ);
+                // Flag as a minion BEFORE adding to the world. addFreshEntity fires
+                // EntityJoinLevel synchronously, where the boss handler would otherwise
+                // be able to transform this minion into another boss.
+                BossData.markAsMinion(minion);
                 level.addFreshEntity(minion);
                 minions.add(minion.getUUID());
 
@@ -442,11 +540,12 @@ public class BossManager {
             var structureManager = level.structureManager();
             var registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
 
-            for (var entry : registry.entrySet()) {
-                Structure structure = entry.getValue();
+            // Only consider structures that actually reference this position, instead of
+            // scanning the entire structure registry for every mob spawn.
+            for (Structure structure : structureManager.getAllStructuresAt(pos).keySet()) {
                 StructureStart start = structureManager.getStructureWithPieceAt(pos, structure);
                 if (start.isValid()) {
-                    return entry.getKey().location();
+                    return registry.getKey(structure);
                 }
             }
         } catch (Exception e) {

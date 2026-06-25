@@ -157,19 +157,25 @@ public class LevelResolver {
         LevelCalculator calculator = new LevelCalculator(mob.getRandom());
         int calculatedLevel = calculator.calculateLevel(rule, override, pos, level);
 
-        // Add adaptive difficulty bonus based on nearby player gear
-        int adaptiveBonus = AdaptiveDifficultyHandler.getAdaptiveLevelBonus(mob);
+        // Add adaptive difficulty bonus based on nearby player gear. The gear score is
+        // computed once here and reused for the adaptive stat/equipment modifiers the
+        // spawn handler applies later (see LevelResult.getAdaptiveGearScore), instead of
+        // being recomputed by a separate, unfiltered spawn subscriber.
+        double adaptiveGearScore = AdaptiveDifficultyHandler.getNearbyGearScore(mob);
+        int adaptiveBonus = AdaptiveDifficultyHandler.getLevelBonusForGearScore(adaptiveGearScore);
         if (adaptiveBonus > 0) {
             LOGGER.debug("[MobLeveling] Adding adaptive level bonus of +{} to {}", adaptiveBonus, mobId);
             calculatedLevel += adaptiveBonus;
         }
 
-        // Determine if we should ignore global cap
-        // Ignore cap if: mob override says so, OR if using fixed level mode (explicit level intent)
+        // Determine if we should ignore global cap.
+        // Only explicit intent bypasses the cap: a mob override that opts out, or a fixed level.
+        // The adaptive bonus does NOT bypass the cap — it is added on top but still clamped to
+        // globalLevelCap. (Previously any adaptive bonus set ignoreCap, which silently voided the
+        // configured cap whenever a geared player was nearby.)
         boolean isFixedLevel = (override != null && override.hasFixedLevel()) ||
                                (rule.getFixedLevel() != null && rule.getLevelMode().equals(ModConstants.LEVEL_MODE_FIXED));
-        // Adaptive bonus can exceed cap unless explicitly prevented
-        boolean ignoreCap = (override != null && override.isIgnoreLevelCap()) || isFixedLevel || adaptiveBonus > 0;
+        boolean ignoreCap = (override != null && override.isIgnoreLevelCap()) || isFixedLevel;
 
         // Apply global cap unless explicitly ignored
         int finalLevel = calculator.applyGlobalCap(calculatedLevel, ignoreCap);
@@ -189,6 +195,7 @@ public class LevelResolver {
                 .ignoreLevelCap(ignoreCap)
                 .huntToLevel(rule.shouldHuntToLevel())
                 .huntToLevelChance(rule.getHuntToLevelChance())
+                .adaptiveGearScore(adaptiveGearScore)
                 .build();
     }
 
@@ -226,14 +233,17 @@ public class LevelResolver {
         try {
             var structureManager = level.structureManager();
 
+            // Fast path: if no structure references this position, no structure rule can match.
+            var structuresAtPos = structureManager.getAllStructuresAt(pos);
+            if (structuresAtPos.isEmpty()) {
+                return null;
+            }
+
+            var structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+
             for (StructureRule rule : dataManager.getStructureRules()) {
-                ResourceLocation structureId = rule.getStructureId();
-
-                Optional<Structure> structure = level.registryAccess()
-                        .registryOrThrow(Registries.STRUCTURE)
-                        .getOptional(structureId);
-
-                if (structure.isPresent()) {
+                Optional<Structure> structure = structureRegistry.getOptional(rule.getStructureId());
+                if (structure.isPresent() && structuresAtPos.containsKey(structure.get())) {
                     StructureStart start = structureManager.getStructureWithPieceAt(pos, structure.get());
                     if (start.isValid()) {
                         return rule;
@@ -405,8 +415,11 @@ public class LevelResolver {
         int defaultLevel = LevelCalculator.getDefaultLevel(pos, level);
         int finalLevel = Math.min(defaultLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
 
+        // Still record the gear score so adaptive stat/equipment modifiers apply to mobs
+        // leveled by the default path (no datapack rule matched).
         return LevelResult.builder(finalLevel)
                 .attributeScaling(Collections.emptyMap())
+                .adaptiveGearScore(AdaptiveDifficultyHandler.getNearbyGearScore(mob))
                 .build();
     }
 

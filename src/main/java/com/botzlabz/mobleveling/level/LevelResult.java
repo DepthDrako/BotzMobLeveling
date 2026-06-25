@@ -24,6 +24,7 @@ public class LevelResult {
     private final boolean ignoreLevelCap;
     private final boolean huntToLevel;
     private final double huntToLevelChance;
+    private final double adaptiveGearScore;
 
     private LevelResult(boolean skip) {
         this.skip = skip;
@@ -34,11 +35,12 @@ public class LevelResult {
         this.ignoreLevelCap = false;
         this.huntToLevel = false;
         this.huntToLevelChance = 1.0;
+        this.adaptiveGearScore = 0.0;
     }
 
     public LevelResult(int level, @Nullable LevelRule sourceRule, @Nullable MobOverride mobOverride,
                        Map<ResourceLocation, AttributeScaling> attributeScaling, boolean ignoreLevelCap,
-                       boolean huntToLevel, double huntToLevelChance) {
+                       boolean huntToLevel, double huntToLevelChance, double adaptiveGearScore) {
         this.skip = false;
         this.level = level;
         this.sourceRule = sourceRule;
@@ -47,6 +49,7 @@ public class LevelResult {
         this.ignoreLevelCap = ignoreLevelCap;
         this.huntToLevel = huntToLevel;
         this.huntToLevelChance = huntToLevelChance;
+        this.adaptiveGearScore = adaptiveGearScore;
     }
 
     public boolean shouldSkip() {
@@ -83,6 +86,15 @@ public class LevelResult {
         return huntToLevelChance;
     }
 
+    /**
+     * The nearby-player gear score computed during resolution (0 if adaptive difficulty
+     * is off or no player was in range). Reused by the spawn handler to apply adaptive
+     * stat/equipment modifiers without recomputing.
+     */
+    public double getAdaptiveGearScore() {
+        return adaptiveGearScore;
+    }
+
     @Nullable
     public ResourceLocation getSourceRuleId() {
         return sourceRule != null ? sourceRule.getId() : null;
@@ -105,6 +117,7 @@ public class LevelResult {
         private boolean ignoreLevelCap = false;
         private boolean huntToLevel = false;
         private double huntToLevelChance = 1.0;
+        private double adaptiveGearScore = 0.0;
 
         public Builder(int level) {
             this.level = level;
@@ -140,8 +153,14 @@ public class LevelResult {
             return this;
         }
 
+        public Builder adaptiveGearScore(double score) {
+            this.adaptiveGearScore = score;
+            return this;
+        }
+
         public LevelResult build() {
-            return new LevelResult(level, sourceRule, mobOverride, attributeScaling, ignoreLevelCap, huntToLevel, huntToLevelChance);
+            return new LevelResult(level, sourceRule, mobOverride, attributeScaling, ignoreLevelCap,
+                    huntToLevel, huntToLevelChance, adaptiveGearScore);
         }
     }
 }

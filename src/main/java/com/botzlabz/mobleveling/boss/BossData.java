@@ -2,6 +2,7 @@ package com.botzlabz.mobleveling.boss;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 
 import javax.annotation.Nullable;
@@ -19,8 +20,24 @@ public final class BossData {
     private static final String NBT_BOSS_DISPLAY_NAME = "botzmobleveling_BossDisplayName";
     private static final String NBT_BOSS_TIER = "botzmobleveling_BossTier";
     private static final String NBT_BOSS_MAX_HEALTH = "botzmobleveling_BossMaxHealth";
+    private static final String NBT_BOSS_MINION = "botzmobleveling_BossMinion";
 
     private BossData() {}
+
+    // ==================== Boss Minions ====================
+
+    /**
+     * Marks an entity as a boss-summoned minion. Minions are excluded from boss
+     * transformation so a boss that summons minions of its own type cannot recursively
+     * spawn more bosses (which would cascade into a boss explosion).
+     */
+    public static void markAsMinion(Entity entity) {
+        entity.getPersistentData().putBoolean(NBT_BOSS_MINION, true);
+    }
+
+    public static boolean isMinion(Mob mob) {
+        return mob.getPersistentData().getBoolean(NBT_BOSS_MINION);
+    }
 
     // ==================== Core Boss State ====================
 
@@ -105,5 +122,6 @@ public final class BossData {
         data.remove(NBT_BOSS_DISPLAY_NAME);
         data.remove(NBT_BOSS_TIER);
         data.remove(NBT_BOSS_MAX_HEALTH);
+        data.remove(NBT_BOSS_MINION);
     }
 }

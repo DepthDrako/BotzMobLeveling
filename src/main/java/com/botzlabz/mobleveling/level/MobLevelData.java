@@ -24,6 +24,19 @@ public final class MobLevelData {
         return mob.getPersistentData().contains(ModConstants.NBT_LEVEL);
     }
 
+    public static void setIgnoreLevelCap(Mob mob, boolean ignore) {
+        mob.getPersistentData().putBoolean(ModConstants.NBT_IGNORE_CAP, ignore);
+    }
+
+    /**
+     * Whether this mob was leveled with the global cap bypassed (fixed level or
+     * an override opting out). Persisted so attribute scaling reapplied on chunk
+     * reload / kill level-up isn't silently re-clamped back to the global cap.
+     */
+    public static boolean ignoresLevelCap(Mob mob) {
+        return mob.getPersistentData().getBoolean(ModConstants.NBT_IGNORE_CAP);
+    }
+
     public static boolean isProcessed(Mob mob) {
         return mob.getPersistentData().getBoolean(ModConstants.NBT_PROCESSED);
     }
@@ -58,6 +71,7 @@ public final class MobLevelData {
         data.remove(ModConstants.NBT_PROCESSED);
         data.remove(ModConstants.NBT_RULE_ID);
         data.remove(ModConstants.NBT_RULE_TYPE);
+        data.remove(ModConstants.NBT_IGNORE_CAP);
     }
 
     public static void copyData(Mob source, Mob target) {

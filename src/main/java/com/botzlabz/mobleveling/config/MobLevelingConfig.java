@@ -61,6 +61,7 @@ public class MobLevelingConfig {
     // Adaptive Difficulty
     public static final ForgeConfigSpec.BooleanValue ADAPTIVE_DIFFICULTY_ENABLED;
     public static final ForgeConfigSpec.IntValue ADAPTIVE_PLAYER_SEARCH_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_MIN_GEAR_SCORE;
     public static final ForgeConfigSpec.DoubleValue ADAPTIVE_GEAR_SCORE_MULTIPLIER;
     public static final ForgeConfigSpec.IntValue ADAPTIVE_MAX_LEVEL_BONUS;
     public static final ForgeConfigSpec.DoubleValue ADAPTIVE_ATTRIBUTE_SCALING;
@@ -89,6 +90,11 @@ public class MobLevelingConfig {
     public static final ForgeConfigSpec.BooleanValue KILL_SHOW_INDICATOR;
     public static final ForgeConfigSpec.ConfigValue<String> KILL_INDICATOR_FORMAT;
     public static final ForgeConfigSpec.ConfigValue<String> KILL_INDICATOR_COLOR;
+
+    // Loot Scaling
+    public static final ForgeConfigSpec.BooleanValue LOOT_SCALING_ENABLED;
+    public static final ForgeConfigSpec.IntValue LOOT_LOOTING_PER_LEVELS;
+    public static final ForgeConfigSpec.IntValue LOOT_MAX_LOOTING_BONUS;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -300,6 +306,12 @@ public class MobLevelingConfig {
                          "Only players within this radius affect mob spawning")
                 .defineInRange("playerSearchRadius", 64, 8, 256);
 
+        ADAPTIVE_MIN_GEAR_SCORE = builder
+                .comment("Minimum nearby player gear score before adaptive stat/equipment modifiers are applied.",
+                         "Below this, mobs still spawn normally with no adaptive buffs. (Level bonuses use the",
+                         "threat brackets and are already 0 for trivial gear.)")
+                .defineInRange("minGearScore", 20.0, 0.0, 100000.0);
+
         ADAPTIVE_GEAR_SCORE_MULTIPLIER = builder
                 .comment("Multiplier for gear score calculation",
                          "Higher values make mobs scale more aggressively with player gear")
@@ -422,6 +434,27 @@ public class MobLevelingConfig {
         KILL_INDICATOR_COLOR = builder
                 .comment("Color for the kill indicator. Supports color names (red, dark_red) or hex (#FF0000)")
                 .define("indicatorColor", "red");
+
+        builder.pop();
+
+        // Loot Scaling Section
+        builder.comment("Loot Scaling - Increase mob drops based on their level").push("lootScaling");
+
+        LOOT_SCALING_ENABLED = builder
+                .comment("Enable level-based loot scaling. When on, leveled mobs gain extra effective Looting",
+                         "when they die, increasing looting-affected drops (arrows, bones, ender pearls, most",
+                         "mob loot) in proportion to their level. Off by default to avoid surprise loot inflation.")
+                .define("enabled", false);
+
+        LOOT_LOOTING_PER_LEVELS = builder
+                .comment("Grant +1 effective Looting per this many levels (base level + kill levels).",
+                         "Example: 10 means a level 50 mob drops as if killed with Looting V. Set 0 to disable.")
+                .defineInRange("lootingBonusPerLevels", 10, 0, 10000);
+
+        LOOT_MAX_LOOTING_BONUS = builder
+                .comment("Maximum extra Looting levels granted by loot scaling, to keep drops reasonable at",
+                         "very high mob levels.")
+                .defineInRange("maxLootingBonus", 10, 0, 1000);
 
         builder.pop();
 

@@ -23,8 +23,10 @@ public class MobKillHandler {
             return;
         }
 
-        // We need the direct attacker to be a Mob
-        Entity killerEntity = event.getSource().getDirectEntity();
+        // Credit the responsible attacker, not the immediate damage source. Using
+        // getEntity() (the owner/shooter) instead of getDirectEntity() (the projectile)
+        // means ranged mobs like skeletons also earn kill XP, not just melee attackers.
+        Entity killerEntity = event.getSource().getEntity();
         if (!(killerEntity instanceof Mob killer)) {
             return;
         }
