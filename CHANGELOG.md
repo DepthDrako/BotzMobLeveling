@@ -35,6 +35,7 @@ All notable changes to BotzMobLeveling will be documented here.
 - **Boss minions can no longer recursively become bosses.** A boss summoning minions of its own type (e.g. Cluckthulhu's chickens inside a stronghold, where the chicken→boss rule also applies) could turn each minion into a fresh boss, cascading into a boss explosion. Minions are now flagged on spawn and excluded from boss transformation.
 - **Ranged mobs now earn kill XP.** Kill leveling read the *direct* damage source, so a skeleton's arrow (not the skeleton) was seen as the killer and no XP was granted. It now credits the responsible attacker, covering both melee and ranged kills.
 - **Cap-exempt mobs keep their level after reload / kill level-ups.** `ignore_level_cap` (and fixed-level / boss) mobs above the global cap had their attribute scaling silently re-clamped to the cap on chunk reload or when gaining a kill level. The cap-exempt state is now persisted and honored, so a level-750 boss stays level-750 after unloading.
+- **Guide books are no longer handed out repeatedly.** `givePlayerGuideOnFirstJoin` gave a new book whenever the player didn't currently hold one — so dying without keepInventory (or dropping/stashing the book) produced a fresh copy on the next join, stacking up many books. The book is now given exactly once per player based on a persisted flag, regardless of whether they still hold it.
 
 ---
 

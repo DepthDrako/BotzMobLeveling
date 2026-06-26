@@ -55,7 +55,20 @@ public class GuideBookHandler {
         }
 
         CompoundTag persisted = getPersistedData(player);
-        if (persisted.getBoolean(nbtFlag) && playerHasGuide(player, bookId)) {
+
+        // Give the book at most once per player, ever. The flag lives in the player's
+        // persisted data (survives death/respawn and relog). Previously this also required
+        // the player to still be HOLDING the book, so anyone who lost it on death (without
+        // keepInventory), dropped it, or stashed it in a chest was handed a fresh copy on the
+        // next join — that's the "I got 10 guide books from dying" bug.
+        if (persisted.getBoolean(nbtFlag)) {
+            return;
+        }
+
+        // Already holding one (e.g. from a previous version or another source)? Just record
+        // that so we never hand out a duplicate, and don't give another.
+        if (playerHasGuide(player, bookId)) {
+            persisted.putBoolean(nbtFlag, true);
             return;
         }
 
