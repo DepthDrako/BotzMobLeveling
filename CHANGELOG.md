@@ -9,7 +9,7 @@ All notable changes to BotzMobLeveling will be documented here.
 ### Added
 - **Public API + commands for reading levels (KubeJS / datapacks / other mods).** The level a mob *would* spawn at can now be read for any position, even with no mobs present — enabling "area difficulty" HUDs.
   - `com.botzlabz.mobleveling.api.BotzMobLevelingAPI`: `getAreaLevel(level, pos)` (the area difficulty from base distance scaling), plus `getMobLevel` / `getMobBaseLevel` / `getMobKillLevel(mob)`.
-  - New commands `/botzmobleveling arealevel [pos]` and `/botzmobleveling moblevel <entity>` (available to all players, read-only). Each returns the value as its command result, so a datapack can capture it with `execute store result score ...` and drive a constant HUD without any mobs nearby.
+  - New commands `/botzmobleveling arealevel [pos]` and `/botzmobleveling moblevel <entity>` (available to all players, read-only). Each returns the value as its command result, so a datapack can capture it with `execute store result score ...` and drive a constant HUD without any mobs nearby. **Silent by default** (returns the value but prints nothing, so they can be polled every tick with no chat spam); append `print` to echo the value to chat for manual use.
 
 ---
 
