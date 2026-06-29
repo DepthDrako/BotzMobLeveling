@@ -1,463 +1,251 @@
 package com.botzlabz.mobleveling.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
 
 public class MobLevelingConfig {
 
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec SPEC;
 
-    // General settings
-    public static final ForgeConfigSpec.BooleanValue ENABLED;
-    public static final ForgeConfigSpec.BooleanValue SHOW_LEVEL_IN_NAME;
-    public static final ForgeConfigSpec.BooleanValue DEBUG_MODE;
+    // -----------------------------------------------------------------------
+    // General
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue ENABLED;
+    public static final ModConfigSpec.BooleanValue DEBUG_MODE;
 
-    // Rule toggles
-    public static final ForgeConfigSpec.BooleanValue STRUCTURE_LEVELING_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue BIOME_LEVELING_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue DIMENSION_LEVELING_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue DISTANCE_LEVELING_ENABLED;
+    // -----------------------------------------------------------------------
+    // Leveling
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.IntValue     GLOBAL_LEVEL_CAP;
+    public static final ModConfigSpec.BooleanValue LEVEL_PASSIVE_MOBS;
+    public static final ModConfigSpec.BooleanValue LEVEL_BOSS_MOBS;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> MOB_BLACKLIST;
 
-    // Mob filtering
-    public static final ForgeConfigSpec.BooleanValue APPLY_TO_PASSIVE_MOBS;
-    public static final ForgeConfigSpec.BooleanValue APPLY_TO_BOSS_MOBS;
-    public static final ForgeConfigSpec.BooleanValue STRUCTURE_OVERRIDES_PASSIVE_FILTER;
-    public static final ForgeConfigSpec.BooleanValue STRUCTURE_OVERRIDES_BOSS_FILTER;
-    public static final ForgeConfigSpec.BooleanValue LEVELED_PASSIVES_CAN_ATTACK;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> MOB_BLACKLIST;
+    // Distance scaling (used by DISTANCE mode rules)
+    public static final ModConfigSpec.IntValue    DISTANCE_ORIGIN_X;
+    public static final ModConfigSpec.IntValue    DISTANCE_ORIGIN_Z;
+    public static final ModConfigSpec.DoubleValue DISTANCE_SCALE_FACTOR;
 
-    // Default level ranges
-    public static final ForgeConfigSpec.IntValue DEFAULT_MIN_LEVEL;
-    public static final ForgeConfigSpec.IntValue DEFAULT_MAX_LEVEL;
-    public static final ForgeConfigSpec.IntValue GLOBAL_LEVEL_CAP;
+    // -----------------------------------------------------------------------
+    // Kill leveling
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue KILL_LEVELING_ENABLED;
+    public static final ModConfigSpec.IntValue     KILL_LEVELING_XP_BASE;
+    public static final ModConfigSpec.DoubleValue  KILL_LEVELING_XP_SCALE;
+    public static final ModConfigSpec.IntValue     KILL_LEVELING_CAP;    // max kill-levels a mob can earn
 
-    // Distance scaling
-    public static final ForgeConfigSpec.IntValue DISTANCE_START_RADIUS;
-    public static final ForgeConfigSpec.IntValue DISTANCE_PER_LEVEL;
-    public static final ForgeConfigSpec.DoubleValue DISTANCE_LEVEL_MULTIPLIER;
+    // -----------------------------------------------------------------------
+    // Adaptive difficulty
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue ADAPTIVE_DIFFICULTY_ENABLED;
+    public static final ModConfigSpec.DoubleValue  ADAPTIVE_SCAN_RADIUS;
+    public static final ModConfigSpec.IntValue     ADAPTIVE_MAX_BONUS;
+    public static final ModConfigSpec.DoubleValue  ADAPTIVE_MIN_GEAR_SCORE;
 
-    // Display settings
-    public static final ForgeConfigSpec.ConfigValue<String> LEVEL_FORMAT;
-    public static final ForgeConfigSpec.ConfigValue<String> LEVEL_COLOR;
-    public static final ForgeConfigSpec.BooleanValue ALWAYS_SHOW_NAME;
+    // -----------------------------------------------------------------------
+    // Loot scaling (opt-in)
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue LOOT_SCALING_ENABLED;
+    public static final ModConfigSpec.IntValue     LOOT_BONUS_PER_LEVELS;
+    public static final ModConfigSpec.IntValue     LOOT_MAX_BONUS;
 
-    // Attribute whitelist
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ALLOWED_ATTRIBUTES;
+    // -----------------------------------------------------------------------
+    // Display
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue DISPLAY_ENABLED;
+    public static final ModConfigSpec.BooleanValue SHOW_ELEMENTAL_TITLE;
+    public static final ModConfigSpec.DoubleValue  ELEMENTAL_TITLE_MIN_VALUE;
+    public static final ModConfigSpec.BooleanValue SHOW_KILL_COUNT;
+    public static final ModConfigSpec.BooleanValue HIDE_MANA_STATS_IF_NO_ISS;
 
-    // Boss Module
-    public static final ForgeConfigSpec.BooleanValue BOSS_MODULE_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue BOSS_SHOW_BOSS_BAR;
-    public static final ForgeConfigSpec.IntValue BOSS_BAR_RENDER_DISTANCE;
-    public static final ForgeConfigSpec.BooleanValue BOSS_PREVENT_DESPAWN;
-    public static final ForgeConfigSpec.BooleanValue BOSS_GLOW_EFFECT;
-    public static final ForgeConfigSpec.BooleanValue BOSS_SPAWN_ANNOUNCEMENT;
-    public static final ForgeConfigSpec.IntValue BOSS_ANNOUNCEMENT_RADIUS;
+    // Color thresholds (level boundaries for color tier changes)
+    public static final ModConfigSpec.IntValue COLOR_TIER_LOW_MAX;   // 1..LOW  → white
+    public static final ModConfigSpec.IntValue COLOR_TIER_MID_MAX;   // LOW+1..MID → green
+    public static final ModConfigSpec.IntValue COLOR_TIER_HIGH_MAX;  // MID+1..HIGH → yellow
+    public static final ModConfigSpec.IntValue COLOR_TIER_EPIC_MAX;  // HIGH+1..EPIC → gold
+    //                                                                // EPIC+1..CAP  → red
+    //                                                                // BOSS          → dark_red
 
-    // Guide Books
-    public static final ForgeConfigSpec.BooleanValue GIVE_PLAYER_GUIDE_ON_FIRST_JOIN;
-    public static final ForgeConfigSpec.BooleanValue GIVE_DEVELOPER_GUIDE_ON_FIRST_JOIN;
+    // -----------------------------------------------------------------------
+    // Boss module
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue BOSS_ENABLED;
+    public static final ModConfigSpec.BooleanValue BOSS_BAR_ENABLED;
+    public static final ModConfigSpec.BooleanValue BOSS_ANNOUNCE_SPAWN;
+    public static final ModConfigSpec.BooleanValue BOSS_GLOW;
+    public static final ModConfigSpec.DoubleValue  BOSS_HEALTH_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue  BOSS_DAMAGE_MULTIPLIER;
+    public static final ModConfigSpec.IntValue     BOSS_ANNOUNCE_RADIUS;
 
-    // Adaptive Difficulty
-    public static final ForgeConfigSpec.BooleanValue ADAPTIVE_DIFFICULTY_ENABLED;
-    public static final ForgeConfigSpec.IntValue ADAPTIVE_PLAYER_SEARCH_RADIUS;
-    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_MIN_GEAR_SCORE;
-    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_GEAR_SCORE_MULTIPLIER;
-    public static final ForgeConfigSpec.IntValue ADAPTIVE_MAX_LEVEL_BONUS;
-    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_ATTRIBUTE_SCALING;
-    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_EQUIPMENT_CHANCE;
-    public static final ForgeConfigSpec.IntValue ADAPTIVE_MAX_EQUIPMENT_TIER;
-    public static final ForgeConfigSpec.BooleanValue ADAPTIVE_COMPATIBILITY_MODE;
-    public static final ForgeConfigSpec.BooleanValue ADAPTIVE_DEBUG_LOGGING;
+    // -----------------------------------------------------------------------
+    // Hunting AI
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.BooleanValue HUNTING_AI_ENABLED;
+    public static final ModConfigSpec.IntValue     HUNTING_AI_MIN_LEVEL;
 
-    // Epic Fight Integration
-    public static final ForgeConfigSpec.BooleanValue EPICFIGHT_INTEGRATION_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue EPICFIGHT_WEAPON_CHANCE;
-    public static final ForgeConfigSpec.BooleanValue EPICFIGHT_PREFER_EXOTIC_AT_HIGH_TIER;
+    // -----------------------------------------------------------------------
+    // Stat increments (per level)
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.DoubleValue VIGOR_INCREMENT;
+    public static final ModConfigSpec.DoubleValue STRENGTH_INCREMENT;
+    public static final ModConfigSpec.DoubleValue ENDURANCE_INCREMENT;
+    public static final ModConfigSpec.DoubleValue STAMINA_INCREMENT;
+    public static final ModConfigSpec.DoubleValue DEXTERITY_INCREMENT;
+    public static final ModConfigSpec.DoubleValue AGILITY_INCREMENT;
+    public static final ModConfigSpec.DoubleValue ATTACK_SPEED_INCREMENT;
+    public static final ModConfigSpec.DoubleValue MANA_POOL_INCREMENT;
+    public static final ModConfigSpec.DoubleValue MANA_DENSITY_INCREMENT;
+    public static final ModConfigSpec.DoubleValue ELEMENTAL_INCREMENT;
 
-    // Kill Leveling
-    public static final ForgeConfigSpec.BooleanValue KILL_LEVELING_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue HUNT_TO_LEVEL_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue HUNT_TO_LEVEL_CHANCE;
-    public static final ForgeConfigSpec.BooleanValue KILL_APPLY_TO_ANY_MOB;
-    public static final ForgeConfigSpec.IntValue KILL_XP_BASE;
-    public static final ForgeConfigSpec.IntValue KILL_XP_PER_VICTIM_LEVEL;
-    public static final ForgeConfigSpec.IntValue KILL_XP_PLAYER_BONUS;
-    public static final ForgeConfigSpec.IntValue KILL_BASE_XP_REQUIRED;
-    public static final ForgeConfigSpec.DoubleValue KILL_XP_SCALING;
-    public static final ForgeConfigSpec.IntValue KILL_MAX_LEVEL;
-    public static final ForgeConfigSpec.BooleanValue KILL_MAKE_PERSISTENT;
-    public static final ForgeConfigSpec.BooleanValue KILL_SHOW_INDICATOR;
-    public static final ForgeConfigSpec.ConfigValue<String> KILL_INDICATOR_FORMAT;
-    public static final ForgeConfigSpec.ConfigValue<String> KILL_INDICATOR_COLOR;
-
-    // Loot Scaling
-    public static final ForgeConfigSpec.BooleanValue LOOT_SCALING_ENABLED;
-    public static final ForgeConfigSpec.IntValue LOOT_LOOTING_PER_LEVELS;
-    public static final ForgeConfigSpec.IntValue LOOT_MAX_LOOTING_BONUS;
+    // -----------------------------------------------------------------------
+    // Caps
+    // -----------------------------------------------------------------------
+    public static final ModConfigSpec.DoubleValue ENDURANCE_CAP;
+    public static final ModConfigSpec.DoubleValue ATTACK_SPEED_CAP;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-
-        // General Section
-        builder.comment("General Settings").push("general");
-
-        ENABLED = builder
-                .comment("Enable or disable the entire mob leveling system")
-                .define("enabled", true);
-
-        SHOW_LEVEL_IN_NAME = builder
-                .comment("Display mob level in their name tag")
-                .define("showLevelInName", true);
-
-        DEBUG_MODE = builder
-                .comment("Enable debug logging for troubleshooting")
-                .define("debugMode", false);
-
-        builder.pop();
-
-        // Rule Toggles Section
-        builder.comment("Rule Type Toggles - Enable/disable specific rule types").push("ruleToggles");
-
-        STRUCTURE_LEVELING_ENABLED = builder
-                .comment("Enable structure-based leveling rules (highest priority)")
-                .define("structureLevelingEnabled", true);
-
-        BIOME_LEVELING_ENABLED = builder
-                .comment("Enable biome-based leveling rules (medium priority)")
-                .define("biomeLevelingEnabled", true);
-
-        DIMENSION_LEVELING_ENABLED = builder
-                .comment("Enable dimension-based leveling rules (below biome, above base rules)")
-                .define("dimensionLevelingEnabled", true);
-
-        DISTANCE_LEVELING_ENABLED = builder
-                .comment("Enable distance-from-spawn leveling (used in base rules)")
-                .define("distanceLevelingEnabled", true);
-
-        builder.pop();
-
-        // Mob Filtering Section
-        builder.comment("Mob Filtering - Control which mobs receive levels").push("filtering");
-
-        APPLY_TO_PASSIVE_MOBS = builder
-                .comment("Apply leveling to passive mobs (animals, villagers, etc)")
-                .define("applyToPassiveMobs", false);
-
-        APPLY_TO_BOSS_MOBS = builder
-                .comment("Apply leveling to boss mobs (Wither, Ender Dragon, etc)")
-                .define("applyToBossMobs", false);
-
-        STRUCTURE_OVERRIDES_PASSIVE_FILTER = builder
-                .comment("Allow structure rules to level passive mobs even when applyToPassiveMobs is false.",
-                         "Example: A chicken in a stronghold can still get leveled if a stronghold rule exists.")
-                .define("structureOverridesPassiveFilter", true);
-
-        STRUCTURE_OVERRIDES_BOSS_FILTER = builder
-                .comment("Allow structure rules to level boss mobs even when applyToBossMobs is false.",
-                         "Example: The Ender Dragon can be leveled by an end_city structure rule.")
-                .define("structureOverridesBossFilter", true);
-
-        LEVELED_PASSIVES_CAN_ATTACK = builder
-                .comment("When enabled, leveled passive mobs can fight back when attacked.",
-                         "This can be overridden per-mob in datapack rules with 'can_attack' field.")
-                .define("leveledPassivesCanAttack", true);
-
-        MOB_BLACKLIST = builder
-                .comment("List of mob IDs that will never receive levels (e.g., 'minecraft:armor_stand')")
-                .defineListAllowEmpty(
-                        List.of("mobBlacklist"),
-                        () -> List.of("minecraft:armor_stand", "minecraft:marker", "minecraft:item_frame", "minecraft:glow_item_frame", "minecraft:painting"),
-                        obj -> obj instanceof String
-                );
-
-        builder.pop();
-
-        // Level Ranges Section
-        builder.comment("Default Level Ranges - Used when no specific rule applies").push("levels");
-
-        DEFAULT_MIN_LEVEL = builder
-                .comment("Default minimum level for mobs without specific rules")
-                .defineInRange("defaultMinLevel", 1, 1, 10000);
-
-        DEFAULT_MAX_LEVEL = builder
-                .comment("Default maximum level for mobs without specific rules")
-                .defineInRange("defaultMaxLevel", 100, 1, 10000);
-
-        GLOBAL_LEVEL_CAP = builder
-                .comment("Absolute maximum level any mob can reach, regardless of rules")
-                .defineInRange("globalLevelCap", 100, 1, 10000);
-
-        builder.pop();
-
-        // Distance Scaling Section
-        builder.comment("Distance-based Scaling - Controls how levels increase with distance from spawn").push("distance");
-
-        DISTANCE_START_RADIUS = builder
-                .comment("Distance from spawn (in blocks) where level scaling begins. Mobs within this radius use minimum level.")
-                .defineInRange("distanceStartRadius", 100, 0, 100000);
-
-        DISTANCE_PER_LEVEL = builder
-                .comment("Number of blocks of distance required per additional level")
-                .defineInRange("distancePerLevel", 50, 1, 10000);
-
-        DISTANCE_LEVEL_MULTIPLIER = builder
-                .comment("Multiplier applied to distance-calculated levels (1.0 = normal, 2.0 = double levels)")
-                .defineInRange("distanceLevelMultiplier", 1.0, 0.1, 10.0);
-
-        builder.pop();
-
-        // Display Section
-        builder.comment("Display Settings - Controls how mob levels are shown").push("display");
-
-        LEVEL_FORMAT = builder
-                .comment("Format for level display. Use {level} as placeholder for the level number.")
-                .define("levelFormat", "[Lv.{level}] ");
-
-        LEVEL_COLOR = builder
-                .comment("Color for level display. Use color names (gold, red, green) or hex codes (#FF5500)")
-                .define("levelColor", "gold");
-
-        ALWAYS_SHOW_NAME = builder
-                .comment("Always show mob name with level (true) or only when looking at mob (false)")
-                .define("alwaysShowName", false);
-
-        builder.pop();
-
-        // Attributes Section
-        builder.comment("Attribute Whitelist - Only these attributes can be modified by the leveling system").push("attributes");
-
-        ALLOWED_ATTRIBUTES = builder
-                .comment("List of attribute IDs that the mod is allowed to modify. Supports modded attributes.")
-                .defineListAllowEmpty(
-                        List.of("allowedAttributes"),
-                        () -> List.of(
-                                "minecraft:generic.max_health",
-                                "minecraft:generic.attack_damage",
-                                "minecraft:generic.armor",
-                                "minecraft:generic.armor_toughness",
-                                "minecraft:generic.knockback_resistance",
-                                "minecraft:generic.movement_speed",
-                                "minecraft:generic.follow_range",
-                                "minecraft:generic.attack_knockback",
-                                "minecraft:generic.attack_speed"
-                        ),
-                        obj -> obj instanceof String
-                );
-
-        builder.pop();
-
-        // Boss Module Section
-        builder.comment("Boss Module - Transform mobs into powerful bosses with special effects").push("bossModule");
-
-        BOSS_MODULE_ENABLED = builder
-                .comment("Enable the boss module. When enabled, mobs can become bosses based on datapack rules.")
-                .define("enabled", true);
-
-        BOSS_SHOW_BOSS_BAR = builder
-                .comment("Show a boss bar for boss mobs")
-                .define("showBossBar", true);
-
-        BOSS_BAR_RENDER_DISTANCE = builder
-                .comment("Maximum distance (in blocks) at which boss bars are visible")
-                .defineInRange("bossBarRenderDistance", 64, 16, 256);
-
-        BOSS_PREVENT_DESPAWN = builder
-                .comment("Prevent boss mobs from despawning naturally")
-                .define("preventDespawn", true);
-
-        BOSS_GLOW_EFFECT = builder
-                .comment("Apply glowing effect to boss mobs (can be overridden per-boss in datapack)")
-                .define("glowEffect", true);
-
-        BOSS_SPAWN_ANNOUNCEMENT = builder
-                .comment("Announce boss spawns to nearby players")
-                .define("spawnAnnouncement", true);
-
-        BOSS_ANNOUNCEMENT_RADIUS = builder
-                .comment("Radius (in blocks) for boss spawn announcements")
-                .defineInRange("announcementRadius", 64, 16, 256);
-
-        builder.pop();
-
-        // Guide Books Section
-        builder.comment("Guide Books - Configure automatic Patchouli guide distribution").push("guideBooks");
-
-        GIVE_PLAYER_GUIDE_ON_FIRST_JOIN = builder
-                .comment("Give the player guide book to each player on first join")
-                .define("givePlayerGuideOnFirstJoin", true);
-
-        GIVE_DEVELOPER_GUIDE_ON_FIRST_JOIN = builder
-                .comment("Give the developer guide book to each player on first join")
-                .define("giveDeveloperGuideOnFirstJoin", false);
-
-        builder.pop();
-
-        // Adaptive Difficulty Section
-        builder.comment("Adaptive Difficulty - Scale mob difficulty based on nearby player gear").push("adaptiveDifficulty");
-
-        ADAPTIVE_DIFFICULTY_ENABLED = builder
-                .comment("Enable adaptive difficulty system that scales mobs based on nearby player gear",
-                         "Works with Iron's Spells, Apotheosis, and other attribute-modifying mods")
-                .define("enabled", true);
-
-        ADAPTIVE_PLAYER_SEARCH_RADIUS = builder
-                .comment("Radius (in blocks) to search for players when calculating adaptive difficulty",
-                         "Only players within this radius affect mob spawning")
-                .defineInRange("playerSearchRadius", 64, 8, 256);
-
-        ADAPTIVE_MIN_GEAR_SCORE = builder
-                .comment("Minimum nearby player gear score before adaptive stat/equipment modifiers are applied.",
-                         "Below this, mobs still spawn normally with no adaptive buffs. (Level bonuses use the",
-                         "threat brackets and are already 0 for trivial gear.)")
-                .defineInRange("minGearScore", 20.0, 0.0, 100000.0);
-
-        ADAPTIVE_GEAR_SCORE_MULTIPLIER = builder
-                .comment("Multiplier for gear score calculation",
-                         "Higher values make mobs scale more aggressively with player gear")
-                .defineInRange("gearScoreMultiplier", 1.0, 0.1, 5.0);
-
-        ADAPTIVE_MAX_LEVEL_BONUS = builder
-                .comment("Maximum additional levels mobs can gain from adaptive difficulty",
-                         "This is added on top of the normal level calculation")
-                .defineInRange("maxLevelBonus", 50, 0, 200);
-
-        ADAPTIVE_ATTRIBUTE_SCALING = builder
-                .comment("How much mob attributes scale with adaptive difficulty",
-                         "1.0 = normal scaling, 2.0 = double attribute bonuses")
-                .defineInRange("attributeScaling", 1.0, 0.1, 3.0);
-
-        ADAPTIVE_EQUIPMENT_CHANCE = builder
-                .comment("Chance (0.0 to 1.0) for mobs to receive equipment based on player gear level",
-                         "Higher gear scores increase this chance up to the maximum")
-                .defineInRange("equipmentChance", 0.3, 0.0, 1.0);
-
-        ADAPTIVE_MAX_EQUIPMENT_TIER = builder
-                .comment("Maximum equipment tier mobs can spawn with (0-4)",
-                         "0 = leather/wood, 1 = chain/stone, 2 = iron, 3 = diamond, 4 = netherite")
-                .defineInRange("maxEquipmentTier", 3, 0, 4);
-
-        ADAPTIVE_COMPATIBILITY_MODE = builder
-                .comment("Compatibility mode for modded attributes",
-                         "When true, scans for known modded attributes (irons_spellbooks, apotheosis, etc)",
-                         "Works with: Iron's Spells (mana, spell power), Apotheosis (current hp bonus, etc)")
-                .define("compatibilityMode", true);
-
-        ADAPTIVE_DEBUG_LOGGING = builder
-                .comment("Enable debug logging for adaptive difficulty calculations")
-                .define("debugLogging", false);
-
-        builder.pop();
-
-        // Epic Fight Integration Section
-        builder.comment("Epic Fight Integration - Dynamic weapon assignment with fighting styles",
-                       "Requires Epic Fight mod to be installed").push("epicFight");
-
-        EPICFIGHT_INTEGRATION_ENABLED = builder
-                .comment("Enable Epic Fight integration",
-                         "When enabled, mobs can spawn with Epic Fight weapons and use their fighting styles")
-                .define("enabled", true);
-
-        EPICFIGHT_WEAPON_CHANCE = builder
-                .comment("Chance (0.0 to 1.0) for mobs to receive Epic Fight weapons instead of vanilla ones",
-                         "Only applies when Epic Fight is installed")
-                .defineInRange("epicFightWeaponChance", 0.7, 0.0, 1.0);
-
-        EPICFIGHT_PREFER_EXOTIC_AT_HIGH_TIER = builder
-                .comment("At high threat tiers, prefer exotic weapons (greatswords, katanas, spears)",
-                         "over basic swords and axes")
-                .define("preferExoticAtHighTier", true);
-
-        builder.pop();
-
-        // Kill Leveling Section
-        builder.comment("Kill Leveling - Mobs gain XP and levels by killing other mobs and players").push("killLeveling");
-
-        KILL_LEVELING_ENABLED = builder
-                .comment("Enable the kill leveling system. Mobs earn XP and levels from kills.")
-                .define("enabled", true);
-
-        HUNT_TO_LEVEL_ENABLED = builder
-                .comment("Global toggle for the hunt_to_level datapack feature.",
-                         "When false, mobs with hunt_to_level: true in their rule will NOT actively hunt other mobs.")
-                .define("huntToLevelEnabled", true);
-
-        HUNT_TO_LEVEL_CHANCE = builder
-                .comment("Default probability (0.0–1.0) that a mob with hunt_to_level: true actually receives hunting AI.",
-                         "Can be overridden per-rule with 'hunt_to_level_chance' in the datapack JSON.",
-                         "1.0 = every matching mob hunts, 0.5 = roughly half will hunt.")
-                .defineInRange("huntToLevelChance", 1.0, 0.0, 1.0);
-
-        KILL_APPLY_TO_ANY_MOB = builder
-                .comment("Allow any mob to gain kill levels, not just mobs already assigned a level by this mod.",
-                         "When false, only mobs processed by spawn rules can accumulate kill XP.")
-                .define("applyToAnyMob", false);
-
-        KILL_XP_BASE = builder
-                .comment("Base XP granted per kill, regardless of the victim's level")
-                .defineInRange("xpBase", 50, 1, 100000);
-
-        KILL_XP_PER_VICTIM_LEVEL = builder
-                .comment("Bonus XP granted per level of the victim (only applies when victim has a level assigned by this mod)")
-                .defineInRange("xpPerVictimLevel", 10, 0, 10000);
-
-        KILL_XP_PLAYER_BONUS = builder
-                .comment("Flat bonus XP added when the victim is a player (stacks with xpBase)")
-                .defineInRange("xpPlayerBonus", 200, 0, 100000);
-
-        KILL_BASE_XP_REQUIRED = builder
-                .comment("XP required to earn the very first kill level")
-                .defineInRange("baseXpRequired", 100, 1, 1000000);
-
-        KILL_XP_SCALING = builder
-                .comment("XP cost multiplier per kill level. Each level costs this many times more than the previous.",
-                         "1.5 means each level costs 50% more (100, 150, 225, 338, ...)")
-                .defineInRange("xpScaling", 1.5, 1.0, 10.0);
-
-        KILL_MAX_LEVEL = builder
-                .comment("Maximum number of kill levels a mob can earn on top of its base spawn level")
-                .defineInRange("maxKillLevel", 50, 1, 10000);
-
-        KILL_MAKE_PERSISTENT = builder
-                .comment("Prevent mobs that have earned at least one kill from despawning naturally")
-                .define("makePersistent", true);
-
-        KILL_SHOW_INDICATOR = builder
-                .comment("Show a kill indicator in the mob's name tag when it has at least one kill")
-                .define("showIndicator", true);
-
-        KILL_INDICATOR_FORMAT = builder
-                .comment("Text prepended to the mob's name when it has kills. Use {kills} for the kill count.",
-                         "Default: a star character followed by a space.")
-                .define("indicatorFormat", "\u2605 ");
-
-        KILL_INDICATOR_COLOR = builder
-                .comment("Color for the kill indicator. Supports color names (red, dark_red) or hex (#FF0000)")
-                .define("indicatorColor", "red");
-
-        builder.pop();
-
-        // Loot Scaling Section
-        builder.comment("Loot Scaling - Increase mob drops based on their level").push("lootScaling");
-
-        LOOT_SCALING_ENABLED = builder
-                .comment("Enable level-based loot scaling. When on, leveled mobs gain extra effective Looting",
-                         "when they die, increasing looting-affected drops (arrows, bones, ender pearls, most",
-                         "mob loot) in proportion to their level. Off by default to avoid surprise loot inflation.")
-                .define("enabled", false);
-
-        LOOT_LOOTING_PER_LEVELS = builder
-                .comment("Grant +1 effective Looting per this many levels (base level + kill levels).",
-                         "Example: 10 means a level 50 mob drops as if killed with Looting V. Set 0 to disable.")
-                .defineInRange("lootingBonusPerLevels", 10, 0, 10000);
-
-        LOOT_MAX_LOOTING_BONUS = builder
-                .comment("Maximum extra Looting levels granted by loot scaling, to keep drops reasonable at",
-                         "very high mob levels.")
-                .defineInRange("maxLootingBonus", 10, 0, 1000);
-
-        builder.pop();
-
-        SPEC = builder.build();
+        ModConfigSpec.Builder b = new ModConfigSpec.Builder();
+
+        b.push("general");
+        ENABLED    = b.comment("Master toggle — set to false to fully disable the mod's effects.")
+                      .define("enabled", true);
+        DEBUG_MODE = b.comment("Log spawn/level events to console for debugging rule loading.")
+                      .define("debugMode", false);
+        b.pop();
+
+        b.push("leveling");
+        GLOBAL_LEVEL_CAP   = b.comment("Hard cap on total mob level (base + kill levels).")
+                              .defineInRange("globalLevelCap", 100, 1, 10000);
+        LEVEL_PASSIVE_MOBS = b.comment("Apply leveling to passive/neutral mobs (animals etc.).")
+                              .define("levelPassiveMobs", false);
+        LEVEL_BOSS_MOBS    = b.comment("Apply leveling to vanilla boss mobs (Wither, Ender Dragon).")
+                              .define("levelBossMobs", false);
+        MOB_BLACKLIST      = b.comment("Entity type IDs that should never be leveled, e.g. [\"minecraft:armor_stand\"].")
+                              .defineListAllowEmpty("mobBlacklist", List.of(), o -> o instanceof String);
+
+        b.push("distance");
+        DISTANCE_ORIGIN_X    = b.comment("World X coordinate used as the origin for distance-based rules.")
+                                .defineInRange("originX", 0, -30000000, 30000000);
+        DISTANCE_ORIGIN_Z    = b.comment("World Z coordinate used as the origin for distance-based rules.")
+                                .defineInRange("originZ", 0, -30000000, 30000000);
+        DISTANCE_SCALE_FACTOR = b.comment("Global multiplier applied to the distance-based level formula.")
+                                 .defineInRange("scaleFactor", 1.0, 0.001, 100.0);
+        b.pop();
+        b.pop();
+
+        b.push("killLeveling");
+        KILL_LEVELING_ENABLED = b.comment("Allow mobs to gain kill levels by killing other entities.")
+                                 .define("enabled", true);
+        KILL_LEVELING_XP_BASE = b.comment("XP required for the first kill level.")
+                                 .defineInRange("xpBase", 100, 1, 100000);
+        KILL_LEVELING_XP_SCALE = b.comment("Exponential multiplier per kill level (threshold = base * scale^killLevel).")
+                                  .defineInRange("xpScale", 1.5, 1.0, 10.0);
+        KILL_LEVELING_CAP = b.comment("Maximum kill levels a single mob can earn (0 = unlimited up to globalLevelCap).")
+                             .defineInRange("killLevelCap", 0, 0, 10000);
+        b.pop();
+
+        b.push("adaptiveDifficulty");
+        ADAPTIVE_DIFFICULTY_ENABLED = b.comment("Scale mob level based on nearby player gear quality.")
+                                       .define("enabled", true);
+        ADAPTIVE_SCAN_RADIUS        = b.comment("Radius in blocks to scan for players when computing gear bonus.")
+                                       .defineInRange("scanRadius", 48.0, 1.0, 256.0);
+        ADAPTIVE_MAX_BONUS          = b.comment("Maximum level bonus that adaptive difficulty can award.")
+                                       .defineInRange("maxBonus", 10, 0, 100);
+        ADAPTIVE_MIN_GEAR_SCORE     = b.comment("Minimum player gear score before that player contributes to the adaptive bonus.",
+                                                "Players below this threshold are ignored, so lightly-geared players don't ramp difficulty.")
+                                       .defineInRange("minGearScore", 20.0, 0.0, 100000.0);
+        b.pop();
+
+        b.push("lootScaling");
+        LOOT_SCALING_ENABLED  = b.comment("Leveled mobs grant extra effective Looting on death, scaling looting-affected drops with their level.",
+                                          "Off by default. Grows existing drop stacks (no duplicate item entities).")
+                                 .define("enabled", false);
+        LOOT_BONUS_PER_LEVELS = b.comment("Grant +1 effective Looting per this many levels (effective level = base + kill levels).",
+                                          "Default 10 -> a level-50 mob drops like Looting V.")
+                                 .defineInRange("lootingBonusPerLevels", 10, 1, 10000);
+        LOOT_MAX_BONUS        = b.comment("Hard cap on the effective Looting bonus a single mob can grant.")
+                                 .defineInRange("maxLootingBonus", 10, 0, 1000);
+        b.pop();
+
+        b.push("display");
+        DISPLAY_ENABLED          = b.comment("Show the level name tag above leveled mobs.")
+                                    .define("enabled", true);
+        SHOW_ELEMENTAL_TITLE     = b.comment("Append a dominant-element suffix (e.g. ★Fire) to the name tag.")
+                                    .define("showElementalTitle", true);
+        ELEMENTAL_TITLE_MIN_VALUE = b.comment("Minimum elemental stat value required before showing the suffix.")
+                                     .defineInRange("elementalTitleMinValue", 5.0, 0.0, 1000.0);
+        SHOW_KILL_COUNT          = b.comment("Append kill count to name tag for mobs that have earned kill levels.")
+                                    .define("showKillCount", false);
+        HIDE_MANA_STATS_IF_NO_ISS = b.comment("Hide mana stat labels when IronsSpellbooks is not loaded.")
+                                     .define("hideManaStatsIfNoISS", true);
+
+        b.push("colorTiers");
+        COLOR_TIER_LOW_MAX  = b.comment("Levels 1–N shown in WHITE.")
+                               .defineInRange("lowMax", 10, 1, 10000);
+        COLOR_TIER_MID_MAX  = b.comment("Levels (lowMax+1)–N shown in GREEN.")
+                               .defineInRange("midMax", 25, 1, 10000);
+        COLOR_TIER_HIGH_MAX = b.comment("Levels (midMax+1)–N shown in YELLOW.")
+                               .defineInRange("highMax", 50, 1, 10000);
+        COLOR_TIER_EPIC_MAX = b.comment("Levels (highMax+1)–N shown in GOLD; above this → RED; boss → DARK_RED.")
+                               .defineInRange("epicMax", 75, 1, 10000);
+        b.pop();
+        b.pop();
+
+        b.push("boss");
+        BOSS_ENABLED          = b.comment("Enable the boss module (boss rules, boss bars, minion spawning).")
+                                 .define("enabled", true);
+        BOSS_BAR_ENABLED      = b.comment("Show a boss health bar for boss-rule mobs.")
+                                 .define("bossBarEnabled", true);
+        BOSS_ANNOUNCE_SPAWN   = b.comment("Broadcast a chat message when a boss spawns.")
+                                 .define("announceSpawn", true);
+        BOSS_GLOW             = b.comment("Give boss mobs the Glowing effect so they show through walls.")
+                                 .define("glow", true);
+        BOSS_HEALTH_MULTIPLIER = b.comment("Default health multiplier for boss-rule mobs (rule can override).")
+                                  .defineInRange("healthMultiplier", 3.0, 1.0, 100.0);
+        BOSS_DAMAGE_MULTIPLIER = b.comment("Default damage multiplier for boss-rule mobs (rule can override).")
+                                  .defineInRange("damageMultiplier", 1.5, 1.0, 50.0);
+        BOSS_ANNOUNCE_RADIUS  = b.comment("Radius in blocks from the boss at which players receive the spawn announcement.")
+                                 .defineInRange("announceRadius", 128, 1, 10000);
+        b.pop();
+
+        b.push("huntingAI");
+        HUNTING_AI_ENABLED   = b.comment("Inject melee attack / target goals into leveled mobs that lack them.")
+                                .define("enabled", true);
+        HUNTING_AI_MIN_LEVEL = b.comment("Minimum level before hunting AI is injected.")
+                                .defineInRange("minLevel", 5, 1, 10000);
+        b.pop();
+
+        b.push("stats");
+        VIGOR_INCREMENT        = b.comment("Max health added per level.")
+                                  .defineInRange("vigor_increment",        1.0,   0.0, 1000.0);
+        STRENGTH_INCREMENT     = b.comment("Attack damage added per level.")
+                                  .defineInRange("strength_increment",     0.5,   0.0, 1000.0);
+        ENDURANCE_INCREMENT    = b.comment("Damage reduction percent added per level (see caps.endurance_cap).")
+                                  .defineInRange("endurance_increment",    0.4,   0.0, 100.0);
+        STAMINA_INCREMENT      = b.comment("Stamina stat added per level.")
+                                  .defineInRange("stamina_increment",      0.5,   0.0, 1000.0);
+        DEXTERITY_INCREMENT    = b.comment("Attack speed added per level.")
+                                  .defineInRange("dexterity_increment",    0.02,  0.0, 100.0);
+        AGILITY_INCREMENT      = b.comment("Movement speed added per level.")
+                                  .defineInRange("agility_increment",      0.002, 0.0, 100.0);
+        ATTACK_SPEED_INCREMENT = b.comment("Attack speed multiplier increment per level.")
+                                  .defineInRange("attack_speed_increment", 0.025, 0.0, 100.0);
+        MANA_POOL_INCREMENT    = b.comment("Mana pool added per level (IronsSpellbooks).")
+                                  .defineInRange("mana_pool_increment",    5.0,   0.0, 10000.0);
+        MANA_DENSITY_INCREMENT = b.comment("Mana density multiplier increment per level (IronsSpellbooks).")
+                                  .defineInRange("mana_density_increment", 0.02,  0.0, 100.0);
+        ELEMENTAL_INCREMENT    = b.comment("Each elemental stat added per level.")
+                                  .defineInRange("elemental_increment",    0.5,   0.0, 1000.0);
+        b.pop();
+
+        b.push("caps");
+        ENDURANCE_CAP    = b.comment("Max endurance damage reduction as a percentage (0-100).")
+                            .defineInRange("endurance_cap", 75.0, 0.0, 100.0);
+        ATTACK_SPEED_CAP = b.comment("Max attack speed multiplier (relative to base weapon speed).")
+                            .defineInRange("attack_speed_cap", 3.0, 1.0, 10.0);
+        b.pop();
+
+        SPEC = b.build();
     }
 }

@@ -1,0 +1,8 @@
+{
+  "_comment": "All mobs in the Nether spawn at a higher base level.",
+  "mode": "random",
+  "min_level": 10,
+  "max_level": 30,
+  "priority": 10,
+  "dimension": "minecraft:the_nether"
+}

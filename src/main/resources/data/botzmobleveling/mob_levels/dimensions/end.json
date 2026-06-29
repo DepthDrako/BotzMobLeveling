@@ -1,0 +1,8 @@
+{
+  "_comment": "All mobs in The End spawn at an even higher base level.",
+  "mode": "random",
+  "min_level": 30,
+  "max_level": 60,
+  "priority": 10,
+  "dimension": "minecraft:the_end"
+}

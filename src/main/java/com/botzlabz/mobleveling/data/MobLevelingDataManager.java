@@ -1,222 +1,264 @@
 package com.botzlabz.mobleveling.data;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
-import com.botzlabz.mobleveling.boss.BossRule;
-import com.botzlabz.mobleveling.util.JsonHelper;
-import com.botzlabz.mobleveling.util.ModConstants;
+import com.botzlabz.mobleveling.config.MobLevelingConfig;
+import com.botzlabz.mobleveling.level.BossRule;
+import com.botzlabz.mobleveling.level.LevelRule;
+import com.botzlabz.mobleveling.level.LevelResolver;
+import com.botzlabz.mobleveling.level.MobOverride;
+import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.slf4j.Logger;
+import net.minecraft.world.entity.Mob;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * Loads all mob-leveling rules from datapacks.
+ *
+ * <p>Rule files live at {@code data/<ns>/mob_levels/<category>/<name>.json}
+ * where {@code category} is one of: {@code base}, {@code biomes},
+ * {@code dimensions}, {@code structures}, {@code bosses}.
+ *
+ * <p>Resolution priority (highest first):
+ * <ol>
+ *   <li>Boss rules</li>
+ *   <li>Structure rules</li>
+ *   <li>Biome rules</li>
+ *   <li>Dimension rules</li>
+ *   <li>Base rules</li>
+ *   <li>Fallback level (1)</li>
+ * </ol>
+ *
+ * <p>Register via {@code AddReloadListenerEvent} on the GAME bus.
+ */
 public class MobLevelingDataManager extends SimpleJsonResourceReloadListener {
 
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    // GSON and LOGGER MUST be declared before INSTANCE so they are non-null when
+    // the constructor calls super(GSON, ...).  Java initialises static fields in
+    // declaration order, so order matters here.
+    private static final Logger LOGGER = LogManager.getLogger(BotzMobLeveling.MOD_ID);
+    private static final Gson   GSON   = new GsonBuilder().setPrettyPrinting().create();
 
-    private static MobLevelingDataManager instance;
+    public static final MobLevelingDataManager INSTANCE = new MobLevelingDataManager();
 
-    private Map<ResourceLocation, StructureRule> structureRules = new HashMap<>();
-    private Map<ResourceLocation, BiomeRule> biomeRulesByBiome = new HashMap<>();
-    private List<BiomeRule> biomeTagRules = new ArrayList<>();
-    private List<DimensionRule> dimensionRules = new ArrayList<>();
-    private List<BaseRule> baseRules = new ArrayList<>();
-    private List<BossRule> bossRules = new ArrayList<>();
+    // Sorted lists — higher priority first within category
+    private List<BossRule>  bossRules      = Collections.emptyList();
+    private List<LevelRule> structureRules = Collections.emptyList();
+    private List<LevelRule> biomeRules     = Collections.emptyList();
+    private List<LevelRule> dimensionRules = Collections.emptyList();
+    private List<LevelRule> baseRules      = Collections.emptyList();
+
+    // Index boss rules by entity type for quick lookup (used by MobSpawnHandler)
+    private Map<String, BossRule> bossByEntity = Collections.emptyMap();
 
     public MobLevelingDataManager() {
-        super(GSON, ModConstants.DATA_DIRECTORY);
-        instance = this;
+        super(GSON, "mob_levels");
     }
 
-    @Nullable
-    public static MobLevelingDataManager getInstance() {
-        return instance;
-    }
+    // -------------------------------------------------------------------------
+    // Loading
+    // -------------------------------------------------------------------------
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> resources, ResourceManager resourceManager, ProfilerFiller profiler) {
-        // Clear existing data
-        structureRules = new HashMap<>();
-        biomeRulesByBiome = new HashMap<>();
-        biomeTagRules = new ArrayList<>();
-        dimensionRules = new ArrayList<>();
-        baseRules = new ArrayList<>();
-        bossRules = new ArrayList<>();
+    protected void apply(Map<ResourceLocation, JsonElement> data,
+                         ResourceManager manager, ProfilerFiller profiler) {
+        List<BossRule>  newBoss      = new ArrayList<>();
+        List<LevelRule> newStructure = new ArrayList<>();
+        List<LevelRule> newBiome     = new ArrayList<>();
+        List<LevelRule> newDimension = new ArrayList<>();
+        List<LevelRule> newBase      = new ArrayList<>();
 
-        int structureCount = 0;
-        int biomeCount = 0;
-        int dimensionCount = 0;
-        int baseCount = 0;
-        int bossCount = 0;
-        int errorCount = 0;
-
-        for (Map.Entry<ResourceLocation, JsonElement> entry : resources.entrySet()) {
+        for (Map.Entry<ResourceLocation, JsonElement> entry : data.entrySet()) {
             ResourceLocation id = entry.getKey();
+            if (!entry.getValue().isJsonObject()) continue;
+            JsonObject json = entry.getValue().getAsJsonObject();
+
+            // Path pattern: <namespace>:<category>/<name>
+            // e.g. botzmobleveling:base/hostile
+            String path     = id.getPath();
+            int    slashIdx = path.indexOf('/');
+            if (slashIdx < 0) {
+                LOGGER.warn("[BotzMobLeveling] Skipping rule at unexpected path: {}", id);
+                continue;
+            }
+            String category = path.substring(0, slashIdx);
+            String ruleId   = id.getNamespace() + ":" + path.substring(slashIdx + 1);
 
             try {
-                JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), "rule");
-
-                // Validate common fields
-                JsonHelper.validateLevelRange(json, id);
-                JsonHelper.validateAttributeScaling(json, id);
-
-                // Determine rule type from path
-                String path = id.getPath();
-
-                if (path.startsWith(ModConstants.STRUCTURES_PATH + "/")) {
-                    StructureRule rule = StructureRule.fromJson(id, json);
-                    structureRules.put(rule.getStructureId(), rule);
-                    structureCount++;
-                    LOGGER.debug("Loaded structure rule: {} for structure {}", id, rule.getStructureId());
-                } else if (path.startsWith(ModConstants.BIOMES_PATH + "/")) {
-                    BiomeRule rule = BiomeRule.fromJson(id, json);
-                    if (rule.hasBiomeTags()) {
-                        biomeTagRules.add(rule);
-                    }
-                    if (rule.hasBiomeId()) {
-                        biomeRulesByBiome.put(rule.getBiomeId(), rule);
-                    }
-                    biomeCount++;
-                    LOGGER.debug("Loaded biome rule: {}", id);
-                } else if (path.startsWith(ModConstants.DIMENSIONS_PATH + "/")) {
-                    DimensionRule rule = DimensionRule.fromJson(id, json);
-                    if (rule.hasDimensions()) {
-                        dimensionRules.add(rule);
-                        dimensionCount++;
-                        LOGGER.debug("Loaded dimension rule: {} for dimensions {}", id, rule.getDimensionIds());
-                    } else {
-                        LOGGER.warn("Dimension rule {} has no 'dimension' or 'dimensions' field, skipping", id);
-                    }
-                } else if (path.startsWith(ModConstants.BASE_PATH + "/")) {
-                    BaseRule rule = BaseRule.fromJson(id, json);
-                    baseRules.add(rule);
-                    baseCount++;
-                    LOGGER.debug("Loaded base rule: {} type {}", id, rule.getType());
-                } else if (path.startsWith(ModConstants.BOSSES_PATH + "/")) {
-                    BossRule rule = BossRule.fromJson(id, json);
-                    bossRules.add(rule);
-                    bossCount++;
-                    LOGGER.debug("Loaded boss rule: {}", id);
-                } else {
-                    LOGGER.warn("Unknown rule path: {} - should be in structures/, biomes/, dimensions/, base/, or bosses/", path);
+                switch (category) {
+                    case "bosses"     -> newBoss.add(BossRule.from(ruleId, json));
+                    case "structures" -> newStructure.add(LevelRule.from(ruleId, json));
+                    case "biomes"     -> newBiome.add(LevelRule.from(ruleId, json));
+                    case "dimensions" -> newDimension.add(LevelRule.from(ruleId, json));
+                    case "base"       -> newBase.add(LevelRule.from(ruleId, json));
+                    default -> LOGGER.warn("[BotzMobLeveling] Unknown category '{}' in {}", category, id);
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to load mob level rule {}: {}", id, e.getMessage());
-                errorCount++;
+                LOGGER.error("[BotzMobLeveling] Failed to parse rule {}: {}", id, e.getMessage());
             }
         }
 
-        // Sort base rules by priority (descending - higher priority first)
-        baseRules.sort(Comparator.comparingInt(BaseRule::getPriority).reversed());
+        Comparator<LevelRule> byPriority = Comparator.comparingInt((LevelRule r) -> r.priority).reversed();
+        this.bossRules      = newBoss.stream().sorted(byPriority).collect(Collectors.toList());
+        this.structureRules = newStructure.stream().sorted(byPriority).collect(Collectors.toList());
+        this.biomeRules     = newBiome.stream().sorted(byPriority).collect(Collectors.toList());
+        this.dimensionRules = newDimension.stream().sorted(byPriority).collect(Collectors.toList());
+        this.baseRules      = newBase.stream().sorted(byPriority).collect(Collectors.toList());
 
-        // Sort biome tag rules by priority (descending)
-        biomeTagRules.sort(Comparator.comparingInt(BiomeRule::getPriority).reversed());
+        // Build entity → boss index
+        Map<String, BossRule> idx = new HashMap<>();
+        for (BossRule br : bossRules) {
+            if (!br.entityTypeFilter.isEmpty()) idx.put(br.entityTypeFilter, br);
+        }
+        this.bossByEntity = Collections.unmodifiableMap(idx);
 
-        // Sort dimension rules by priority (descending)
-        dimensionRules.sort(Comparator.comparingInt(DimensionRule::getPriority).reversed());
-
-        // Sort boss rules by tier (descending - higher tier = more specific/important)
-        bossRules.sort(Comparator.comparingInt(BossRule::getTier).reversed());
-
-        LOGGER.info("[{}] Loaded {} structure rules, {} biome rules, {} dimension rules, {} base rules, {} boss rules ({} errors)",
-                BotzMobLeveling.MOD_ID, structureCount, biomeCount, dimensionCount, baseCount, bossCount, errorCount);
+        if (MobLevelingConfig.DEBUG_MODE.get()) {
+            LOGGER.info("[BotzMobLeveling] Loaded rules — boss:{} structure:{} biome:{} dimension:{} base:{}",
+                bossRules.size(), structureRules.size(), biomeRules.size(),
+                dimensionRules.size(), baseRules.size());
+        }
     }
 
-    // Structure rules
+    // -------------------------------------------------------------------------
+    // Resolution
+    // -------------------------------------------------------------------------
 
-    public Collection<StructureRule> getStructureRules() {
-        return structureRules.values();
-    }
+    /**
+     * Full resolution pipeline. Returns a {@link LevelResolver.LevelResult}
+     * with {@code level == -1} when a SKIP rule matched.
+     */
+    public LevelResolver.LevelResult resolve(Mob mob, ServerLevel level) {
+        net.minecraft.core.BlockPos pos = mob.blockPosition();
 
-    @Nullable
-    public StructureRule getStructureRule(ResourceLocation structureId) {
-        return structureRules.get(structureId);
-    }
-
-    public boolean hasStructureRule(ResourceLocation structureId) {
-        return structureRules.containsKey(structureId);
-    }
-
-    // Biome rules
-
-    @Nullable
-    public BiomeRule getBiomeRule(ResourceLocation biomeId) {
-        return biomeRulesByBiome.get(biomeId);
-    }
-
-    public List<BiomeRule> getBiomeTagRules() {
-        return biomeTagRules;
-    }
-
-    public Collection<BiomeRule> getAllBiomeRules() {
-        Set<BiomeRule> all = new HashSet<>(biomeRulesByBiome.values());
-        all.addAll(biomeTagRules);
-        return all;
-    }
-
-    public Collection<BiomeRule> getBiomeRules() {
-        return getAllBiomeRules();
-    }
-
-    // Dimension rules
-
-    public List<DimensionRule> getDimensionRules() {
-        return dimensionRules;
-    }
-
-    // Base rules
-
-    public List<BaseRule> getBaseRules() {
-        return baseRules;
-    }
-
-    // Stats
-
-    public int getTotalRuleCount() {
-        return structureRules.size() + biomeRulesByBiome.size() + biomeTagRules.size() + dimensionRules.size() + baseRules.size();
-    }
-
-    public String getStats() {
-        return String.format("Structure: %d, Biome: %d (+ %d tag rules), Dimension: %d, Base: %d, Boss: %d",
-                structureRules.size(), biomeRulesByBiome.size(), biomeTagRules.size(), dimensionRules.size(), baseRules.size(), bossRules.size());
-    }
-
-    // Boss rules
-
-    public List<BossRule> getBossRules() {
-        return bossRules;
-    }
-
-    @Nullable
-    public BossRule getBossRule(ResourceLocation ruleId) {
+        // 1 – Boss rules
         for (BossRule rule : bossRules) {
-            if (rule.getId().equals(ruleId)) {
-                return rule;
-            }
+            if (!rule.matchesEntity(mob)) continue;
+            if (!rule.matchesDimension(level)) continue;
+            if (!rule.matchesBiome(level, pos)) continue;
+            if (!rule.matchesStructure(level, pos)) continue;
+            int lvl = rule.resolve(mob, level);
+            if (lvl == 0) return LevelResolver.LevelResult.SKIP; // SKIP mode
+            return build(lvl, rule, "boss", rule, mob);
         }
-        return null;
+
+        // 2 – Structure rules
+        for (LevelRule rule : structureRules) {
+            if (!rule.matchesEntity(mob)) continue;
+            if (!rule.matchesDimension(level)) continue;
+            if (!rule.matchesStructure(level, pos)) continue;
+            int lvl = rule.resolve(mob, level);
+            if (lvl == 0) return LevelResolver.LevelResult.SKIP;
+            return build(lvl, rule, "structure", null, mob);
+        }
+
+        // 3 – Biome rules
+        for (LevelRule rule : biomeRules) {
+            if (!rule.matchesEntity(mob)) continue;
+            if (!rule.matchesDimension(level)) continue;
+            if (!rule.matchesBiome(level, pos)) continue;
+            int lvl = rule.resolve(mob, level);
+            if (lvl == 0) return LevelResolver.LevelResult.SKIP;
+            return build(lvl, rule, "biome", null, mob);
+        }
+
+        // 4 – Dimension rules
+        for (LevelRule rule : dimensionRules) {
+            if (!rule.matchesEntity(mob)) continue;
+            if (!rule.matchesDimension(level)) continue;
+            int lvl = rule.resolve(mob, level);
+            if (lvl == 0) return LevelResolver.LevelResult.SKIP;
+            return build(lvl, rule, "dimension", null, mob);
+        }
+
+        // 5 – Base rules
+        for (LevelRule rule : baseRules) {
+            if (!rule.matchesEntity(mob)) continue;
+            int lvl = rule.resolve(mob, level);
+            if (lvl == 0) return LevelResolver.LevelResult.SKIP;
+            return build(lvl, rule, "base", null, mob);
+        }
+
+        // 6 – Fallback
+        return new LevelResolver.LevelResult(1, "fallback", "base", null);
     }
 
     /**
-     * Find all boss rules that could apply to a specific mob type.
+     * Builds a {@link LevelResolver.LevelResult} for a matched rule, resolving its
+     * per-entity {@link MobOverride} and the effective cap exemption (rule flag OR
+     * override flag).
      */
-    public List<BossRule> getBossRulesForMob(ResourceLocation mobId) {
-        List<BossRule> matching = new ArrayList<>();
-        for (BossRule rule : bossRules) {
-            if (rule.isEnabled() && rule.appliesToMob(mobId)) {
-                matching.add(rule);
-            }
+    private static LevelResolver.LevelResult build(int lvl, LevelRule rule, String type,
+                                                   @Nullable BossRule boss, Mob mob) {
+        MobOverride ov = rule.overrideFor(mob);
+        boolean ignoreCap = rule.ignoreLevelCap || (ov != null && ov.ignoreLevelCap());
+
+        // Merge datapack attribute ops: rule's baseline, then the override's on top
+        // (override wins per attribute). Empty map stays empty (cheap common case).
+        Map<String, com.botzlabz.mobleveling.level.AttrOp> ops;
+        if (rule.attributeScaling.isEmpty() && (ov == null || ov.attributeScaling().isEmpty())) {
+            ops = Map.of();
+        } else {
+            ops = new HashMap<>(rule.attributeScaling);
+            if (ov != null) ops.putAll(ov.attributeScaling());
         }
-        return matching;
+        return new LevelResolver.LevelResult(lvl, rule.id, type, boss, ov, ignoreCap, ops);
     }
+
+    /**
+     * Resolves the "area level" at a position with no mob present — the level a
+     * generic mob would be assigned there. Used by the public API / commands so
+     * datapacks and HUDs can show area difficulty.
+     *
+     * <p>Mirrors {@link #resolve}'s priority chain (structure → biome → dimension
+     * → base) but ignores entity-type filters and uses the deterministic
+     * {@link LevelRule#levelAt} (no RNG). Result is clamped to the global cap.
+     */
+    public int resolveAreaLevel(ServerLevel level, net.minecraft.core.BlockPos pos) {
+        for (LevelRule rule : structureRules) {
+            if (rule.matchesDimension(level) && rule.matchesStructure(level, pos))
+                return clampArea(rule.levelAt(level, pos));
+        }
+        for (LevelRule rule : biomeRules) {
+            if (rule.matchesDimension(level) && rule.matchesBiome(level, pos))
+                return clampArea(rule.levelAt(level, pos));
+        }
+        for (LevelRule rule : dimensionRules) {
+            if (rule.matchesDimension(level))
+                return clampArea(rule.levelAt(level, pos));
+        }
+        for (LevelRule rule : baseRules) {
+            return clampArea(rule.levelAt(level, pos));
+        }
+        return 1; // matches resolve()'s fallback level
+    }
+
+    private static int clampArea(int lvl) {
+        if (lvl <= 0) return 0;
+        return Math.min(lvl, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
+    }
+
+    // -------------------------------------------------------------------------
+    // Accessors
+    // -------------------------------------------------------------------------
+
+    public Optional<BossRule> getBossRuleForEntity(String entityTypeId) {
+        return Optional.ofNullable(bossByEntity.get(entityTypeId));
+    }
+
+    public List<BossRule>  getBossRules()      { return bossRules; }
+    public List<LevelRule> getBaseRules()      { return baseRules; }
+    public List<LevelRule> getBiomeRules()     { return biomeRules; }
+    public List<LevelRule> getDimensionRules() { return dimensionRules; }
+    public List<LevelRule> getStructureRules() { return structureRules; }
 }

@@ -1,332 +1,192 @@
 package com.botzlabz.mobleveling.event;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
-import com.botzlabz.mobleveling.adaptive.MobResponseHandler;
+import com.botzlabz.mobleveling.adaptive.DifficultyCalculator;
+import com.botzlabz.mobleveling.ai.HuntingGoalInjector;
 import com.botzlabz.mobleveling.attribute.AttributeScalingManager;
+import com.botzlabz.mobleveling.boss.BossManager;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
-import com.botzlabz.mobleveling.data.AttributeScaling;
-import com.botzlabz.mobleveling.display.LevelDisplayManager;
-import com.botzlabz.mobleveling.kills.HuntingGoalHandler;
-import com.botzlabz.mobleveling.kills.KillLevelData;
+import com.botzlabz.mobleveling.display.LevelDisplay;
+import com.botzlabz.mobleveling.level.BossRule;
 import com.botzlabz.mobleveling.level.LevelResolver;
-import com.botzlabz.mobleveling.level.LevelResult;
+import com.botzlabz.mobleveling.level.MobLevelCapability;
 import com.botzlabz.mobleveling.level.MobLevelData;
-import com.mojang.logging.LogUtils;
-import net.minecraft.core.BlockPos;
+import com.botzlabz.mobleveling.level.MobLevelStore;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.slf4j.Logger;
+import net.minecraft.world.entity.MobCategory;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod.EventBusSubscriber(modid = BotzMobLeveling.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+import java.util.List;
+
+@EventBusSubscriber(modid = BotzMobLeveling.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class MobSpawnHandler {
 
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(BotzMobLeveling.MOD_ID);
 
-    private static final LevelResolver levelResolver = new LevelResolver();
-    private static final AttributeScalingManager attributeManager = new AttributeScalingManager();
-    private static final LevelDisplayManager displayManager = new LevelDisplayManager();
+    @SubscribeEvent
+    public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
+        if (!MobLevelingConfig.ENABLED.get()) return;
+        if (!(event.getEntity() instanceof Mob mob)) return;
+        if (!(mob.level() instanceof ServerLevel serverLevel)) return;
 
-    /**
-     * Handle mob finalize spawn - primary hook for natural spawns.
-     * This fires after mob spawning is complete but before it's added to the world.
-     */
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onMobFinalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
-        if (!MobLevelingConfig.ENABLED.get()) {
-            return;
+        MobLevelData data = MobLevelCapability.get(mob);
+        if (data == null || data.isProcessed()) return;
+
+        // ---- Filtering ----
+        ResourceLocation entityId = mob.getType().builtInRegistryHolder().key().location();
+
+        // Blacklist check
+        List<? extends String> blacklist = MobLevelingConfig.MOB_BLACKLIST.get();
+        if (!blacklist.isEmpty()) {
+            String idStr = entityId.toString();
+            if (blacklist.contains(idStr) || blacklist.contains(entityId.getPath())) return;
         }
 
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
-            return;
+        // Passive mob toggle
+        boolean isPassive = mob.getType().getCategory() != MobCategory.MONSTER;
+        if (isPassive && !MobLevelingConfig.LEVEL_PASSIVE_MOBS.get()) return;
+
+        // Boss mob toggle (vanilla bosses — Wither, Ender Dragon)
+        boolean isVanillaBoss = mob.getType().getCategory() == MobCategory.MISC
+            || mob instanceof net.minecraft.world.entity.boss.wither.WitherBoss
+            || mob instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+        if (isVanillaBoss && !MobLevelingConfig.LEVEL_BOSS_MOBS.get()) return;
+
+        // ---- Level resolution ----
+        LevelResolver.LevelResult result = LevelResolver.resolve(mob, serverLevel);
+        if (result.isSkip()) return;
+
+        int cap = MobLevelingConfig.GLOBAL_LEVEL_CAP.get();
+        boolean ignoreCap = result.ignoreCap;
+
+        // 1. Rule-range-clamped base level (DISTANCE rules without a max_level stay
+        //    unbounded here; the global cap is applied at the end unless exempt).
+        int level = result.level;
+
+        // 2. Per-entity override: a fixed level replaces the base outright, otherwise
+        //    the bonus stacks on top.
+        if (result.override != null) {
+            Integer fixed = result.override.fixedLevel();
+            level = (fixed != null) ? fixed : level + result.override.levelBonus();
         }
 
-        // Skip processing during initial world generation to prevent hangs
-        // Mobs spawned during world gen will be processed when they're loaded later
-        if (!isServerReady(serverLevel)) {
-            return;
-        }
-
-        Mob mob = event.getEntity();
-        BlockPos pos = mob.blockPosition();
-
-        // Process the mob
-        processNewMob(mob, serverLevel, pos, "FinalizeSpawn");
-    }
-
-    /**
-     * Handle entity join level - fallback for spawn eggs, commands, loaded entities.
-     * This catches mobs that weren't processed by FinalizeSpawn.
-     * Also handles reapplying transient modifiers to loaded mobs.
-     */
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (!MobLevelingConfig.ENABLED.get()) {
-            return;
-        }
-
-        if (event.getLevel().isClientSide()) {
-            return;
-        }
-
-        if (!(event.getEntity() instanceof Mob mob)) {
-            return;
-        }
-
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        // Skip processing during initial world generation to prevent hangs
-        if (!isServerReady(serverLevel)) {
-            return;
-        }
-
-        BlockPos pos = mob.blockPosition();
-
-        // Check if this mob was already processed (has level data from previous save)
-        if (MobLevelData.isProcessed(mob)) {
-            // Mob was loaded from chunk - reapply transient modifiers if it has a level
-            if (MobLevelData.hasLevel(mob)) {
-                reapplyModifiersToLoadedMob(mob, serverLevel);
-            }
-            return;
-        }
-
-        // New mob that wasn't caught by FinalizeSpawn
-        processNewMob(mob, serverLevel, pos, "EntityJoinLevel");
-    }
-
-    /**
-     * Reapply transient attribute modifiers to a mob that was loaded from chunk.
-     * Since we use transient modifiers, they don't persist to NBT and need reapplication.
-     */
-    private static void reapplyModifiersToLoadedMob(Mob mob, ServerLevel level) {
-        try {
-            int baseLevel = MobLevelData.getLevel(mob);
-            // Include any kill levels earned so attributes stay at the correct combined level
-            int killLevel = KillLevelData.getKillLevel(mob);
-            int mobLevel = baseLevel + killLevel;
-            // Don't re-clamp cap-exempt mobs (fixed level / ignore_level_cap), otherwise a
-            // high-level boss or override mob would be nerfed back to the cap after reload.
-            if (!MobLevelData.ignoresLevelCap(mob)) {
-                mobLevel = Math.min(mobLevel, MobLevelingConfig.GLOBAL_LEVEL_CAP.get());
-            }
-
-            // Get the rule that was used (if stored)
-            var ruleIdOpt = MobLevelData.getSourceRuleId(mob);
-            var ruleTypeOpt = MobLevelData.getSourceRuleType(mob);
-
-            // Try to get attribute scaling from the original rule
-            Map<ResourceLocation, AttributeScaling> scaling = new HashMap<>();
-
-            if (ruleIdOpt.isPresent() && ruleTypeOpt.isPresent()) {
-                // Try to find the original rule and get its scaling
-                var rule = levelResolver.findRuleById(ruleIdOpt.get(), ruleTypeOpt.get());
-                if (rule != null) {
-                    scaling = rule.getAttributeScaling();
-                }
-            }
-
-            // If we couldn't find the rule, try resolving fresh
-            if (scaling.isEmpty()) {
-                LevelResult result = levelResolver.resolve(mob, mob.blockPosition(), level);
-                if (!result.shouldSkip()) {
-                    scaling = result.getAttributeScaling();
-                }
-            }
-
-            // Apply scaling
-            if (!scaling.isEmpty()) {
-                attributeManager.applyScaling(mob, mobLevel, scaling);
-            }
-
-            // Re-add hunting goals if the mob had hunt_to_level enabled before unloading
-            HuntingGoalHandler.reapplyHuntingOnLoad(mob);
-
-            if (MobLevelingConfig.DEBUG_MODE.get()) {
-                LOGGER.debug("[{}] Reapplied modifiers to loaded {} at level {}",
-                        BotzMobLeveling.MOD_ID,
-                        ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()),
-                        mobLevel
-                );
-            }
-        } catch (Exception e) {
-            // Don't crash the game if reapplication fails
-            if (MobLevelingConfig.DEBUG_MODE.get()) {
-                LOGGER.warn("Failed to reapply modifiers to loaded mob: {}", e.getMessage());
-            }
-        }
-    }
-
-    // Track if the server has fully started (player has joined)
-    private static volatile boolean serverFullyReady = false;
-    private static volatile long lastReadyCheckTime = 0;
-
-    /**
-     * Check if the server is ready for mob processing.
-     * During world creation, we skip processing to prevent hangs and conflicts with other mods.
-     */
-    private static boolean isServerReady(ServerLevel level) {
-        // If we've already confirmed the server is ready, use cached result
-        // But re-check periodically in case of dimension changes
-        if (serverFullyReady && (System.currentTimeMillis() - lastReadyCheckTime) < 5000) {
-            return true;
-        }
-
-        try {
-            var server = level.getServer();
-            if (server == null) {
-                return false;
-            }
-
-            // Server must be running (not just starting up)
-            if (!server.isRunning()) {
-                serverFullyReady = false;
-                return false;
-            }
-
-            // During world creation, game time is 0
-            // Wait until the world has actually started ticking significantly
-            // Use a longer delay (200 ticks = 10 seconds) to let other mods finish their initialization
-            if (level.getGameTime() < 200) {
-                return false;
-            }
-
-            // Additional check: make sure there's at least one player in the world
-            // This ensures world generation is complete
-            if (server.getPlayerList().getPlayerCount() == 0) {
-                return false;
-            }
-
-            // Server is ready - cache this result
-            serverFullyReady = true;
-            lastReadyCheckTime = System.currentTimeMillis();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Reset the ready state when server stops.
-     * Called from mod lifecycle events.
-     */
-    public static void resetServerReadyState() {
-        serverFullyReady = false;
-        lastReadyCheckTime = 0;
-    }
-
-    private static void processNewMob(Mob mob, ServerLevel level, BlockPos pos, String source) {
-        // Skip if already processed (double-check for race conditions)
-        if (MobLevelData.isProcessed(mob)) {
-            return;
-        }
-
-        // Resolve level using priority system
-        LevelResult result = levelResolver.resolve(mob, pos, level);
-
-        if (result.shouldSkip()) {
-            // Mark as processed so we don't try again
-            MobLevelData.markProcessed(mob);
-            return;
-        }
-
-        int mobLevel = result.getLevel();
-
-        // Store level in persistent data
-        MobLevelData.setLevel(mob, mobLevel);
-        MobLevelData.setIgnoreLevelCap(mob, result.isIgnoreLevelCap());
-        MobLevelData.markProcessed(mob);
-
-        // Store source rule info for debugging
-        if (result.getSourceRule() != null) {
-            MobLevelData.setSourceRule(mob, result.getSourceRuleId(), result.getSourceRuleType());
-        }
-
-        // Apply attribute scaling
-        if (!result.getAttributeScaling().isEmpty()) {
-            attributeManager.applyScaling(mob, mobLevel, result.getAttributeScaling());
-        }
-
-        // Handle passive mob combat ability
-        applyPassiveCombatSettings(mob, result);
-
-        // Enable mob-hunting AI if the rule requests it, subject to a per-rule chance roll
-        if (result.shouldHuntToLevel()) {
-            // Per-rule chance takes precedence; falls back to global config default
-            double chance = result.getHuntToLevelChance();
-            if (chance >= 1.0 || mob.getRandom().nextDouble() < chance) {
-                HuntingGoalHandler.enableHunting(mob);
-            }
-        }
-
-        // Update display name
-        if (MobLevelingConfig.SHOW_LEVEL_IN_NAME.get()) {
-            displayManager.updateDisplay(mob, mobLevel);
-        }
-
-        // Apply adaptive difficulty stat/equipment modifiers. Runs only for mobs that
-        // passed the leveling filters (blacklist, passive/boss, server-ready) above, and
-        // reuses the gear score computed during resolve so it isn't calculated twice.
+        // 3. Adaptive difficulty bonus on top.
         if (MobLevelingConfig.ADAPTIVE_DIFFICULTY_ENABLED.get()) {
-            double gearScore = result.getAdaptiveGearScore();
-            if (gearScore >= MobLevelingConfig.ADAPTIVE_MIN_GEAR_SCORE.get()) {
-                MobResponseHandler.applyAdaptiveModifiers(mob, gearScore, level.getRandom());
-            }
+            level += DifficultyCalculator.computeBonus(mob, serverLevel);
         }
+
+        // 4. Final clamp — skipped only for cap-exempt mobs (bosses / ignore_level_cap).
+        if (!ignoreCap) level = Math.min(level, cap);
+        if (level < 1) level = 1;
+
+        // Apply level to data
+        data.applyLevel(level, result.ruleId, result.ruleType);
+        data.setIgnoreCap(ignoreCap);
+        data.setAttributeOps(result.attributeOps);
+
+        // Boss module
+        if (result.bossRule != null && MobLevelingConfig.BOSS_ENABLED.get()) {
+            setupBoss(mob, data, result.bossRule, serverLevel);
+        }
+
+        // Apply attribute modifiers (config stats + datapack ops)
+        AttributeScalingManager.apply(mob, data);
+        mob.setHealth(mob.getMaxHealth());
+
+        // Inject hunting AI (for hostile leveled mobs)
+        if (!isPassive) {
+            HuntingGoalInjector.inject(mob, level);
+        } else {
+            HuntingGoalInjector.injectPassiveCombat(mob);
+        }
+
+        // Display name
+        LevelDisplay.apply(mob, data);
+
+        // Persist to entity's persistent data (survives restart).
+        // The store helper also writes the BML_Level int that eidolon_ai reads.
+        MobLevelStore.persist(mob, data);
 
         if (MobLevelingConfig.DEBUG_MODE.get()) {
-            LOGGER.debug("[{}] Assigned level {} to {} at {} (source: {}, rule: {})",
-                    BotzMobLeveling.MOD_ID,
-                    mobLevel,
-                    ForgeRegistries.ENTITY_TYPES.getKey(mob.getType()),
-                    pos,
-                    source,
-                    result.getSourceRuleId()
-            );
+            LOGGER.info("[BotzMobLeveling] Spawned {} Lv.{} (rule: {} / {})",
+                entityId, level, result.ruleId, result.ruleType);
         }
     }
 
-    /**
-     * Apply combat settings to passive mobs based on config and datapack rules.
-     */
-    private static void applyPassiveCombatSettings(Mob mob, LevelResult result) {
-        // Only applies to passive mobs (animals)
-        if (!(mob instanceof Animal)) {
-            return;
+    // -------------------------------------------------------------------------
+
+    private static void setupBoss(Mob mob, MobLevelData data, BossRule rule, ServerLevel serverLevel) {
+        data.applyBossRule(rule);
+
+        // Store the effective health multiplier; the MAX_HEALTH modifier itself is
+        // applied by AttributeScalingManager.apply(mob, data) — which also runs on
+        // reload, so the multiplier survives chunk unload / server restart (the
+        // transient modifier is otherwise not persisted in entity NBT).
+        double healthMul = rule.healthMultiplier > 1.0
+            ? rule.healthMultiplier
+            : MobLevelingConfig.BOSS_HEALTH_MULTIPLIER.get();
+        data.setBossHealthMul(healthMul);
+
+        // Glow
+        if (rule.glow || MobLevelingConfig.BOSS_GLOW.get()) {
+            mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                net.minecraft.world.effect.MobEffects.GLOWING, Integer.MAX_VALUE, 0, false, false));
         }
 
-        // Check if mob override has explicit can_attack setting
-        var mobOverride = result.getMobOverride();
-        Boolean canAttack = null;
+        // Immunities
+        applyImmunities(mob, rule.immunities);
 
-        if (mobOverride != null && mobOverride.hasCanAttackOverride()) {
-            canAttack = mobOverride.getCanAttack();
+        // Spawn minions
+        if (!rule.minionType.isEmpty() && rule.minionCount > 0) {
+            spawnMinions(mob, rule, serverLevel);
         }
 
-        // If no override, use config default
-        if (canAttack == null) {
-            canAttack = MobLevelingConfig.LEVELED_PASSIVES_CAN_ATTACK.get();
+        // Register boss bar AFTER everything is set up
+        BossManager.registerBoss(mob, data, serverLevel);
+    }
+
+    private static void applyImmunities(Mob mob, java.util.List<String> immunities) {
+        for (String immunity : immunities) {
+            switch (immunity.toLowerCase()) {
+                case "fire"  -> mob.clearFire(); // boss is immune to fire; clear any existing fire ticks
+                case "fall"  -> {}  // fall damage handled via DamageReductionHandler
+                // Store immunities in data so DamageReductionHandler can check them
+                default -> {}
+            }
         }
+    }
 
-        // Apply the setting
-        PassiveMobCombatHandler.setCombatEnabled(mob, canAttack);
+    private static void spawnMinions(Mob boss, BossRule rule, ServerLevel serverLevel) {
+        ResourceLocation minionId = ResourceLocation.tryParse(rule.minionType);
+        if (minionId == null) return;
+        // ENTITY_TYPE is a defaulted registry: get() on an unknown id returns the
+        // default entry (pig) instead of null, so a typo'd minion_type would
+        // silently spawn pigs.  containsKey is the real existence check.
+        if (!net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(minionId)) return;
+        net.minecraft.world.entity.EntityType<?> minionType =
+            net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(minionId);
 
-        // If can_attack is explicitly true and mob is a PathfinderMob, pre-add combat goals
-        if (canAttack && mob instanceof PathfinderMob pathfinderMob) {
-            PassiveMobCombatHandler.enableCombatOnSpawn(pathfinderMob);
+        net.minecraft.core.BlockPos bossPos = boss.blockPosition();
+        int spread = Math.max(1, rule.minionSpread);
+        java.util.Random rand = new java.util.Random();
+
+        for (int i = 0; i < rule.minionCount; i++) {
+            int dx = rand.nextInt(spread * 2 + 1) - spread;
+            int dz = rand.nextInt(spread * 2 + 1) - spread;
+            net.minecraft.core.BlockPos spawnPos = bossPos.offset(dx, 0, dz);
+
+            net.minecraft.world.entity.Entity minion = minionType.create(serverLevel);
+            if (minion == null) continue;
+            minion.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5,
+                          rand.nextFloat() * 360f, 0f);
+            serverLevel.addFreshEntity(minion);
         }
     }
 }

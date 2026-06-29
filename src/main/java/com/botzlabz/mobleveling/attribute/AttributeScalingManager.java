@@ -1,184 +1,203 @@
 package com.botzlabz.mobleveling.attribute;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
-import com.botzlabz.mobleveling.config.MobLevelingConfig;
-import com.botzlabz.mobleveling.data.AttributeScaling;
-import com.mojang.logging.LogUtils;
+import com.botzlabz.mobleveling.level.AttrOp;
+import com.botzlabz.mobleveling.level.MobLevelData;
+import com.botzlabz.mobleveling.stats.MobStatBlock;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.slf4j.Logger;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class AttributeScalingManager {
+/**
+ * Applies and removes level-based attribute modifiers for leveled mobs.
+ *
+ * <p>Uses {@code addTransientModifier} so modifiers are NOT saved to entity NBT
+ * and must be re-applied every time the entity joins the world (handled by
+ * {@link com.botzlabz.mobleveling.event.AttributeRestoreHandler}).
+ * This avoids stacking issues and gives us full control over persistence.
+ *
+ * <p>Two layers stack additively:
+ * <ul>
+ *   <li><b>Config-increment stats</b> — four hardcoded {@link MobStatBlock} stats
+ *       (vigor/strength/dexterity/agility) with fixed keys.</li>
+ *   <li><b>Datapack ops</b> — arbitrary attributes from a rule's/override's
+ *       {@code attribute_scaling} (Phase 3b), each keyed by its attribute id so it
+ *       layers on top of the config stats rather than replacing them.</li>
+ * </ul>
+ *
+ * <p>Modifiers use {@link ResourceLocation} keys so they can be cleanly removed
+ * by ID before re-application.
+ */
+public final class AttributeScalingManager {
 
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String MODIFIER_NAME_PREFIX = BotzMobLeveling.MOD_ID + "_level_";
+    private static final Logger LOGGER = LogManager.getLogger(BotzMobLeveling.MOD_ID);
 
-    // Base UUID used to generate consistent UUIDs for each attribute
-    private static final UUID BASE_UUID = UUID.fromString("b0721ab5-0001-4e31-8000-000000000000");
+    private static final ResourceLocation KEY_VIGOR       = rl("vigor_bonus");
+    private static final ResourceLocation KEY_STRENGTH    = rl("strength_bonus");
+    private static final ResourceLocation KEY_DEXTERITY   = rl("dexterity_bonus");
+    private static final ResourceLocation KEY_AGILITY     = rl("agility_bonus");
+    private static final ResourceLocation KEY_BOSS_HEALTH = rl("boss_health_mul");
 
-    public void applyScaling(Mob mob, int level, Map<ResourceLocation, AttributeScaling> scalingMap) {
-        Set<String> allowedAttributes = new HashSet<>(MobLevelingConfig.ALLOWED_ATTRIBUTES.get());
+    /** Attribute ids we've already warned about being unresolvable, so we log once. */
+    private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
 
-        for (Map.Entry<ResourceLocation, AttributeScaling> entry : scalingMap.entrySet()) {
-            ResourceLocation attrId = entry.getKey();
+    private static ResourceLocation rl(String path) {
+        return ResourceLocation.fromNamespaceAndPath(BotzMobLeveling.MOD_ID, path);
+    }
 
-            // Check whitelist
-            if (!allowedAttributes.contains(attrId.toString())) {
-                if (MobLevelingConfig.DEBUG_MODE.get()) {
-                    LOGGER.debug("Skipping attribute {} - not in whitelist", attrId);
+    // -------------------------------------------------------------------------
+    // Full apply/remove (config stats + datapack ops) — the path callers use
+    // -------------------------------------------------------------------------
+
+    public static void apply(LivingEntity entity, MobLevelData data) {
+        apply(entity, data.getStatBlock());
+        applyDatapackOps(entity, data.getAttributeOps(), data.getTotalLevel());
+        applyBossHealth(entity, data);
+    }
+
+    public static void remove(LivingEntity entity, MobLevelData data) {
+        remove(entity);
+        removeDatapackOps(entity, data.getAttributeOps());
+        removeModifier(entity, Attributes.MAX_HEALTH, KEY_BOSS_HEALTH);
+    }
+
+    /**
+     * Boss MAX_HEALTH multiplier, as an {@code ADD_MULTIPLIED_BASE} modifier so it
+     * scales the base health and stacks cleanly with the vigor {@code ADD_VALUE}
+     * bonus (boss HP = base × mul + vigor). Applied here — not only at spawn — so it
+     * is re-applied on reload (transient modifiers aren't saved to entity NBT).
+     */
+    private static void applyBossHealth(LivingEntity entity, MobLevelData data) {
+        if (!data.isBoss()) return;
+        double mul = data.getBossHealthMul();
+        if (mul <= 1.0) return;
+        applyModifier(entity, Attributes.MAX_HEALTH, KEY_BOSS_HEALTH,
+                      (float) (mul - 1.0), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    }
+
+    // -------------------------------------------------------------------------
+    // Config-increment stats (four fixed attributes)
+    // -------------------------------------------------------------------------
+
+    public static void apply(LivingEntity entity, MobStatBlock stats) {
+        applyModifier(entity, Attributes.MAX_HEALTH,     KEY_VIGOR,     stats.getValue("vigor"),
+                      AttributeModifier.Operation.ADD_VALUE);
+        applyModifier(entity, Attributes.ATTACK_DAMAGE,  KEY_STRENGTH,  stats.getValue("strength"),
+                      AttributeModifier.Operation.ADD_VALUE);
+        applyModifier(entity, Attributes.ATTACK_SPEED,   KEY_DEXTERITY, stats.getValue("dexterity"),
+                      AttributeModifier.Operation.ADD_VALUE);
+        applyModifier(entity, Attributes.MOVEMENT_SPEED, KEY_AGILITY,   stats.getValue("agility"),
+                      AttributeModifier.Operation.ADD_VALUE);
+    }
+
+    public static void remove(LivingEntity entity) {
+        removeModifier(entity, Attributes.MAX_HEALTH,     KEY_VIGOR);
+        removeModifier(entity, Attributes.ATTACK_DAMAGE,  KEY_STRENGTH);
+        removeModifier(entity, Attributes.ATTACK_SPEED,   KEY_DEXTERITY);
+        removeModifier(entity, Attributes.MOVEMENT_SPEED, KEY_AGILITY);
+    }
+
+    // -------------------------------------------------------------------------
+    // Datapack attribute ops (Phase 3b)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Applies each datapack {@link AttrOp} as a distinct transient modifier keyed by
+     * the resolved attribute id ({@code mobleveling:datapack/<ns>/<path>}), with value
+     * {@code valuePerLevel × level}. Existing same-key modifiers are removed first so
+     * re-application (kill level-up / reload) doesn't stack.
+     */
+    public static void applyDatapackOps(LivingEntity entity, Map<String, AttrOp> ops, int level) {
+        if (ops == null || ops.isEmpty()) return;
+        for (Map.Entry<String, AttrOp> e : ops.entrySet()) {
+            Holder<Attribute> attr = resolveAttribute(e.getKey());
+            if (attr == null) {
+                if (WARNED.add(e.getKey())) {
+                    LOGGER.warn("[BotzMobLeveling] attribute_scaling references unknown attribute '{}' — skipping.", e.getKey());
                 }
                 continue;
             }
-
-            AttributeScaling scaling = entry.getValue();
-            applyAttributeModifier(mob, attrId, level, scaling);
-        }
-
-        // Heal mob to new max health after modifications
-        healToMaxHealth(mob);
-    }
-
-    private void applyAttributeModifier(Mob mob, ResourceLocation attrId, int level, AttributeScaling scaling) {
-        try {
-            // Get attribute from registry (supports modded attributes)
-            Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(attrId);
-
-            if (attribute == null) {
-                // Try built-in registry as fallback
-                attribute = BuiltInRegistries.ATTRIBUTE.get(attrId);
-            }
-
-            if (attribute == null) {
-                if (MobLevelingConfig.DEBUG_MODE.get()) {
-                    LOGGER.warn("Unknown attribute: {} - may be from unloaded mod", attrId);
-                }
-                return;
-            }
-
-            AttributeInstance instance = mob.getAttribute(attribute);
-            if (instance == null) {
-                // Mob doesn't have this attribute
-                return;
-            }
-
-            // Calculate bonus
-            double bonus = scaling.calculateBonus(level);
-
-            if (bonus == 0.0) {
-                return; // No change needed
-            }
-
-            // Generate consistent UUID for this attribute
-            UUID modifierId = generateModifierUUID(attrId);
-
-            // Check if modifier already exists with same value - skip if identical
-            AttributeModifier existing = instance.getModifier(modifierId);
-            if (existing != null) {
-                // If modifier already exists with same value, skip to avoid issues
-                if (Math.abs(existing.getAmount() - bonus) < 0.001) {
-                    if (MobLevelingConfig.DEBUG_MODE.get()) {
-                        LOGGER.debug("Skipping {} - identical modifier already exists on {}",
-                                attrId.getPath(), mob.getType().getDescription().getString());
-                    }
-                    return;
-                }
-                // Remove existing modifier safely
-                try {
-                    instance.removeModifier(modifierId);
-                } catch (Exception e) {
-                    LOGGER.debug("Failed to remove existing modifier {} - continuing anyway", modifierId);
-                }
-            }
-
-            // Get operation
-            AttributeModifier.Operation operation = scaling.getModifierOperation();
-
-            // Create and apply modifier
-            String modifierName = MODIFIER_NAME_PREFIX + attrId.getPath();
-            AttributeModifier modifier = new AttributeModifier(
-                    modifierId,
-                    modifierName,
-                    bonus,
-                    operation
-            );
-
-            // Use transient modifier to avoid save/load issues with permanent modifiers
-            // Transient modifiers don't persist to NBT, so they're reapplied each time
-            instance.addTransientModifier(modifier);
-
-            if (MobLevelingConfig.DEBUG_MODE.get()) {
-                LOGGER.debug("Applied {} modifier to {}: {} {} (level {})",
-                        attrId.getPath(), mob.getType().getDescription().getString(),
-                        formatBonus(bonus, operation), operation.name(), level);
-            }
-        } catch (Exception e) {
-            // Catch any exception to prevent crashing the game
-            LOGGER.warn("Failed to apply attribute {} to mob {}: {}",
-                    attrId, mob.getType().getDescription().getString(), e.getMessage());
-            if (MobLevelingConfig.DEBUG_MODE.get()) {
-                LOGGER.debug("Full stack trace:", e);
-            }
+            var instance = entity.getAttribute(attr);
+            if (instance == null) continue; // entity doesn't have this attribute (e.g. armor on some mobs)
+            ResourceLocation key = datapackKey(attr);
+            instance.removeModifier(key);
+            double value = e.getValue().valuePerLevel() * level;
+            instance.addTransientModifier(new AttributeModifier(key, value, e.getValue().operation()));
         }
     }
 
-    private UUID generateModifierUUID(ResourceLocation attrId) {
-        // Generate a consistent UUID based on the attribute ID
-        String seed = BASE_UUID.toString() + attrId.toString();
-        return UUID.nameUUIDFromBytes(seed.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private void healToMaxHealth(Mob mob) {
-        try {
-            float maxHealth = mob.getMaxHealth();
-            if (mob.getHealth() < maxHealth) {
-                mob.setHealth(maxHealth);
-            }
-        } catch (Exception e) {
-            // Don't crash if health can't be set
-            if (MobLevelingConfig.DEBUG_MODE.get()) {
-                LOGGER.debug("Could not heal mob to max health: {}", e.getMessage());
-            }
+    public static void removeDatapackOps(LivingEntity entity, Map<String, AttrOp> ops) {
+        if (ops == null || ops.isEmpty()) return;
+        for (String id : ops.keySet()) {
+            Holder<Attribute> attr = resolveAttribute(id);
+            if (attr == null) continue;
+            var instance = entity.getAttribute(attr);
+            if (instance != null) instance.removeModifier(datapackKey(attr));
         }
     }
 
-    private String formatBonus(double bonus, AttributeModifier.Operation operation) {
-        if (operation == AttributeModifier.Operation.ADDITION) {
-            return String.format("%+.2f", bonus);
-        } else {
-            return String.format("%+.1f%%", bonus * 100);
-        }
+    /** Stable per-attribute modifier id, derived from the resolved attribute's registry key. */
+    private static ResourceLocation datapackKey(Holder<Attribute> attr) {
+        ResourceLocation attrId = BuiltInRegistries.ATTRIBUTE.getKey(attr.value());
+        String suffix = attrId != null ? attrId.getNamespace() + "/" + attrId.getPath() : "unknown";
+        return rl("datapack/" + suffix);
     }
 
-    public void removeAllModifiers(Mob mob) {
-        for (String attrStr : MobLevelingConfig.ALLOWED_ATTRIBUTES.get()) {
-            ResourceLocation attrId = new ResourceLocation(attrStr);
-            Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(attrId);
-
-            if (attribute == null) {
-                attribute = BuiltInRegistries.ATTRIBUTE.get(attrId);
-            }
-
-            if (attribute == null) {
-                continue;
-            }
-
-            AttributeInstance instance = mob.getAttribute(attribute);
-            if (instance == null) {
-                continue;
-            }
-
-            UUID modifierId = generateModifierUUID(attrId);
-            if (instance.getModifier(modifierId) != null) {
-                instance.removeModifier(modifierId);
-            }
+    /**
+     * Resolves an attribute id string to its registry {@link Holder}. Accepts a bare
+     * path ("max_health"), a namespaced id, and — since vanilla attributes keep the
+     * {@code generic.} prefix on 1.21.1 — retries with that prefix when a prefix-less
+     * lookup misses. Returns {@code null} when unresolvable.
+     */
+    private static Holder<Attribute> resolveAttribute(String raw) {
+        ResourceLocation rl = ResourceLocation.tryParse(raw.contains(":") ? raw : "minecraft:" + raw);
+        if (rl == null) return null;
+        Holder<Attribute> h = lookup(rl);
+        if (h == null && !rl.getPath().contains(".")) {
+            // friendly retry: "max_health" → "generic.max_health"
+            h = lookup(ResourceLocation.fromNamespaceAndPath(rl.getNamespace(), "generic." + rl.getPath()));
         }
+        return h;
     }
+
+    private static Holder<Attribute> lookup(ResourceLocation rl) {
+        return BuiltInRegistries.ATTRIBUTE
+                .getHolder(ResourceKey.create(Registries.ATTRIBUTE, rl))
+                .map(h -> (Holder<Attribute>) h)
+                .orElse(null);
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private static void applyModifier(LivingEntity entity,
+            net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute,
+            ResourceLocation key, float value, AttributeModifier.Operation op) {
+        var instance = entity.getAttribute(attribute);
+        if (instance == null) return;
+        instance.removeModifier(key);
+        instance.addTransientModifier(new AttributeModifier(key, value, op));
+    }
+
+    private static void removeModifier(LivingEntity entity,
+            net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute,
+            ResourceLocation key) {
+        var instance = entity.getAttribute(attribute);
+        if (instance != null) instance.removeModifier(key);
+    }
+
+    private AttributeScalingManager() {}
 }

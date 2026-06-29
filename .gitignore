@@ -39,3 +39,7 @@ Thumbs.db
 *.class
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
+
+# Run directory (this project uses "runs")
+runs/
+run/

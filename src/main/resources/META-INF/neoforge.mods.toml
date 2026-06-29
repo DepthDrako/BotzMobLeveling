@@ -1,0 +1,47 @@
+modLoader   = "javafml"
+loaderVersion = "[4,)"
+license     = "MIT"
+
+[[accessTransformers]]
+    file = "META-INF/accesstransformer.cfg"
+
+[[mods]]
+    modId       = "botzmobleveling"
+    version     = "1.0.0"
+    displayName = "BotzMobLeveling"
+    description = "Level-based mob stat system for Eidolon Reach."
+
+[[dependencies.botzmobleveling]]
+    modId        = "neoforge"
+    type         = "required"
+    versionRange = "[21.1,)"
+    ordering     = "NONE"
+    side         = "BOTH"
+
+[[dependencies.botzmobleveling]]
+    modId        = "minecraft"
+    type         = "required"
+    versionRange = "[1.21.1,1.22)"
+    ordering     = "NONE"
+    side         = "BOTH"
+
+[[dependencies.botzmobleveling]]
+    modId        = "eidolon_lib"
+    type         = "required"
+    versionRange = "[1.0.0,)"
+    ordering     = "AFTER"
+    side         = "BOTH"
+
+[[dependencies.botzmobleveling]]
+    modId        = "irons_spells_n_spellbooks"
+    type         = "optional"
+    versionRange = "[1.0.0,)"
+    ordering     = "NONE"
+    side         = "BOTH"
+
+[[dependencies.botzmobleveling]]
+    modId        = "epicfight"
+    type         = "optional"
+    versionRange = "[1.0.0,)"
+    ordering     = "NONE"
+    side         = "BOTH"

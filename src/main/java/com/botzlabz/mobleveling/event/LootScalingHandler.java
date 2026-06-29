@@ -2,62 +2,61 @@ package com.botzlabz.mobleveling.event;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
-import com.botzlabz.mobleveling.kills.KillLevelData;
+import com.botzlabz.mobleveling.level.MobLevelCapability;
 import com.botzlabz.mobleveling.level.MobLevelData;
-import com.mojang.logging.LogUtils;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
-import net.minecraftforge.event.entity.living.LootingLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import org.slf4j.Logger;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 /**
- * Scales mob loot with level by boosting the effective Looting level used in the mob's
- * loot roll. This increases looting-affected drops (arrows, bones, ender pearls, most
- * mob loot) in proportion to the mob's level — e.g. a high-level skeleton drops many
- * more arrows, and packs get a clean "+1 looting per N levels" knob.
+ * Opt-in level-based loot scaling.
  *
- * <p>Implemented via {@link LootingLevelEvent} so it works with vanilla and most modded
- * loot tables without duplicating item entities. Opt-in via the {@code lootScaling}
- * config; off by default to avoid surprise loot inflation in existing packs.
+ * <p>1.20.1 implemented this through Forge's {@code LootingLevelEvent}, bumping
+ * the looting level fed into the loot table. NeoForge 1.21.1 removed that event
+ * (looting became an enchantment effect with no level hook), so this instead
+ * post-processes the final {@link LivingDropsEvent}: for a leveled mob it grants
+ * an effective Looting bonus and grows each <i>stackable</i> drop by a uniform
+ * {@code 0..bonus} — the same distribution vanilla's {@code LootingEnchantFunction}
+ * uses. Counts are grown in place, so no extra item entities are spawned.
+ *
+ * <p>Non-stackable drops (tools, armor — a mob's own equipment) are skipped, so
+ * unique gear is never duplicated. Off unless {@code lootScaling.enabled}.
  */
-@Mod.EventBusSubscriber(modid = BotzMobLeveling.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class LootScalingHandler {
+@EventBusSubscriber(modid = BotzMobLeveling.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+public final class LootScalingHandler {
 
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final RandomSource RANDOM = RandomSource.create();
 
     @SubscribeEvent
-    public static void onLootingLevel(LootingLevelEvent event) {
-        if (!MobLevelingConfig.ENABLED.get() || !MobLevelingConfig.LOOT_SCALING_ENABLED.get()) {
-            return;
-        }
+    public static void onLivingDrops(LivingDropsEvent event) {
+        if (!MobLevelingConfig.LOOT_SCALING_ENABLED.get()) return;
+        if (event.getEntity().level().isClientSide()) return;
+        if (!(event.getEntity() instanceof Mob mob)) return;
 
-        int perLevels = MobLevelingConfig.LOOT_LOOTING_PER_LEVELS.get();
-        if (perLevels <= 0) {
-            return;
-        }
+        MobLevelData data = MobLevelCapability.get(mob);
+        if (data == null || !data.isProcessed()) return;
 
-        // The event entity is the mob whose loot is being rolled (the victim).
-        if (!(event.getEntity() instanceof Mob mob) || !MobLevelData.hasLevel(mob)) {
-            return;
-        }
+        // Effective level = base + kill levels (mirrors the 1.20.1 behaviour).
+        int perLevels = MobLevelingConfig.LOOT_BONUS_PER_LEVELS.get();
+        int bonus = Math.min(data.getTotalLevel() / perLevels,
+                             MobLevelingConfig.LOOT_MAX_BONUS.get());
+        if (bonus <= 0) return;
 
-        // Effective level = spawn level + any kill levels earned.
-        int level = MobLevelData.getLevel(mob) + KillLevelData.getKillLevel(mob);
-        if (level <= 0) {
-            return;
-        }
+        for (ItemEntity itemEntity : event.getDrops()) {
+            ItemStack stack = itemEntity.getItem();
+            if (stack.isEmpty() || stack.getMaxStackSize() <= 1) continue; // skip equipment/tools
 
-        int bonus = Math.min(level / perLevels, MobLevelingConfig.LOOT_MAX_LOOTING_BONUS.get());
-        if (bonus <= 0) {
-            return;
-        }
+            int extra = RANDOM.nextInt(bonus + 1); // uniform 0..bonus, like vanilla looting
+            if (extra <= 0) continue;
 
-        event.setLootingLevel(event.getLootingLevel() + bonus);
-
-        if (MobLevelingConfig.DEBUG_MODE.get()) {
-            LOGGER.debug("[{}] Loot scaling: +{} looting for level {} {}",
-                    BotzMobLeveling.MOD_ID, bonus, level, mob.getType().getDescription().getString());
+            stack.setCount(Math.min(stack.getMaxStackSize(), stack.getCount() + extra));
+            itemEntity.setItem(stack);
         }
     }
+
+    private LootScalingHandler() {}
 }
