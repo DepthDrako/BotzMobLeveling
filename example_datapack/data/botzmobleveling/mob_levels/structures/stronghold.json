@@ -1,0 +1,15 @@
+{
+  "_comment": "Stronghold mobs are fixed Lv.200 with a couple of signature overrides.",
+  "structure": "minecraft:stronghold",
+  "priority": 100,
+  "mode": "fixed",
+  "level": 200,
+  "mob_overrides": {
+    "minecraft:silverfish": { "level": 100 },
+    "minecraft:enderman":   { "level": 300, "ignore_level_cap": true }
+  },
+  "attribute_scaling": {
+    "max_health":    { "operation": "add_value", "value_per_level": 1.0 },
+    "attack_damage": { "operation": "add_value", "value_per_level": 0.05 }
+  }
+}

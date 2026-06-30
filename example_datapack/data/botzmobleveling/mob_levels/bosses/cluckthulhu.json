@@ -1,0 +1,19 @@
+{
+  "_comment": "Scoped boss: only chickens INSIDE strongholds become Cluckthulhu. Local boss bar (80 blocks).",
+  "entity": "minecraft:chicken",
+  "structure": "minecraft:stronghold",
+  "mode": "fixed",
+  "level": 750,
+  "ignore_level_cap": true,
+  "health_multiplier": 50.0,
+  "damage_multiplier": 8.0,
+  "boss_bar_color": "red",
+  "boss_bar_title": "§4§l☠ Cluckthulhu ☠",
+  "boss_bar_range": 80,
+  "announcement": "§4§l☠ Cluckthulhu has awoken! ☠",
+  "glow": true,
+  "immunities": ["fire", "fall"],
+  "minion_type": "minecraft:chicken",
+  "minion_count": 6,
+  "minion_spread": 5
+}

@@ -1,0 +1,17 @@
+{
+  "_comment": "Deep Dark is a fixed high-level zone; the Warden is a capped-exempt monster.",
+  "biome": "minecraft:deep_dark",
+  "priority": 50,
+  "mode": "fixed",
+  "level": 100,
+  "mob_overrides": {
+    "minecraft:warden": {
+      "level": 1000,
+      "ignore_level_cap": true,
+      "attribute_scaling": {
+        "max_health":    { "operation": "add_value", "value_per_level": 1.0 },
+        "attack_damage": { "operation": "add_value", "value_per_level": 0.1 }
+      }
+    }
+  }
+}

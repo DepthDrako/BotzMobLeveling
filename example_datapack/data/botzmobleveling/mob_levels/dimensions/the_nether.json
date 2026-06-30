@@ -1,0 +1,12 @@
+{
+  "_comment": "Nether-wide baseline of Lv.50-150 with light attribute scaling.",
+  "dimension": "minecraft:the_nether",
+  "priority": 30,
+  "mode": "random",
+  "min_level": 50,
+  "max_level": 150,
+  "attribute_scaling": {
+    "max_health":    { "operation": "add_value",    "value_per_level": 1.0 },
+    "attack_damage": { "operation": "multiply_base", "value_per_level": 0.01 }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "_comment": "Hostile mobs scale with distance from the configured origin.",
+  "mode": "distance",
+  "hostile_only": true,
+  "min_level": 1,
+  "max_level": 200,
+  "distance_scale": 0.02
+}
