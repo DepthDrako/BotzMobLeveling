@@ -7,7 +7,7 @@ license     = "MIT"
 
 [[mods]]
     modId       = "botzmobleveling"
-    version     = "1.0.0"
+    version     = "1.0.7"
     displayName = "BotzMobLeveling"
     description = "Level-based mob stat system for Eidolon Reach."
 
