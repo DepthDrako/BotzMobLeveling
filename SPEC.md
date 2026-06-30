@@ -3,13 +3,13 @@
 **Target:** Minecraft 1.21.1 · NeoForge
 **Java:** 21
 **Original:** 1.20.1 Forge 47.4.0
-**Hard Dependency:** `eidolon_lib` (stat system, shared interfaces)
-**Soft Dependency:** `eidolon_ai` (reads mob stats via IStatHolder)
+**Hard Dependency:** `botz_lib` (stat system, shared interfaces)
+**Soft Dependency:** `botz_ai` (reads mob stats via IStatHolder)
 **Optional:** `epicfight`, `irons_spells_n_spellbooks`
 
 > **Design decision:** No rank/letter class system (SSR→E removed entirely).
 > One unified mode — level assigned by rules, stats scale linearly with level.
-> Both this mod and `leveling_system` use the same stat keys (from eidolon_lib) but
+> Both this mod and `leveling_system` use the same stat keys (from botz_lib) but
 > are independently configurable. Mob stat values and player stat values are separate
 > configs even when the keys are identical.
 
@@ -17,14 +17,14 @@
 
 ## Lib Delegation
 
-The following live in `eidolon_lib` — do not reimplement:
-- `StatKey` constants → `com.eidolonreach.eidolon_lib.stats.StatKey`
-- `StatBlock` data class → `com.eidolonreach.eidolon_lib.stats.StatBlock`
-- `IStatHolder` interface → `com.eidolonreach.eidolon_lib.api.IStatHolder`
-- `CapabilityHelper` utilities → `com.eidolonreach.eidolon_lib.capability.CapabilityHelper`
-- `StaminaState` enum → `com.eidolonreach.eidolon_lib.api.StaminaState`
+The following live in `botz_lib` — do not reimplement:
+- `StatKey` constants → `com.botzlabz.lib.stats.StatKey`
+- `StatBlock` data class → `com.botzlabz.lib.stats.StatBlock`
+- `IStatHolder` interface → `com.botzlabz.lib.api.IStatHolder`
+- `CapabilityHelper` utilities → `com.botzlabz.lib.capability.CapabilityHelper`
+- `StaminaState` enum → `com.botzlabz.lib.api.StaminaState`
 
-`MobStatBlock` (capability data) implements `IStatHolder` so `eidolon_ai` reads mob
+`MobStatBlock` (capability data) implements `IStatHolder` so `botz_ai` reads mob
 stats without importing this mod directly.
 
 ---
@@ -38,7 +38,7 @@ One stat block per mob. All stats scale linearly with mob level. No rank multipl
 | `vigor`          | `minecraft:max_health`                                | +0     | +1.0 HP                    | Always             |
 | `strength`       | `minecraft:attack_damage`                             | +0     | +0.5 dmg                   | Always             |
 | `endurance`      | Damage reduction % (additive, hard cap 75%)           | 0%     | +0.4% per level            | Always             |
-| `stamina`        | Stamina pool size (read by eidolon_ai)                | base   | +0.5 units per level       | Always             |
+| `stamina`        | Stamina pool size (read by botz_ai)                | base   | +0.5 units per level       | Always             |
 | `dexterity`      | `minecraft:attack_speed`                              | +0     | +0.02 per level            | Always             |
 | `agility`        | `minecraft:movement_speed`                            | +0     | +0.002 per level           | Always             |
 | `attack_speed`   | Weapon attack speed multiplier (hard cap ×3.0)        | ×1.0   | +0.025× per level          | Always             |
@@ -59,13 +59,13 @@ reducedDamage = incomingDamage × (1 - min(enduranceValue / 100, 0.75))
 ```
 Stacks additively with vanilla armor (armor runs first, then endurance reduction applies to post-armor damage).
 
-**Stamina** — mob stamina pool size is passed to `eidolon_ai` StaminaCapability on spawn.
-Stamina itself is managed by eidolon_ai; this mod only sets the pool size.
+**Stamina** — mob stamina pool size is passed to `botz_ai` StaminaCapability on spawn.
+Stamina itself is managed by botz_ai; this mod only sets the pool size.
 For mobs, the hunger-drain reduction from stamina (player mechanic) does NOT apply.
 
 **Attack Speed** — separate from Dexterity. Dexterity modifies `minecraft:attack_speed` attribute
 (vanilla, affects animation timing). Attack Speed is an internal multiplier on damage dealt
-within an attack window (handled by eidolon_combat or eidolon_ai if loaded, else stored only).
+within an attack window (handled by eidolon_combat or botz_ai if loaded, else stored only).
 
 **Mana Pool / Mana Density** — if ISS is NOT loaded:
 - Mana pool is tracked internally (simple float on the capability, not shown to player)
@@ -75,7 +75,7 @@ within an attack window (handled by eidolon_combat or eidolon_ai if loaded, else
 
 **Elemental stats** — always stored in the stat block and exposed via `IStatHolder`.
 `botz_elemental` reads them to apply damage bonuses and affinities.
-`eidolon_ai` reads the dominant elemental stat to bias spell school selection.
+`botz_ai` reads the dominant elemental stat to bias spell school selection.
 This mod applies NO direct game effect from elemental stats — pure data layer only.
 
 ---
@@ -133,7 +133,7 @@ Remove by ResourceLocation key before re-applying (level change / kill level).
 
 `endurance`, `stamina`, `attack_speed`, `mana_pool`, `mana_density`, and elemental stats
 are NOT applied via vanilla attribute system — they are read directly from the capability
-by eidolon_ai, eidolon_combat, and botz_elemental.
+by botz_ai, eidolon_combat, and botz_elemental.
 
 ---
 
@@ -318,7 +318,7 @@ BotzMobLeveling/
 │   └── compat/
 │       ├── EpicFightIntegration.java
 │       ├── ISSIntegration.java           # ISS mana hook — conditional on ModList
-│       └── EidolonAIIntegration.java     # exposes IStatHolder to eidolon_ai
+│       └── BotzAIIntegration.java     # exposes IStatHolder to botz_ai
 └── src/main/resources/
     ├── META-INF/neoforge.mods.toml
     └── data/botzmobleveling/
@@ -329,7 +329,7 @@ BotzMobLeveling/
 
 ## 10. Implementation Order
 
-1. Gradle setup — copy from eidolon_lib, update modId
+1. Gradle setup — copy from botz_lib, update modId
 2. `MobLevelingConfig` — ModConfigSpec with all keys from §7
 3. `MobLevelData` capability — NeoForge: RegisterCapabilitiesEvent + AttachCapabilitiesEvent
 4. `MobStatBlock` — implements IStatHolder, stores stat floats, NBT save/load
@@ -345,4 +345,4 @@ BotzMobLeveling/
 14. `NetworkHandler` — sync level/stats to client for display
 15. `ISSIntegration` — conditional mana hook
 16. `EpicFightIntegration` — verify 1.21.1 EF API
-17. `EidolonAIIntegration` — expose IStatHolder, guard with ModList check
+17. `BotzAIIntegration` — expose IStatHolder, guard with ModList check

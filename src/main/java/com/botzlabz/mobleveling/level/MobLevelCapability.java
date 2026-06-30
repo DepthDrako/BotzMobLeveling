@@ -1,7 +1,7 @@
 package com.botzlabz.mobleveling.level;
 
 import com.botzlabz.mobleveling.BotzMobLeveling;
-import com.eidolonreach.eidolon_lib.capability.CapabilityHelper;
+import com.botzlabz.lib.capability.CapabilityHelper;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * Convenience accessor for {@link BotzMobLeveling#MOB_LEVEL_CAP}.
  *
- * <p>Delegates to eidolon_lib's {@link CapabilityHelper} for consistent
+ * <p>Delegates to botz_lib's {@link CapabilityHelper} for consistent
  * null-safety across all Eidolon mods.
  */
 public final class MobLevelCapability {

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
  * mob with a custom name.  Since {@link LevelDisplay} names every leveled mob,
  * without this handler no leveled mob would EVER despawn naturally — the mob cap
  * fills with stale mobs, fresh spawning grinds down, and downstream systems that
- * react to natural despawn (eidolon_ai's nemesis dormancy) never trigger.
+ * react to natural despawn (botz_ai's nemesis dormancy) never trigger.
  *
  * <p><b>What it does:</b> on the despawn check, if the mob is leveled, carries OUR
  * tag (not a player rename), and has no real persistence reason, we replicate the

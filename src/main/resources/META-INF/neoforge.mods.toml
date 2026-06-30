@@ -26,7 +26,7 @@ license     = "MIT"
     side         = "BOTH"
 
 [[dependencies.botzmobleveling]]
-    modId        = "eidolon_lib"
+    modId        = "botz_lib"
     type         = "required"
     versionRange = "[1.0.0,)"
     ordering     = "AFTER"

@@ -1,11 +1,11 @@
 package com.botzlabz.mobleveling.combat;
 
-import com.eidolonreach.eidolon_lib.combat.WeakSpotRegistry;
+import com.botzlabz.lib.combat.WeakSpotRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Registers vanilla mob weak spots in eidolon_lib's {@link WeakSpotRegistry}.
+ * Registers vanilla mob weak spots in botz_lib's {@link WeakSpotRegistry}.
  *
  * <p>Called once from {@link com.botzlabz.mobleveling.BotzMobLeveling#commonSetup}.
  * {@code eidolon_combat} reads from {@link WeakSpotRegistry} during hit resolution —

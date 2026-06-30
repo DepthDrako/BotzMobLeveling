@@ -8,7 +8,7 @@ import com.botzlabz.mobleveling.data.MobLevelingDataManager;
 import com.botzlabz.mobleveling.display.LevelDisplay;
 import com.botzlabz.mobleveling.level.MobLevelData;
 import com.botzlabz.mobleveling.level.MobLevelStore;
-import com.eidolonreach.eidolon_lib.capability.EidolonLibCapabilities;
+import com.botzlabz.lib.capability.BotzLibCapabilities;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -76,11 +76,11 @@ public class BotzMobLeveling {
                 ? MobLevelStore.getOrCreate(mob) : null
         );
 
-        // Cross-mod stat access: consumers (eidolon_ai, botz_elemental, ...) read
-        // this mob's stats through eidolon_lib's IStatHolder token without any
+        // Cross-mod stat access: consumers (botz_ai, botz_elemental, ...) read
+        // this mob's stats through botz_lib's IStatHolder token without any
         // compile dependency on this mod.
         event.registerEntity(
-            EidolonLibCapabilities.STAT_HOLDER,
+            BotzLibCapabilities.STAT_HOLDER,
             type,
             (entity, ctx) -> entity instanceof Mob mob && !mob.level().isClientSide()
                 ? MobLevelStore.getOrCreate(mob).getStatBlock() : null

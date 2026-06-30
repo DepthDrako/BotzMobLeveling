@@ -59,7 +59,7 @@ public class MobKillHandler {
             LevelDisplay.apply(killerMob, killerData);
         }
 
-        // Always persist updated XP / level data (also syncs BML_Level for eidolon_ai)
+        // Always persist updated XP / level data (also syncs BML_Level for botz_ai)
         MobLevelStore.persist(killerMob, killerData);
     }
 }

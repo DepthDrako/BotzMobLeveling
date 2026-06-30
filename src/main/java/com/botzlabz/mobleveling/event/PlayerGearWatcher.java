@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 /**
- * Keeps {@link GearScoreCache} up-to-date using eidolon_lib's async pool.
+ * Keeps {@link GearScoreCache} up-to-date using botz_lib's async pool.
  *
  * <ul>
  *   <li>Player logs in → initial score computed.</li>
@@ -20,7 +20,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
  * </ul>
  *
  * <p>All actual gear-scoring work runs off the main thread via
- * {@link com.eidolonreach.eidolon_lib.async.EidolonAsync}.
+ * {@link com.botzlabz.lib.async.BotzAsync}.
  */
 @EventBusSubscriber(modid = BotzMobLeveling.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public final class PlayerGearWatcher {

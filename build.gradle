@@ -23,6 +23,6 @@ runs {
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 
-    // eidolon_lib — hard dependency
-    implementation files('../eidolon_lib/build/libs/eidolon_lib-1.0.0.jar')
+    // botz_lib — hard dependency
+    implementation files('../botz_lib/build/libs/botz_lib-1.0.0.jar')
 }

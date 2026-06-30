@@ -1,6 +1,6 @@
 package com.botzlabz.mobleveling.adaptive;
 
-import com.eidolonreach.eidolon_lib.async.EidolonAsync;
+import com.botzlabz.lib.async.BotzAsync;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <ol>
  *   <li>{@link com.botzlabz.mobleveling.event.PlayerGearWatcher} calls
  *       {@link #updateAsync} whenever a player's equipment changes or they log in.</li>
- *   <li>The scoring work runs on the {@link EidolonAsync} thread pool — it only
+ *   <li>The scoring work runs on the {@link BotzAsync} thread pool — it only
  *       touches the already-copied {@link ItemStack} snapshots, never live world
  *       state.</li>
  *   <li>{@link DifficultyCalculator} calls {@link #getScore} synchronously on the
@@ -45,12 +45,12 @@ public final class GearScoreCache {
     }
 
     // ------------------------------------------------------------------
-    // Write (triggered on main thread, computed on EidolonAsync pool)
+    // Write (triggered on main thread, computed on BotzAsync pool)
     // ------------------------------------------------------------------
 
     /**
      * Snapshots the player's gear <em>on the calling (main) thread</em>,
-     * then submits the actual scoring calculation to the {@link EidolonAsync}
+     * then submits the actual scoring calculation to the {@link BotzAsync}
      * pool.  The result is written back to {@link #CACHE} on the main thread
      * via the server's task queue.
      *
@@ -63,7 +63,7 @@ public final class GearScoreCache {
         ItemStack       weapon = GearAnalyzer.snapshotWeapon(player);
         ItemStack       offhand = GearAnalyzer.snapshotOffhand(player);
 
-        EidolonAsync.submit(
+        BotzAsync.submit(
             () -> GearAnalyzer.scoreFromSnapshots(armor, weapon, offhand),
             score -> CACHE.put(uuid, score),
             server

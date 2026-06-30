@@ -50,7 +50,7 @@ public final class MobLevelStore {
 
     /**
      * Writes the data to the mob's persistent NBT.  Also mirrors the total level
-     * to the {@code BML_Level} int that eidolon_ai reads as a brain input —
+     * to the {@code BML_Level} int that botz_ai reads as a brain input —
      * keep both in sync on every save.
      */
     public static void persist(Mob mob, MobLevelData data) {

@@ -49,11 +49,11 @@ mobs.
 
 ## Reading Levels From Other Mods (no dependency)
 
-A mob's level/stats are exposed through **eidolon_lib's `STAT_HOLDER` capability**,
+A mob's level/stats are exposed through **botz_lib's `STAT_HOLDER` capability**,
 so other Eidolon mods can read them without depending on BotzMobLeveling:
 
 ```java
-IStatHolder stats = entity.getCapability(EidolonLibCapabilities.STAT_HOLDER);
+IStatHolder stats = entity.getCapability(BotzLibCapabilities.STAT_HOLDER);
 int level = (stats != null) ? stats.getEntityLevel() : 0;
 ```
 

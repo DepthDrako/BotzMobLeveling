@@ -18,7 +18,7 @@ scale to nearby players' gear. Includes a configurable boss module.
 
 | Mod | Type | Notes |
 |---|---|---|
-| `eidolon_lib` | **required** | Shared library (capabilities, stat keys, weak-spot registry, async pool). |
+| `botz_lib` | **required** | Shared library (capabilities, stat keys, weak-spot registry, async pool). |
 | Iron's Spells 'n Spellbooks | optional | Mana stats are computed/exposed; direct application is a stub pending the ISS 1.21.1 API. |
 | Epic Fight | optional | Integration hook is a placeholder in this mod (combat behaviour lives in companion mods). |
 
@@ -35,7 +35,7 @@ scale to nearby players' gear. Includes a configurable boss module.
 - **Loot scaling** (opt-in), **hunting AI** injection, natural-despawn restoration for tagged mobs.
 - **Public API & commands** — `BotzMobLevelingAPI` (area/mob level queries) and `/botzmobleveling arealevel|moblevel`.
 
-Cross-mod consumers read a mob's stats via eidolon_lib's `STAT_HOLDER` capability
+Cross-mod consumers read a mob's stats via botz_lib's `STAT_HOLDER` capability
 (or the mirrored `BML_Level` persistent-data int) — no compile dependency required.
 
 ## Building
@@ -44,8 +44,8 @@ Cross-mod consumers read a mob's stats via eidolon_lib's `STAT_HOLDER` capabilit
 ./gradlew build
 ```
 
-> **Note:** this project depends on a locally-built `eidolon_lib` jar at
-> `../eidolon_lib/build/libs/eidolon_lib-1.0.0.jar` (see `build.gradle`). Build
-> `eidolon_lib` first, or adjust the dependency to your setup.
+> **Note:** this project depends on a locally-built `botz_lib` jar at
+> `../botz_lib/build/libs/botz_lib-1.0.0.jar` (see `build.gradle`). Build
+> `botz_lib` first, or adjust the dependency to your setup.
 
 The built jar lands in `build/libs/`.

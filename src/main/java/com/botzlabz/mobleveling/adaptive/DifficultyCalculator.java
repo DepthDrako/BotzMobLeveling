@@ -13,7 +13,7 @@ import java.util.List;
  * <h3>Design</h3>
  * Player gear scores are pre-computed asynchronously by
  * {@link PlayerGearWatcher} + {@link GearScoreCache} using
- * eidolon_lib's {@link com.eidolonreach.eidolon_lib.async.EidolonAsync} pool.
+ * botz_lib's {@link com.botzlabz.lib.async.BotzAsync} pool.
  * This method only reads the cached values — it is main-thread safe and
  * returns instantly without any blocking or heavy computation.
  *

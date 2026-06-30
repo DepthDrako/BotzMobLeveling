@@ -15,7 +15,7 @@ import java.util.List;
  * player inventory state.  Use {@link #snapshotArmor}, {@link #snapshotWeapon},
  * and {@link #snapshotOffhand} to copy item stacks on the main thread, then pass
  * those snapshots to {@link #scoreFromSnapshots} on any thread (including
- * {@link com.eidolonreach.eidolon_lib.async.EidolonAsync}).
+ * {@link com.botzlabz.lib.async.BotzAsync}).
  *
  * <h3>Scoring</h3>
  * <ul>

@@ -111,7 +111,7 @@ public class MobSpawnHandler {
         LevelDisplay.apply(mob, data);
 
         // Persist to entity's persistent data (survives restart).
-        // The store helper also writes the BML_Level int that eidolon_ai reads.
+        // The store helper also writes the BML_Level int that botz_ai reads.
         MobLevelStore.persist(mob, data);
 
         if (MobLevelingConfig.DEBUG_MODE.get()) {

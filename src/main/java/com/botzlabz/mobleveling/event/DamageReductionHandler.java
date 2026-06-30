@@ -4,7 +4,7 @@ import com.botzlabz.mobleveling.BotzMobLeveling;
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
 import com.botzlabz.mobleveling.level.MobLevelCapability;
 import com.botzlabz.mobleveling.level.MobLevelData;
-import com.eidolonreach.eidolon_lib.stats.StatKey;
+import com.botzlabz.lib.stats.StatKey;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;

@@ -1,22 +1,22 @@
 package com.botzlabz.mobleveling.stats;
 
 import com.botzlabz.mobleveling.config.MobLevelingConfig;
-import com.eidolonreach.eidolon_lib.api.IStatHolder;
-import com.eidolonreach.eidolon_lib.stats.StatBlock;
-import com.eidolonreach.eidolon_lib.stats.StatKey;
+import com.botzlabz.lib.api.IStatHolder;
+import com.botzlabz.lib.stats.StatBlock;
+import com.botzlabz.lib.stats.StatKey;
 import net.minecraft.nbt.CompoundTag;
 
 /**
  * Computed stat set for a leveled mob.
  *
- * <p>Internally uses eidolon_lib's {@link StatBlock} for integer level
+ * <p>Internally uses botz_lib's {@link StatBlock} for integer level
  * storage and NBT serialisation.  All stat levels are set equal to
  * {@code mobLevel} (uniform linear scaling, no rank system).
  *
  * <p>Float values (used by attribute modifiers, damage reduction, etc.)
  * are derived on-the-fly as {@code configIncrement × mobLevel}.
  *
- * <p>Implements {@link IStatHolder} so {@code eidolon_ai}, {@code eidolon_combat}
+ * <p>Implements {@link IStatHolder} so {@code botz_ai}, {@code eidolon_combat}
  * and other mods can read this mob's stats through the shared lib interface
  * without importing {@code botzmobleveling} directly.
  */
@@ -57,7 +57,7 @@ public class MobStatBlock implements IStatHolder {
     }
 
     // -------------------------------------------------------------------------
-    // Direct StatBlock access (for eidolon_combat / eidolon_ai)
+    // Direct StatBlock access (for eidolon_combat / botz_ai)
     // -------------------------------------------------------------------------
 
     /**

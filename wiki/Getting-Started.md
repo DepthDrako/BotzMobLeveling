@@ -5,7 +5,7 @@ This guide walks through setting up your first mob-leveling datapack on 1.21.1.
 ## Prerequisites
 
 - Minecraft 1.21.1 + NeoForge 21.1.172+
-- BotzMobLeveling **and eidolon_lib** installed
+- BotzMobLeveling **and botz_lib** installed
 
 ## Creating Your First Datapack
 

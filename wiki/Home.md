@@ -55,13 +55,13 @@ Within a category, rules are sorted by their `priority` field (higher first).
 
 - Minecraft **1.21.1**
 - **NeoForge 21.1.172+**
-- **eidolon_lib** (required dependency)
+- **botz_lib** (required dependency)
 - Iron's Spells 'n Spellbooks, Epic Fight — optional
 
 ## Installation
 
 1. Install NeoForge for 1.21.1.
-2. Place the mod jar **and `eidolon_lib`** in your `mods` folder.
+2. Place the mod jar **and `botz_lib`** in your `mods` folder.
 3. Add datapacks under `world/datapacks/` for custom rules.
 4. Run `/reload` to apply rule changes.
 
