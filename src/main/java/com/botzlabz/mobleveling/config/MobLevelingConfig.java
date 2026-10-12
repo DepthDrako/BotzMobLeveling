@@ -73,6 +73,7 @@ public class MobLevelingConfig {
     // Epic Fight Integration
     public static final ForgeConfigSpec.BooleanValue EPICFIGHT_INTEGRATION_ENABLED;
     public static final ForgeConfigSpec.DoubleValue EPICFIGHT_WEAPON_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue ADAPTIVE_GEAR_DROP_CHANCE;
     public static final ForgeConfigSpec.BooleanValue EPICFIGHT_PREFER_EXOTIC_AT_HIGH_TIER;
 
     // Kill Leveling
@@ -346,6 +347,12 @@ public class MobLevelingConfig {
         ADAPTIVE_DEBUG_LOGGING = builder
                 .comment("Enable debug logging for adaptive difficulty calculations")
                 .define("debugLogging", false);
+
+        ADAPTIVE_GEAR_DROP_CHANCE = builder
+                .comment("Chance (0.0 to 1.0) that each piece of gear given by adaptive difficulty drops when the mob dies.",
+                         "Dropped pieces get random durability loss, like vanilla mob equipment.",
+                         "0.085 = vanilla's chance for a mob's spawn gear. 0 = never drops.")
+                .defineInRange("gearDropChance", 0.085, 0.0, 1.0);
 
         builder.pop();
 

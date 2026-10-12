@@ -146,6 +146,8 @@ public class MobResponseHandler {
         }
 
         int tier = ThreatCalculator.getEquipmentTier(gearScore);
+        // Not setGuaranteedDrop: that is a 200% chance, which always drops and skips vanilla's durability loss.
+        float gearDropChance = MobLevelingConfig.ADAPTIVE_GEAR_DROP_CHANCE.get().floatValue();
         boolean equipmentGiven = false;
 
         // Enable loot pickup for equipment to work properly
@@ -170,7 +172,7 @@ public class MobResponseHandler {
             
             if (!weapon.isEmpty()) {
                 mob.setItemSlot(EquipmentSlot.MAINHAND, weapon);
-                mob.setGuaranteedDrop(EquipmentSlot.MAINHAND);
+                mob.setDropChance(EquipmentSlot.MAINHAND, gearDropChance);
                 equipmentGiven = true;
             }
         }
@@ -181,7 +183,7 @@ public class MobResponseHandler {
             ItemStack helmet = getHelmetForTier(tier, random);
             if (!helmet.isEmpty()) {
                 mob.setItemSlot(EquipmentSlot.HEAD, helmet);
-                mob.setGuaranteedDrop(EquipmentSlot.HEAD);
+                mob.setDropChance(EquipmentSlot.HEAD, gearDropChance);
                 equipmentGiven = true;
             }
         }
@@ -191,7 +193,7 @@ public class MobResponseHandler {
             ItemStack chestplate = getChestplateForTier(tier, random);
             if (!chestplate.isEmpty()) {
                 mob.setItemSlot(EquipmentSlot.CHEST, chestplate);
-                mob.setGuaranteedDrop(EquipmentSlot.CHEST);
+                mob.setDropChance(EquipmentSlot.CHEST, gearDropChance);
                 equipmentGiven = true;
             }
         }
@@ -201,7 +203,7 @@ public class MobResponseHandler {
             ItemStack leggings = getLeggingsForTier(tier, random);
             if (!leggings.isEmpty()) {
                 mob.setItemSlot(EquipmentSlot.LEGS, leggings);
-                mob.setGuaranteedDrop(EquipmentSlot.LEGS);
+                mob.setDropChance(EquipmentSlot.LEGS, gearDropChance);
                 equipmentGiven = true;
             }
         }
@@ -211,7 +213,7 @@ public class MobResponseHandler {
             ItemStack boots = getBootsForTier(tier, random);
             if (!boots.isEmpty()) {
                 mob.setItemSlot(EquipmentSlot.FEET, boots);
-                mob.setGuaranteedDrop(EquipmentSlot.FEET);
+                mob.setDropChance(EquipmentSlot.FEET, gearDropChance);
                 equipmentGiven = true;
             }
         }

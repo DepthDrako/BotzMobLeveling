@@ -28,7 +28,9 @@
       "base_bonus": 0.0,
       "per_level": 0.03,
       "operation": "multiply_base",
-      "max_bonus": 1.5
+      "max_bonus": 1.5,
+      "flat_per_level": 0.1,
+      "flat_max_bonus": 5.0
     },
     "minecraft:generic.armor": {
       "base_bonus": 0.0,

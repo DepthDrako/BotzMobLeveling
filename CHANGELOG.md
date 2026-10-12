@@ -4,6 +4,14 @@ All notable changes to BotzMobLeveling will be documented here.
 
 ---
 
+## [1.0.8] - 2026-10-12
+
+### Fixed
+- **Adaptive-difficulty gear no longer always drops at full durability.** Gear given to mobs by adaptive difficulty was marked as a guaranteed drop (a 200% chance), so it always dropped and skipped vanilla's durability loss. It now uses a normal drop chance: new config `adaptiveDifficulty.gearDropChance`, default `0.085` (vanilla's chance for spawn gear). Pieces that drop get random wear, like vanilla mob equipment. `0` = never drops.
+- **Level damage now matters for unarmed mobs too.** Damage scaling is `multiply_base`, which also multiplies a held weapon's damage, so an unarmed mob gained far less from its level (zombie: 3 to 7.5 at max level, versus 8 to 20 with an iron sword). Attribute scaling entries can now add a flat part next to the main operation: `"flat_per_level"` and `"flat_max_bonus"`. The default hostile rule adds `+0.1` attack damage per level, up to `+5`.
+
+---
+
 ## [1.0.7] - 2026-06-26
 
 ### Added

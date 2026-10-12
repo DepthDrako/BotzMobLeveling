@@ -69,6 +69,8 @@ public class AttributeScalingManager {
                 return;
             }
 
+            applyFlatModifier(mob, instance, attrId, scaling.calculateFlatBonus(level));
+
             // Calculate bonus
             double bonus = scaling.calculateBonus(level);
 
@@ -129,6 +131,28 @@ public class AttributeScalingManager {
         }
     }
 
+    /** The optional flat ADDITION part of a scaling entry (see AttributeScaling#calculateFlatBonus). */
+    private void applyFlatModifier(Mob mob, AttributeInstance instance, ResourceLocation attrId, double flat) {
+        UUID flatId = generateFlatModifierUUID(attrId);
+        if (instance.getModifier(flatId) != null) {
+            instance.removeModifier(flatId);
+        }
+        if (flat == 0.0) {
+            return;
+        }
+        instance.addTransientModifier(new AttributeModifier(flatId, MODIFIER_NAME_PREFIX + attrId.getPath() + "_flat",
+                flat, AttributeModifier.Operation.ADDITION));
+        if (MobLevelingConfig.DEBUG_MODE.get()) {
+            LOGGER.debug("Applied flat {} modifier to {}: {}", attrId.getPath(),
+                    mob.getType().getDescription().getString(), formatBonus(flat, AttributeModifier.Operation.ADDITION));
+        }
+    }
+
+    private UUID generateFlatModifierUUID(ResourceLocation attrId) {
+        String seed = BASE_UUID.toString() + attrId.toString() + "#flat";
+        return UUID.nameUUIDFromBytes(seed.getBytes(StandardCharsets.UTF_8));
+    }
+
     private UUID generateModifierUUID(ResourceLocation attrId) {
         // Generate a consistent UUID based on the attribute ID
         String seed = BASE_UUID.toString() + attrId.toString();
@@ -178,6 +202,10 @@ public class AttributeScalingManager {
             UUID modifierId = generateModifierUUID(attrId);
             if (instance.getModifier(modifierId) != null) {
                 instance.removeModifier(modifierId);
+            }
+            UUID flatId = generateFlatModifierUUID(attrId);
+            if (instance.getModifier(flatId) != null) {
+                instance.removeModifier(flatId);
             }
         }
     }
